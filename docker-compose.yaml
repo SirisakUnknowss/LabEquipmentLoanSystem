@@ -1,0 +1,28 @@
+version: "4.5"
+# Dev only
+services:
+
+  web:
+    build: 
+      context: ./webApp
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - ./web:/usr/src/app/
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./web/docker/.file
+    command: "python manage.py runserver 0.0.0.0:8000"
+    networks:
+      vpcbr:
+        ipv4_address: 192.168.43.201
+
+    restart: always
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 192.168.43.0/24
+         gateway: 192.168.43.1
