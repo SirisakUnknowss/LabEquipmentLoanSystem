@@ -7,11 +7,11 @@ services:
       context: ./webApp
       dockerfile: ./docker/Dockerfile
     volumes:
-      - ./web:/usr/src/app/
+      - ./webApp:/usr/src/app/
     ports:
       - "8000:8000"
     env_file:
-      - ./web/docker/.file
+      - ./webApp/docker/.app
     command: "python manage.py runserver 0.0.0.0:8000"
     networks:
       vpcbr:

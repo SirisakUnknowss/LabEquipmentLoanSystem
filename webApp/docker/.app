@@ -1,4 +1,4 @@
-DJANGO_SETTINGS_MODULE=settings.dev
+DJANGO_SETTINGS_MODULE=settings.setting
 # python manage.py createsuperuser --noinput
 DJANGO_SUPERUSER_USERNAME=Unknowss
 DJANGO_SUPERUSER_PASSWORD=Unknowss01
