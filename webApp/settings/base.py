@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Project
     'base.apps.BaseConfig',
+    'account.apps.AccountConfig',
 ]
 
 MIDDLEWARE = [
@@ -51,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'webApp.urls'
+ROOT_URLCONF = 'LabEquipmentLoanSystem.urls'
 
 TEMPLATES = [
     {
@@ -69,22 +71,22 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'webApp.wsgi.application'
+WSGI_APPLICATION = 'LabEquipmentLoanSystem.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        "ENGINE": os.environ.get('DJANGO_DB_ENGINE'),
+        "NAME": os.environ.get('DJANGO_DB_NAME'),
+        "USER": os.environ.get('DJANGO_DB_USER'),
+        "PASSWORD": os.environ.get('DJANGO_DB_PASSWORD'),
+        "HOST": os.environ.get('DJANGO_DB_HOST'),
+        "PORT": os.environ.get('DJANGO_DB_PORT'),
     }
 }
 
-
 # Password validation
-# https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -117,7 +119,34 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC = os.path.join(BASE_DIR, "static")
+#Additional staticfiles, assets in this case.
+STATICFILES_DIRS = [
+    os.path.join(STATIC, "assets"),
+]
+STATIC_ROOT = os.path.join(STATIC, "staticfiles")
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(STATIC, "media")
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [ 
+            os.path.join(STATIC, 'templates'), 
+            ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+            ],
+        },
+    },
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
