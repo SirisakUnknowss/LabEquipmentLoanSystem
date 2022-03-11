@@ -3,6 +3,7 @@ version: "4.5"
 services:
 
   web:
+    image: postgres
     build: 
       context: ./webApp
       dockerfile: ./docker/Dockerfile
@@ -15,7 +16,7 @@ services:
     command: "python manage.py runserver 0.0.0.0:8000"
     networks:
       vpcbr:
-        ipv4_address: 192.168.43.201
+        ipv4_address: 192.168.0.201
 
     restart: always
 
@@ -24,5 +25,5 @@ networks:
     driver: bridge
     ipam:
      config:
-       - subnet: 192.168.43.0/24
-         gateway: 192.168.43.1
+       - subnet: 192.168.0.201/24
+         gateway: 192.168.0.1

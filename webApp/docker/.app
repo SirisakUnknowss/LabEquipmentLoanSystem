@@ -8,5 +8,5 @@ DJANGO_DB_ENGINE=django.db.backends.postgresql_psycopg2
 DJANGO_DB_NAME=loanLabEquipment
 DJANGO_DB_USER=postgres
 DJANGO_DB_PASSWORD=Unknowss01
-DJANGO_DB_HOST=localhost
+DJANGO_DB_HOST=host.docker.internal
 DJANGO_DB_PORT=5432
