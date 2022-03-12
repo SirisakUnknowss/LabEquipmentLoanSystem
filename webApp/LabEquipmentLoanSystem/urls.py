@@ -24,4 +24,5 @@ from base import views as baseViews
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', baseViews.homepage, name='homepage'),
+    path('login', baseViews.login, name='loginApi'),
 ]
