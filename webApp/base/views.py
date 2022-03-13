@@ -5,3 +5,6 @@ def homepage(request):
     if not(request.user.is_authenticated):
         return render(request, 'base/login.html')
     return render(request, 'base/index.html')
+
+def registerpage(request):
+    return render(request, 'base/signin.html')
