@@ -11,7 +11,11 @@
                         <i class="material-icons opacity-10 text-white me-sm-3">notifications</i>
                         <i class="material-icons opacity-10 text-white me-sm-3">account_circle</i>
                         <li class="nav-item d-flex align-items-center">
-                        <a href="{% url 'loginApi' %}"><span class="d-sm-inline d-none text-white">เข้าสู่ระบบ</span></a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'homepage' %}"><span class="d-sm-inline d-none text-white">{{ user.account.studentID }}</span></a>
+                        {% else %}
+                            <a href="{% url 'homepage' %}"><span class="d-sm-inline d-none text-white">เข้าสู่ระบบ</span></a>
+                        {% endif %}
                         </li>
                     </ul>
                 </div>

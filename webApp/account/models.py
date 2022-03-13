@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.contrib.auth.models import User
 
 
 LEVEL_CLASS = [
@@ -25,8 +26,9 @@ class Account(models.Model):
     Inherited fields:
     password, last_login, is_active
     """
+    user        = models.OneToOneField(User, on_delete=models.CASCADE, related_name='account')
     studentID   = models.CharField(max_length=100, unique=True)
-    password    = models.CharField(max_length=100, validators=[MinValueValidator(8)], default='12345678')
+    password    = models.CharField(max_length=100, default='12345678')
     email       = models.EmailField(null=True, blank=True)
     firstname   = models.CharField(max_length=100, null=True, blank=True)
     lastname    = models.CharField(max_length=100, null=True, blank=True)

@@ -5,17 +5,17 @@ from import_export.admin import ImportExportModelAdmin, ImportMixin, ExportMixin
 from .models import Account
 
 @admin.register(Account)
-class AccountAdmin(ImportExportModelAdmin):
+class AccountAdmin(admin.ModelAdmin):
 
     list_display = ['id', 'studentID', 'email', 'firstname', 'lastname', 'gender', 'status']
     fieldsets = (
-        ('Account', {'fields': ('studentID', 'password', 'levelclass', 'branch', 'faculty')}),
+        ('Account', {'fields': ('user', 'studentID', 'password', 'levelclass', 'branch', 'faculty')}),
         ('Personal info', {'fields': ('firstname', 'lastname', 'gender', 'email', 'phone', 'status')}),
     )
     add_fieldsets = (
         ('Account', {
             'classes': ('wide',),
-            'fields': ('studentID', 'password', 'levelclass', 'branch', 'faculty')}
+            'fields': ('user', 'studentID', 'password', 'levelclass', 'branch', 'faculty')}
         ),
         ('Personal info', {'fields': ('firstname', 'lastname', 'gender', 'email', 'phone', 'status')}),
     )
