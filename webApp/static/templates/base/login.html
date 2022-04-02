@@ -11,7 +11,7 @@
                 <div class="col-lg-4 col-md-8 col-12 mx-auto">
                     <div class="card z-index-0 fadeIn3 fadeInBottom">
                         <div class="position-relative mt-n5 text-center">
-                            <img src="{{ STATIC_URL }}/images/user.png" />
+                            <img src="{{ STATIC_URL }}/images/nrru-logo.png" style="width:30%" />
                         </div>
                         <div class="card-body">
                             <h4 class="text-black font-weight-bolder text-center mt-2 mb-0">เข้าสู่ระบบ</h4>
@@ -19,19 +19,19 @@
                             action="{% url 'loginApi' %}">
                             {% csrf_token %}
                             <div class="input-group input-group-outline my-3">
-                                <label class="form-label">ชื่อผุูใช้งาน</label>
+                                <label class="form-label">รหัสนักศึกษา</label>
                                 <input type="text" class="form-control" id="id_username" name="username" >
                             </div>
                             <div class="input-group input-group-outline mb-3">
                                 <label class="form-label">รหัสผ่าน</label>
                                 <input type="password" class="form-control" id="id_password" name="password">
                             </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">เข้าสู่ระบบ</button>
-                            </div>
                             <p class="mt-4 text-sm text-center">
                                 <a href="{% url 'registerpage' %}" class="text-primary text-gradient font-weight-bold underline">ลงทะเบียนเข้าใช้งาน</a>
                             </p>
+                            <div class="text-center">
+                                <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">เข้าสู่ระบบ</button>
+                            </div>
                             </form>
                             
                             <p class=" label label-danger">{{ error }} </p>

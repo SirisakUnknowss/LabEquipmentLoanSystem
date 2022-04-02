@@ -25,5 +25,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', baseViews.homepage, name='homepage'),
     path('register', baseViews.registerpage, name='registerpage'),
+    path('notifications', baseViews.notificationspage, name='notificationspage'),
+    path('information', baseViews.informationpage, name='informationpage'),
+    path('equipment-list', baseViews.equipmentlistpage, name='equipmentlistpage'),
+    path('history-borrowing', baseViews.borrowinghistorypage, name='borrowinghistorypage'),
+    path('contactpage', baseViews.contactpage, name='contactpage'),
     path('api/account/', include('account.urls')),
 ]

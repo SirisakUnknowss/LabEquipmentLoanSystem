@@ -46,7 +46,7 @@ def user_register(request):
         account = Account.objects.get(studentID=username)
         return redirect(reverse('registerpage'))
     except ObjectDoesNotExist:
-        user        = User.objects.create_user(username=username, email=None, password=password, is_active=True)
+        user = User.objects.create_user(username=username, email=None, password=password, is_active=True)
         account = createAccount(user=user, studentID=username, password=password)
         account.save()
         user = account.user
