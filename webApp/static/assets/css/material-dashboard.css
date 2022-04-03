@@ -3804,6 +3804,7 @@ textarea.form-control-lg {
   margin-left: 1rem; }
 
 .card-header {
+  text-align: center;
   padding: 0.5rem 1rem;
   margin-bottom: 0;
   background-color: #fff;
@@ -17074,7 +17075,6 @@ input[type=number] {
   align-items: center;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  padding-left: 1rem;
   display: inline-block;
   height: 100%;
   width: 33.33%;

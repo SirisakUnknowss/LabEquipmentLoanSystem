@@ -1,14 +1,21 @@
 {% extends 'base/base.html' %}
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-lg-7 col-md-10 mx-auto">
-            <div class="card mt-4">
-                <div class="card-header p-3">
-                    <h5 class="mb-0">แจ้งเตือนการยืม-คืนอุปกรณ์เคมี</h5>
+<main class="main-content position-relative max-height-vh-100 h-100">
+    <div class="container-fluid py-4">
+        <div class="row mt-4">
+            <div class="card card-body mx-2 mx-md-1 mt-n4">
+                <div class="card-header">
+                    <h5>แจ้งเตือนการยืม-คืนอุปกรณ์เคมี</h5>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</main>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+    <script>
+        let name_page = "id_notification_page"
+    </script>
 {% endblock %}

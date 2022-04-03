@@ -2,3 +2,10 @@
 {% block content %}
 {% include 'base/landing.html' %}
 {% endblock %}
+
+{% block js %}
+{{ block.super }}
+    <script>
+        let name_page = "id_home_page"
+    </script>
+{% endblock %}
