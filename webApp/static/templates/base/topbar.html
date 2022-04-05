@@ -10,7 +10,7 @@
                     <ul class="navbar-nav justify-content-end">
                         <i class="material-icons opacity-10 text-white me-sm-3">shopping_bag</i>
                         <i class="material-icons opacity-10 text-white me-sm-3">notifications</i>
-                        <i class="material-icons opacity-10 text-white me-sm-3">account_circle</i>
+                        <a href="{% url 'user-profile' %}"><i class="material-icons opacity-10 text-white me-sm-3">account_circle</i></a>
                         <li class="nav-item d-flex align-items-center">
                         {% if user.is_authenticated %}
                             <span class="d-sm-inline d-none text-white" title="{{ user.account.firstname }} {{ user.account.lastname }}">{{ user.account.studentID }}</span>

@@ -5,7 +5,10 @@ const id_equipment_list_page        = document.getElementById("id_equipment_list
 const id_borrowing_history_page     = document.getElementById("id_borrowing_history_page")
 const id_borrowing_information_page = document.getElementById("id_borrowing_information_page")
 
-window.onload = (event) => {
+checkNamePage()
+function checkNamePage()
+{
+    if (typeof name_page == 'undefined') { return; }
     switch(String(name_page)) {
         case id_home_page.name:
             id_home_page.className = "nav-link text-white active bg-gradient-primary"

@@ -30,5 +30,6 @@ urlpatterns = [
     path('equipment-list', baseViews.equipmentlistpage, name='equipment-list'),
     path('history-borrowing', baseViews.borrowinghistorypage, name='borrowing-history'),
     path('contactpage', baseViews.contactpage, name='contact-us'),
+    path('account/profile', baseViews.profilepage, name='user-profile'),
     path('api/account/', include('account.urls')),
 ]

@@ -4,7 +4,7 @@
 {% block sidebar %}{% endblock %}
 {% block topbar %}{% endblock %}
 {% block content %}
-<main class="main-content mt-0 bg-body">
+<main class="mt-0 bg-body">
     <div class="page-header align-items-start min-vh-100">
         <div class="container my-auto">
             <div class="row">
@@ -20,11 +20,11 @@
                             {% csrf_token %}
                             <div class="input-group input-group-outline my-3">
                                 <label class="form-label">รหัสนักศึกษา</label>
-                                <input type="text" class="form-control" id="id_username" name="username" >
+                                <input type="text" class="form-control" id="id_username" name="username" onfocus="focused(this)" onfocusout="defocused(this)">
                             </div>
                             <div class="input-group input-group-outline mb-3">
                                 <label class="form-label">รหัสผ่าน</label>
-                                <input type="password" class="form-control" id="id_password" name="password">
+                                <input type="password" class="form-control" id="id_password" name="password" onfocus="focused(this)" onfocusout="defocused(this)">
                             </div>
                             <p class="mt-4 text-sm text-center">
                                 <a href="{% url 'registerpage' %}" class="text-primary text-gradient font-weight-bold underline">ลงทะเบียนเข้าใช้งาน</a>

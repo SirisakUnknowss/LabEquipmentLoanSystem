@@ -1,0 +1,24 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+    <div class="container-fluid py-4">
+        <div class="row mt-4">
+            <div class="card card-body mx-2 mx-md-1 mt-n4">
+                <div class="card-header">
+                    <h5>เพิ่มอุปกรณ์เคมี</h5>
+                </div>
+                <div class="container">
+                    <!--Simple Form-->
+                    <h2 class="my-4">เพิ่มรูปภาพ</h2>
+                    <form method="post" enctype="multipart/form-data">
+                      {% csrf_token %}
+                          <input type="file" name="upload" accept="image/*">
+                          <br>
+                          <button class="btn btn-dark my-4" type="submit">ยืนยัน</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

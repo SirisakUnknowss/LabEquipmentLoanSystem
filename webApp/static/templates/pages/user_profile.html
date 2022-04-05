@@ -1,0 +1,83 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+    <div class="container-fluid py-4">
+        <div class="row mt-4">
+            <div class="card card-body mx-2 mx-md-1 mt-n4">
+                <div class="card-header">
+                    <h5>ข้อมูลบัญชีผู้ยืม-คืน อุปกรณ์เคมี</h5>
+                </div>
+                
+                <div class="card-body ms-5 mt-n5 pb-2">
+                    <div class="row gx-4 mb-2">
+                        <div class="col-auto">
+                            <div class="avatar avatar-xl position-relative">
+                                <img src="{{ STATIC_URL }}/images/profile.png" alt="profile_image" class="w-100 border-radius-section shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="list-group">
+                        <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">ชื่อ - นามสกุล </strong> &nbsp; {{ user.account.firstname }} &nbsp; {{ user.account.lastname }}</li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">รหัสนักศึกษา </strong> &nbsp; {{ user.account.studentID }}</li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">สาขา </strong> &nbsp; {{ user.account.branch }}</li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">เบอร์โทรติดต่อ </strong> &nbsp; {{ user.account.phone }}</li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">อีเมล์ </strong> &nbsp; {{ user.account.email }}</li>
+                    </ul>
+                </div>
+                
+            {% if user.is_authenticated %}
+            {% endif %}
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="card card-body mx-2 mx-md-1 mt-n3">
+                <div class="card-header">
+                    <h5>รายการยืม-คืน อุปกรณ์เคมี</h5>
+                </div>
+                <div class="card-body px-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-5">
+                            <thead>
+                                <tr>
+                                    <th class="text-center text-uppercase text-secondary text-sm font-weight-bolder opacity-10">รายการ</th>
+                                    <th class="text-center text-uppercase text-secondary text-sm font-weight-bolder opacity-10">จำนวน</th>
+                                    <th class="text-center text-uppercase text-secondary text-sm font-weight-bolder opacity-10">วันที่ยืม</th>
+                                    <th class="text-center text-uppercase text-secondary text-sm font-weight-bolder opacity-10">วันที่คืน</th>
+                                    <th class="text-center text-uppercase text-secondary text-sm font-weight-bolder opacity-10">สถานะ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="align-middle text-center text-sm">
+                                        <span class="mb-0 text-sm">1</span>
+                                    </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <span class="text-secondary text-xs font-weight-bold">20</span>
+                                    </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <span class="text-secondary text-xs font-weight-bold">14/04/2565</span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-xs font-weight-bold">21/04/2565</span>
+                                    </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <span class="badge badge-sm bg-gradient-success">ดำเนินการ</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+    <script>
+        let name_page = "user_profile"
+    </script>
+{% endblock %}
