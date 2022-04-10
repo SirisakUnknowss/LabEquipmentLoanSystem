@@ -1,5 +1,50 @@
 from django.urls import reverse
 from django.shortcuts import render, redirect
+from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
+
+class LabAPIView(GenericAPIView):
+
+    def __init__(self, **kwargs):
+        super(LabAPIView, self).__init__()
+        self.response = {"error":"", "result":""}
+
+class LabAPIGetView(LabAPIView):
+
+    def __init__(self, **kwargs):
+        super(LabAPIGetView, self).__init__()
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, context={"request": request})
+        self.response["result"] = serializer.data
+        return Response(self.response)
+
+class LabListView(LabAPIView):
+
+    def __init__(self, **kwargs):
+        super(LabListView, self).__init__()
+
+    def get(self, request, *args, **kwargs):
+        queryset                = self.filter_queryset(self.get_queryset())
+        serializer              = self.get_serializer(queryset, many=True, context={"request": request})
+        self.response["result"] = serializer.data
+        return Response(self.response)
+
+class LabListPaginatedView(LabAPIView):
+
+    def __init__(self, **kwargs):
+        super(LabListPaginatedView, self).__init__()
+
+    def get(self, request, *args, **kwargs):
+        queryset                = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer              = self.get_serializer(queryset, many=True, context={"request": request})
+        self.response["result"] = serializer.data
+        return Response(self.response)
 
 # Create your views here.
 def homepage(request):
