@@ -20,4 +20,4 @@ RUN apt install gcc
 
 COPY . .
 
-RUN pip install --user -r ./docker/prodRDS/requirements.txt
+RUN pip install -r ./docker/prodRDS/requirements.txt

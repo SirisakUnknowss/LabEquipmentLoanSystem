@@ -2,7 +2,7 @@ version: "3.9"
 # Dev only
 services:
 
-  web:
+  webApp:
     build: 
       context: ./webApp
       dockerfile: ./docker/prodRDS/Dockerfile
