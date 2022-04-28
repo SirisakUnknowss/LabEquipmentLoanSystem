@@ -1,14 +1,15 @@
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.http import Http404
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.http.response import HttpResponse
+from rest_framework.exceptions import ValidationError
 
 from .form import AuthenForm, RegisterForm
 from .models import Account
 from .serializers import SlzAccountCreate
-from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 
@@ -18,11 +19,8 @@ def user_login(request):
     form = AuthenForm(request.POST)
     if not form.is_valid():
         return HttpResponse(form.errors, content_type='application/json')
-    username = form['username'].value()
-    password = form['password'].value()
-    
     try:
-        account = Account.objects.get(studentID=username, password=password)
+        account = Account.objects.get(studentID=form['username'].value, password=form['password'].value)
         user = account.user
         login(request, user)
         return redirect(reverse('homepage'))
@@ -38,20 +36,21 @@ def user_register(request):
         raise Http404("A Page does not exist")
     form = RegisterForm(request.POST)
     if not form.is_valid():
-        return HttpResponse(form.errors, content_type='application/json')
-    username = form['username'].value()
-    password = form['password'].value()
-    
-    try:
-        account = Account.objects.get(studentID=username)
-        return redirect(reverse('registerpage'))
-    except ObjectDoesNotExist:
-        user = User.objects.create_user(username=username, email=None, password=password, is_active=True)
-        account = createAccount(user=user, studentID=username, password=password)
-        account.save()
-        user = account.user
-        login(request, user)
-        return redirect(reverse('homepage'))
+        return HttpResponse(form, content_type='application/json')
+    check_account_exist(form)
+    user = User.objects.create_user(username=form.username, email=form.email, password=form.password, is_active=True)
+    account = createAccount(user=form.user, studentID=form.username, password=form.password)
+    account.save()
+    user = account.user
+    login(request, user)
+    return redirect(reverse('homepage'))
+
+def check_account_exist(form:RegisterForm):
+    account = Account.objects.filter(studentID=form.username)
+    if account.exists():
+        return Http404("Already have this account.")
+    if form.password != form.repassword:
+        return Http404("Password and confirm password does not match.")
     
 def createAccount(user, studentID, password, email, firstname, lastname, gender, phone, levelclass, branch, faculty, status):
     data = {
