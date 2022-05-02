@@ -16,8 +16,6 @@ Including another URLconf
 # Django
 from django.contrib import admin
 from django.urls import path, include
-from django.conf.urls.static import static
-from django.conf import settings
 # Project
 from base import views as baseViews
 
@@ -32,4 +30,7 @@ urlpatterns = [
     path('contactpage', baseViews.contactpage, name='contact-us'),
     path('account/profile', baseViews.profilepage, name='user-profile'),
     path('api/account/', include('account.urls')),
+    #equipment
+    path('api/equipment/', include('equipment.urls')),
+    path('equipment/add', baseViews.addequipmentpage, name='addequipmentpage'),
 ]

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # Project
     'base.apps.BaseConfig',
     'account.apps.AccountConfig',
+    'equipment.apps.EquipmentConfig',
 ]
 
 MIDDLEWARE = [

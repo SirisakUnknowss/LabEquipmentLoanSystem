@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% block content %}
 <main class="main-content position-relative max-height-vh-100 h-100">
-    <div class="container-fluid py-4">
+    <div class="container-fluid py-4 px-xl-10 px-md-5">
         <div class="row mt-4">
             <div class="card card-body mx-2 mx-md-1 mt-n4">
                 <div class="card-header">
@@ -9,12 +9,33 @@
                 </div>
                 <div class="container">
                     <!--Simple Form-->
-                    <h2 class="my-4">เพิ่มรูปภาพ</h2>
-                    <form method="post" enctype="multipart/form-data">
-                      {% csrf_token %}
-                          <input type="file" name="upload" accept="image/*">
-                          <br>
-                          <button class="btn btn-dark my-4" type="submit">ยืนยัน</button>
+                    <form enctype="multipart/form-data" id="add-equipment" method="post" action="{% url 'addEquipmentApi' %}">
+                        {% csrf_token %}
+                        
+                        <div class="input-group input-group-outline my-3">
+                            <label class="form-label">ชื่ออุปกรณ์</label>
+                            <input type="text" class="form-control" id="id_nameequipment" name="nameequipment" required>
+                        </div>
+                        <div class="input-group input-group-outline my-3">
+                            <label class="form-label">ขนาด</label>
+                            <input type="number" class="form-control numInputWrapper" id="id_sizing" name="sizing" required>
+                        </div>
+                        <div class="input-group input-group-outline my-3">
+                            <select class="form-select" id="id_unit" name="unit" required>
+                                <option value="">-------- หน่วย --------</option>
+                                <option value="NotSpecified">ไม่ระบุ</option>
+                                <option value="Celsius">&#8451;</option>
+                                <option value="CubicCentimeter">cm³</option>
+                            </select>
+                        </div>
+                        <div class="input-group input-group-outline my-3">
+                            <label class="form-label">จำนวน</label>
+                            <input type="number" class="form-control numInputWrapper" id="id_quantity" name="quantity" required>
+                        </div>
+                        <h2 class="my-4">เพิ่มรูปภาพ</h2>
+                        <input type="file" name="upload" accept="image/*">
+                        <br>
+                        <button class="btn btn-dark my-4" type="submit">ยืนยัน</button>
                     </form>
                 </div>
             </div>

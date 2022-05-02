@@ -84,3 +84,6 @@ def profilepage(request):
     if not(request.user.is_authenticated):
         return redirect(reverse('homepage'))
     return render(request, 'pages/user_profile.html')
+
+def addequipmentpage(request):
+    return render(request, 'pages/add_equipment.html')
