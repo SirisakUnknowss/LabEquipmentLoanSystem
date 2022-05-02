@@ -36,52 +36,70 @@ def user_register(request):
         raise Http404("A Page does not exist")
     form = RegisterForm(request.POST)
     if not form.is_valid():
-        return HttpResponse(form, content_type='application/json')
+        return HttpResponse(form.errors, content_type='application/json')
     check_account_exist(form)
-    user = User.objects.create_user(username=form.username, email=form.email, password=form.password, is_active=True)
-    account = createAccount(user=form.user, studentID=form.username, password=form.password)
-    account.save()
-    user = account.user
+    check_password(form)
+    user    = create_user_data(form)
+    account = createAccount(user, form)
+    user    = account.user
     login(request, user)
     return redirect(reverse('homepage'))
 
+def create_user_data(form:RegisterForm):
+    user = User.objects.create_user(
+        username=form['username'].data, 
+        email=form['email'].data, 
+        password=form['password'].data, 
+        is_active=True
+        )
+    return user
+
 def check_account_exist(form:RegisterForm):
-    account = Account.objects.filter(studentID=form.username)
+    account = Account.objects.filter(studentID=form['username'].value)
     if account.exists():
         return Http404("Already have this account.")
-    if form.password != form.repassword:
+
+def check_password(form:RegisterForm):
+    if form['password'].value != form['repassword'].value:
         return Http404("Password and confirm password does not match.")
     
-def createAccount(user, studentID, password, email, firstname, lastname, gender, phone, levelclass, branch, faculty, status):
+def createAccount(user:User, form:RegisterForm):
+    branch = split_branch(form['branch'].data)
     data = {
         "user": user.id,
-        "studentID": studentID,
-        "password": password,
-        "firstname": firstname,
-        "lastname": lastname,
-        "email": email,
-        "phone": phone,
-        "gender": gender,
-        "levelclass": levelclass,
-        "branch": branch,
-        "faculty": faculty,
-        "status": status
+        "studentID": form['username'].data,
+        "password": form['password'].data,
+        "nameprefix": form['nameprefix'].data,
+        "firstname": form['firstname'].data,
+        "lastname": form['lastname'].data,
+        "email": form['email'].data,
+        "phone": form['phone'].data,
+        "levelclass": form['levelclass'].data,
+        "branch": branch['branch'],
+        "faculty": branch['faculty'],
+        "status": 'user'
     }
     serializer = SlzAccountCreate(data=data)
     serializer.is_valid(raise_exception=True)
-    customer = Account(
+    data = serializer.validated_data
+    account = Account(
         user=user,
-        studentID=studentID,
-        password=password,
-        firstname=firstname,
-        lastname=lastname,
-        email=email,
-        phone=phone,
-        gender=gender,
-        levelclass=levelclass,
-        branch=branch,
-        faculty=faculty,
-        status=status,
+        studentID=data['studentID'],
+        password=data['password'],
+        nameprefix=data['nameprefix'],
+        firstname=data['firstname'],
+        lastname=data['lastname'],
+        email=data['email'],
+        phone=data['phone'],
+        levelclass=data['levelclass'],
+        branch=data['branch'],
+        faculty=data['faculty'],
+        status=data['status'],
         )
-    customer.save()
-    return customer
+    account.save()
+    return account
+
+def split_branch(value:str):
+    strSplit = value.split('_')
+    data = { 'branch': strSplit[1], 'faculty': strSplit[0] }
+    return data

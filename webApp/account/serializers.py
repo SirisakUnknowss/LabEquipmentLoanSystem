@@ -9,6 +9,8 @@ class SlzAccountCreate(serializers.ModelSerializer):
     
     class Meta:
         model = Account
+        exclude = []
+        field = '__all__'
 
 # class SlzAuthenOTP(serializers.Serializer):
     # studentID = serializers.CharField(max_length=10)

@@ -7,5 +7,5 @@ from rest_framework.permissions import AllowAny
 # Create your views here.
 class ListEquipment(LabListView):
     queryset            = Equipment.objects.all()
-    serializer_class    = SlzPrototypeRobot
+    # serializer_class    = SlzPrototypeRobot
     permission_classes = [ AllowAny ]
