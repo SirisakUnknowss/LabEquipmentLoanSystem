@@ -1,0 +1,46 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+    <div class="container-fluid py-4">
+
+      <div class="row mt-4">
+        <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center">
+          <h5>รายการอุปกรณ์เคมี</h5>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-12 text-end mt-3 mb-4">
+          <button class="btn bg-gradient-warning w-100 mb-0 toast-btn" type="button" data-target="warningToast">ยืมอุปกรณ์</button>
+        </div>
+        <div class="col-lg-2 col-md-4 col-12 text-end mt-3 mb-4">
+          <button class="btn bg-gradient-danger w-100 mb-0 toast-btn" type="button" data-target="warningToast">ยืมอุปกรณ์</button>
+        </div>
+      </div>
+      <div class="row mt-4">
+        
+        <div class="col-lg-3 col-md-6 mt-3 mb-4">
+          <div class="card z-index-2 ">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+              <div class="bg-gradient-light shadow-secondary border-radius-lg py-3 pe-1">
+                <div class="chart">
+                  <img src="{{ STATIC_URL }}/images/Beaker.png" />
+                </div>
+              </div>
+            </div>
+            <div class="card-body mb-n3 text-center">
+              <h6 class="mb-3">บีกเกอร์</h6>
+              <button class="btn bg-gradient-info" type="button">ดูข้อมูลเพิ่มเติม</button>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+    <script>
+        let name_page = "id_equipment_list_page"
+    </script>
+{% endblock %}

@@ -13961,6 +13961,9 @@ label,
 .footer .footer-logo {
   max-width: 2rem; }
 
+  .bg-equipment-list {
+    background-image: linear-gradient(195deg, #FFFFFF 0%, #FFFFFF 100%); }
+
 .bg-gradient-landing-btn {
   background-image: linear-gradient(195deg, #1A7575 0%, #1A7575 100%); }
 .bg-gradient-primary {
