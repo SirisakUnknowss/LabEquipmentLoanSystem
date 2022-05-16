@@ -2030,8 +2030,6 @@ textarea.form-control-lg {
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
-  -webkit-print-color-adjust: exact;
-          color-adjust: exact;
   transition: background-color 0.25s ease, border-color 0.25s ease, background-position 0.15s ease-in-out, opacity 0.15s ease-out, box-shadow 0.15s ease-in-out; }
   @media (prefers-reduced-motion: reduce) {
     .form-check-input {
@@ -7245,6 +7243,9 @@ textarea.form-control-lg {
 
 .text-black-50 {
   color: rgba(0, 0, 0, 0.5) !important; }
+
+.text-black {
+  color: #000000 !important; }
 
 .text-white-50 {
   color: rgba(255, 255, 255, 0.5) !important; }

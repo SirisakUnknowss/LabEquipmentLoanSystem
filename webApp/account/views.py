@@ -1,11 +1,10 @@
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib.auth import login, logout
-from django.http import Http404
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 from django.http.response import HttpResponse
-from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 
 from .form import AuthenForm, RegisterForm
 from .models import Account
@@ -20,7 +19,7 @@ def user_login(request):
     if not form.is_valid():
         return HttpResponse(form.errors, content_type='application/json')
     try:
-        account = Account.objects.get(studentID=form['username'].value, password=form['password'].value)
+        account = Account.objects.get(studentID=form['username'].data, password=form['password'].data)
         user = account.user
         login(request, user)
         return redirect(reverse('homepage'))
