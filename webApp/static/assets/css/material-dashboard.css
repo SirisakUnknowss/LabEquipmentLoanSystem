@@ -17093,3 +17093,8 @@ input[type=number] {
   height: 100%;
   width: 50%;
 }
+
+.image-equipment {
+  height: 100%;
+  width: auto;
+}

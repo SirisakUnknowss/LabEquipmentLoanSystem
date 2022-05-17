@@ -38,6 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    # Module
+    'rest_framework',
+    'django_filters',
+    'import_export',
+    'rest_framework.authtoken',
     # Project
     'base.apps.BaseConfig',
     'account.apps.AccountConfig',
@@ -59,7 +65,9 @@ ROOT_URLCONF = 'LabEquipmentLoanSystem.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

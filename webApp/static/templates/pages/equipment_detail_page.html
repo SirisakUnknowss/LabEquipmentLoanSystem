@@ -7,13 +7,14 @@
         <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center">
           <h5>รายการอุปกรณ์วิทยาศาสตร์</h5>
         </div>
-        
+        {% if user.account.status == "user" %}
         <div class="col-lg-2 col-md-4 col-12 text-end mt-3 mb-4">
           <button class="btn bg-gradient-warning w-100 mb-0 toast-btn" type="button" data-target="warningToast">ยืมอุปกรณ์</button>
         </div>
         <div class="col-lg-2 col-md-4 col-12 text-end mt-3 mb-4">
-          <button class="btn bg-gradient-danger w-100 mb-0 toast-btn" type="button" data-target="warningToast">ยืมอุปกรณ์</button>
+          <button class="btn bg-gradient-danger w-100 mb-0 toast-btn" type="button" data-target="warningToast">คืนอุปกรณ์</button>
         </div>
+        {% endif %}
       </div>
       <div class="row mt-4">
         

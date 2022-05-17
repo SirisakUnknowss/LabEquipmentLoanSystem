@@ -5,6 +5,7 @@ from django.utils.html import mark_safe
 
 def getClassPath(instance, filename):
     className = instance.__class__.__name__
+    filename  = instance.name + str(instance.size) + str(instance.unit) + ".png"
     return "{}/{}".format(className, filename)
 
 class Equipment(models.Model):
@@ -17,7 +18,8 @@ class Equipment(models.Model):
     @property
     def thumbnail(self):
         if self.image:
-            return mark_safe('<img src="{}" width="250" height="250" />'.format(self.image.url))
+            pathImage = str(self.image.url).replace('media/', '')
+            return mark_safe('<img src="{}" width="250" height="250" />'.format('/media/' + pathImage))
         return ""
 
     def __str__(self):

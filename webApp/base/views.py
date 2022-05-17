@@ -1,7 +1,10 @@
+from multiprocessing import context
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+
+from equipment.models import Equipment
 
 class LabAPIView(GenericAPIView):
 
@@ -68,7 +71,9 @@ def informationpage(request):
 def equipmentlistpage(request):
     if not(request.user.is_authenticated):
         return redirect(reverse('homepage'))
-    return render(request, 'pages/equipment_list_page.html')
+    equipments = Equipment.objects.all().values()
+    context = { 'equipments': equipments }
+    return render(request, 'pages/equipment_list_page.html', context)
 
 def borrowinghistorypage(request):
     if not(request.user.is_authenticated):
@@ -86,4 +91,6 @@ def profilepage(request):
     return render(request, 'pages/user_profile.html')
 
 def addequipmentpage(request):
+    if not(request.user.account.status == 'admin'):
+        return redirect(reverse('homepage'))
     return render(request, 'pages/add_equipment.html')

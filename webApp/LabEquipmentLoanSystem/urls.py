@@ -16,6 +16,8 @@ Including another URLconf
 # Django
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 # Project
 from base import views as baseViews
 
@@ -33,4 +35,4 @@ urlpatterns = [
     #equipment
     path('api/equipment/', include('equipment.urls')),
     path('equipment/add', baseViews.addequipmentpage, name='addequipmentpage'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
