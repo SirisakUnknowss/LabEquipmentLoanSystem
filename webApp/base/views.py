@@ -1,6 +1,6 @@
-from multiprocessing import context
 from django.urls import reverse
 from django.shortcuts import render, redirect
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
@@ -68,13 +68,6 @@ def informationpage(request):
         return redirect(reverse('homepage'))
     return render(request, 'pages/information_page.html')
 
-def equipmentlistpage(request):
-    if not(request.user.is_authenticated):
-        return redirect(reverse('homepage'))
-    equipments = Equipment.objects.all().values()
-    context = { 'equipments': equipments }
-    return render(request, 'pages/equipment_list_page.html', context)
-
 def borrowinghistorypage(request):
     if not(request.user.is_authenticated):
         return redirect(reverse('homepage'))
@@ -94,3 +87,23 @@ def addequipmentpage(request):
     if not(request.user.account.status == 'admin'):
         return redirect(reverse('homepage'))
     return render(request, 'pages/add_equipment.html')
+
+def equipmentlistpage(request):
+    if not(request.user.is_authenticated):
+        return redirect(reverse('homepage'))
+    equipments = Equipment.objects.all().values()
+    context = { 'equipments': equipments }
+    return render(request, 'pages/equipment_list_page.html', context)
+
+def equipmentdetailpage(request):
+    if not(request.user.is_authenticated):
+        return redirect(reverse('homepage'))
+    if request.method == 'GET':
+        return redirect(reverse('equipment-list'))
+    equipmentID = request.POST['EquipmentID']
+    try:
+        equipment = Equipment.objects.get(id=equipmentID)
+        context = { 'equipment': equipment }
+        return render(request, 'pages/equipment_detail_page.html', context)
+    except ObjectDoesNotExist:
+        return redirect(reverse('equipment-list'))

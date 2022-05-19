@@ -27,7 +27,6 @@ urlpatterns = [
     path('register', baseViews.registerpage, name='registerpage'),
     path('notifications', baseViews.notificationspage, name='notifications-forgetten'),
     path('information', baseViews.informationpage, name='information-equipment'),
-    path('equipment-list', baseViews.equipmentlistpage, name='equipment-list'),
     path('history-borrowing', baseViews.borrowinghistorypage, name='borrowing-history'),
     path('contactpage', baseViews.contactpage, name='contact-us'),
     path('account/profile', baseViews.profilepage, name='user-profile'),
@@ -35,4 +34,8 @@ urlpatterns = [
     #equipment
     path('api/equipment/', include('equipment.urls')),
     path('equipment/add', baseViews.addequipmentpage, name='addequipmentpage'),
+    path('equipment/list', baseViews.equipmentlistpage, name='equipment-list'),
+    path('equipment/detail', baseViews.equipmentdetailpage, name='equipment-detail'),
+    #borrowing
+    path('api/borrowing/', include('borrowing.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

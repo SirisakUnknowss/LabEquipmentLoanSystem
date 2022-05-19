@@ -24,16 +24,31 @@
                 <div class="bg-gradient-light shadow-secondary border-radius-lg py-3 pe-1">
                   <div class="chart">
                     {% if equipment.image %}
-                      <img src="{{ equipment.image }}" class="image-equipment" />
+                      <img src="{{ equipment.image }}" class="image-equipments img-fluid shadow border-radius-xl" />
                     {% else %}
-                      <img src="{{ STATIC_URL }}/images/equipment/PlaceHolder.png" class="image-equipment" />
+                      <img src="{{ STATIC_URL }}/images/equipment/PlaceHolder.png" class="image-equipments border-radius-xl" />
                     {% endif %}
                   </div>
                 </div>
               </div>
               <div class="card-body mb-n3 text-center">
-                <h6 class="mb-3">{{ equipment.name }}</h6>
-                <button class="btn bg-gradient-info" type="button">ดูข้อมูลเพิ่มเติม</button>
+                <h5 class="mb-1">{{ equipment.name }}</h5>
+                <span class="d-block">
+                  ขนาด : {{ equipment.quantity }} 
+                  {% ifequal equipment.unit "NotSpecified" %}{% endifequal %}
+                  {% ifequal equipment.unit "Celsius" %}&#8451;{% endifequal %}
+                  {% ifequal equipment.unit "CubicCentimeter" %}cm³{% endifequal %}
+                  {% ifequal equipment.unit "Millimeter" %}mm{% endifequal %}
+                </span>
+                <span class="d-block mb-3">จำนวนที่มี : {{ equipment.quantity }}</span>
+                <form id="add-equipment" method="post" action="{% url 'addItemForBorrowingApi' %}">
+                  {% csrf_token %}
+                  
+                  <label class="form-label">จำนวนที่ยืม : </label>
+                  <input type="number" class="mb-3" id="quantity" name="quantity" min="1" max="{{ equipment.quantity }}">
+                  <input type="hidden" value="{{ equipment.id }}" name="EquipmentID" />
+                  <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
+                </form>
               </div>
             </div>
           </div>
