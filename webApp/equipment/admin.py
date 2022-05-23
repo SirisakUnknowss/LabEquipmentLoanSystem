@@ -4,7 +4,7 @@ from import_export.admin import ImportExportModelAdmin
 
 
 @admin.register(Equipment)
-class TypeAdmin(ImportExportModelAdmin):
+class EquipmentAdmin(ImportExportModelAdmin):
 
     list_display    = [ 'id', 'name', 'quantity', 'size', 'unit' ]
 

@@ -25,7 +25,7 @@ SECRET_KEY = '*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+SITE_ID = 1
 ALLOWED_HOSTS = []
 
 
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'base.apps.BaseConfig',
     'account.apps.AccountConfig',
     'equipment.apps.EquipmentConfig',
+    'borrowing.apps.BorrowingConfig',
 ]
 
 MIDDLEWARE = [

@@ -1,7 +1,7 @@
 from django.db import models
-from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
 
+from borrowing.models import EquipmentCart
 
 LEVEL_CLASS = [
     (1, '1'),
@@ -50,3 +50,9 @@ class Account(models.Model):
     faculty     = models.CharField(max_length=100, null=True, blank=True)
     status      = models.CharField(max_length=10, choices=STATUS.choices, null=True, blank=True)
 
+    def __str__(self):
+        return self.studentID
+
+    @property
+    def equipmentcartcount(self):
+        return EquipmentCart.objects.filter(user__studentID=self.studentID).count()

@@ -2,7 +2,7 @@
 from django.core.files.storage import FileSystemStorage
 from rest_framework.permissions import AllowAny
 from django.urls import reverse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from rest_framework.exceptions import ValidationError
 #Project
 from base.views import LabListView, LabAPIGetView
