@@ -8,7 +8,7 @@
             <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
                 <div class="ms-md-auto pe-md-3 d-flex align-items-center">
                     <ul class="navbar-nav justify-content-end">
-                        <i class="material-icons opacity-10 text-white me-sm-3">shopping_bag</i>
+                        <a href="{% url 'equipmentcart-list' %}"><i class="material-icons opacity-10 text-white me-sm-3">shopping_bag</i></a>
                         {% ifequal user.account.equipmentcartcount 0 %}
                         {% else %}
                             <span class="position-absolute top-10 badge rounded-pill bg-danger border border-white small mx-9 py-1 px-2">

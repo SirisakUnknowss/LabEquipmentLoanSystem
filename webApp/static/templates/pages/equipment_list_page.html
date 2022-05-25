@@ -34,7 +34,7 @@
               <div class="card-body mb-n3 text-center">
                 <h5 class="mb-1">{{ equipment.name }}</h5>
                 <span class="d-block">
-                  ขนาด : {{ equipment.quantity }} 
+                  ขนาด : {{ equipment.size }} 
                   {% ifequal equipment.unit "NotSpecified" %}{% endifequal %}
                   {% ifequal equipment.unit "Celsius" %}&#8451;{% endifequal %}
                   {% ifequal equipment.unit "CubicCentimeter" %}cm³{% endifequal %}

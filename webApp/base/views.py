@@ -5,6 +5,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
 from equipment.models import Equipment
+from borrowing.models import EquipmentCart
 
 class LabAPIView(GenericAPIView):
 
@@ -107,3 +108,11 @@ def equipmentdetailpage(request):
         return render(request, 'pages/equipment_detail_page.html', context)
     except ObjectDoesNotExist:
         return redirect(reverse('equipment-list'))
+
+def equipmentcartlistpage(request):
+    if not(request.user.is_authenticated):
+        return redirect(reverse('homepage'))
+    equipmentsCart = EquipmentCart.objects.filter(user=request.user.account)
+    print('equipmentsCart ------------ ', equipmentsCart)
+    context = { 'equipmentsCart': equipmentsCart }
+    return render(request, 'pages/cart_equipment_page.html', context)

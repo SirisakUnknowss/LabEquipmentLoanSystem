@@ -4,5 +4,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('add', views.AddItemForBorrowingApi.as_view(), name='addItemForBorrowingApi')
+    path('add', views.AddItemForBorrowingApi.as_view(), name='addItemForBorrowingApi'),
+    path('remove', views.RemoveItemForBorrowingApi.as_view(), name='removeItemForBorrowingApi'),
 ]

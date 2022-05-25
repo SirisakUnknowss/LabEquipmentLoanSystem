@@ -38,4 +38,5 @@ urlpatterns = [
     path('equipment/detail', baseViews.equipmentdetailpage, name='equipment-detail'),
     #borrowing
     path('api/borrowing/', include('borrowing.urls')),
+    path('equipment/borrowing', baseViews.equipmentcartlistpage, name='equipmentcart-list'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

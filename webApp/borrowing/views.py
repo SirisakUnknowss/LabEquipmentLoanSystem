@@ -1,6 +1,7 @@
 from rest_framework.permissions import AllowAny
 from django.urls import reverse
 from django.shortcuts import redirect
+from django.db.models import F
 #Project
 from base.views import LabAPIGetView
 from .models import EquipmentCart
@@ -24,7 +25,10 @@ class AddItemForBorrowingApi(LabAPIGetView):
     
     def perform_create(self, serializer, account):
         validated = serializer.validated_data
-        print('validated. =================== ', validated.get("equipment"))
+        equipmentCart = EquipmentCart.objects.filter(user=account, equipment=validated.get("equipment"))
+        if equipmentCart.exists():
+            equipmentCart.update(quantity=F('quantity') + validated.get("quantity"))
+            return equipmentCart
         equipmentCart = EquipmentCart(
             user        = account,
             equipment   = validated.get("equipment"),
@@ -32,3 +36,14 @@ class AddItemForBorrowingApi(LabAPIGetView):
             )
         equipmentCart.save()
         return equipmentCart
+
+class RemoveItemForBorrowingApi(LabAPIGetView):
+    queryset            = EquipmentCart.objects.all()
+    serializer_class    = SlzEquipmentCart
+    permission_classes = [ AllowAny ]
+
+    def post(self, request, *args, **kwargs):
+        account     = request.user.account
+        idCart      = request.data['equipmentCart']
+        EquipmentCart.objects.filter(id=idCart, user=account).delete()
+        return redirect(reverse('equipmentcart-list'))
