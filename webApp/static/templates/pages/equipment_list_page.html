@@ -8,7 +8,7 @@
       </div>
       {% if user.account.status == "user" %}
       <div class="col-lg-2 col-md-4 col-12 text-end mt-3 mb-4">
-        <button class="btn bg-gradient-warning w-100 mb-0 toast-btn" type="button" data-target="warningToast">ยืมอุปกรณ์</button>
+        <a href="{% url 'equipmentcart-list' %}"><button class="btn bg-gradient-warning w-100 mb-0 toast-btn" type="button" data-target="warningToast">ยืมอุปกรณ์</button></a>
       </div>
       <div class="col-lg-2 col-md-4 col-12 text-end mt-3 mb-4">
         <button class="btn bg-gradient-danger w-100 mb-0 toast-btn" type="button" data-target="warningToast">คืนอุปกรณ์</button>

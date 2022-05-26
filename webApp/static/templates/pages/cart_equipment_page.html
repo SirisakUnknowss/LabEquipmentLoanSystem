@@ -3,17 +3,17 @@
 <main class="main-content position-relative max-height-vh-100 h-100">
     <div class="container-fluid py-4">
 
-        <div class="row mt-4">
+        <div class="row mt-3 mb-4">
             <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center">
                 <h5>อุปกรณ์วิทยาศาสตร์ที่จองไว้</h5>
             </div>
         </div>
 
         <div class="row mt-4">
-            <div class="card card-body mx-2 mx-md-1 mt-n4">
+            <div class="card card-body mx-2 mx-md-1 mt-3">
                 <div class="card-body px-0 pb-2">
                     <div class="table-responsive p-0">
-                        {% if equipmentsCart %}
+                    {% if equipmentsCart %}
                         <table class="table align-items-center mb-0">
                             <thead>
                                 <tr>
@@ -25,38 +25,55 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for equipmentCart in equipmentsCart %}
-                                    <tr>
-                                        <td class="align-middle text-center">
-                                            <span class="text-secondary text-s font-weight-bolder">{{ equipmentCart.user.studentID }}</span>
-                                        </td>
-                                        <td class="align-middle text-center">
-                                            <span class="text-secondary text-s font-weight-bolder">{{ equipmentCart.equipment.name }}</span>
-                                        </td>
-                                        <td class="align-middle text-center">
-                                            <span class="text-secondary text-s font-weight-bolder">
-                                                {{ equipmentCart.equipment.size }} 
-                                                {% ifequal equipmentCart.equipment.unit "NotSpecified" %}{% endifequal %}
-                                                {% ifequal equipmentCart.equipment.unit "Celsius" %}&#8451;{% endifequal %}
-                                                {% ifequal equipmentCart.equipment.unit "CubicCentimeter" %}cm³{% endifequal %}
-                                                {% ifequal equipmentCart.equipment.unit "Millimeter" %}mm{% endifequal %}
-                                            </span>
-                                        </td>
-                                        <td class="align-middle text-center">
-                                            <span class="text-secondary text-s font-weight-bolder">{{ equipmentCart.quantity }}</span>
-                                        </td>
-                                        <td class="align-middle text-center text-sm">
-                                            <form id="remove-equipmentCart" method="post" action="{% url 'removeItemForBorrowingApi' %}">
-                                                {% csrf_token %}
-                                                <input type="hidden" value="{{ equipmentCart.id }}" name="equipmentCart" />
-                                                <button class="btn bg-gradient-danger" type="submit">ลบรายการ</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
+                            {% for equipmentCart in equipmentsCart %}
+                                <tr>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-s">{{ equipmentCart.user.studentID }}</span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-s">{{ equipmentCart.equipment.name }}</span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-s">
+                                            {{ equipmentCart.equipment.size }} 
+                                            {% ifequal equipmentCart.equipment.unit "NotSpecified" %}{% endifequal %}
+                                            {% ifequal equipmentCart.equipment.unit "Celsius" %}&#8451;{% endifequal %}
+                                            {% ifequal equipmentCart.equipment.unit "CubicCentimeter" %}cm³{% endifequal %}
+                                            {% ifequal equipmentCart.equipment.unit "Millimeter" %}mm{% endifequal %}
+                                        </span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-s">{{ equipmentCart.quantity }}</span>
+                                    </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <form id="remove-equipmentCart" method="post" action="{% url 'removeItemForBorrowingApi' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" value="{{ equipmentCart.id }}" name="equipmentCart" />
+                                            <button class="btn bg-gradient-danger" type="submit">ลบรายการ</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                                
+                                <tr>
+                                    <td class="align-middle text-center"></td>
+                                </tr>
                             </tbody>
                         </table>
-                        {% endif %}
+                    {% else %}
+                        <div class="text-center mt-4 mb-4">
+                            <span class="text-secondary text-2xl d-block mb-2">ไม่มีรายการอุปกรณ์วิทยาศาสตร์</span>
+                            <a href="{% url 'equipment-list' %}">
+                                <button class="btn bg-gradient-info" type="submit">เลือกอุปกรณ์วิทยาศาสตร์</button>
+                            </a>
+                        </div>
+                    {% endif %}
+                    </div>
+                    <div class="text-center mt-4 mb-4">
+                        <form id="confirm-equipment" method="post" action="{% url 'confirmBorringApi' %}">
+                          {% csrf_token %}
+                          <button class="btn bg-gradient-success" type="submit">ยืนยันการยืมอุปกรณ์วิทยาศาสตร์</button>
+                        </form>
                     </div>
                 </div>
             </div>

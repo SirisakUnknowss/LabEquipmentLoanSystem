@@ -3,8 +3,9 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from django.db.models import F
 #Project
-from base.views import LabAPIGetView
-from .models import EquipmentCart
+from base.views import LabAPIGetView, LabAPIView
+from equipment.models import Equipment
+from .models import Borrowing, EquipmentCart, Order
 from .serializers import SlzEquipmentCartInput, SlzEquipmentCart
 
 # Create your views here.
@@ -12,7 +13,7 @@ from .serializers import SlzEquipmentCartInput, SlzEquipmentCart
 class AddItemForBorrowingApi(LabAPIGetView):
     queryset            = EquipmentCart.objects.all()
     serializer_class    = SlzEquipmentCartInput
-    permission_classes = [ AllowAny ]
+    permission_classes  = [ AllowAny ]
 
     def post(self, request, *args, **kwargs):
         account                 = request.user.account
@@ -40,10 +41,31 @@ class AddItemForBorrowingApi(LabAPIGetView):
 class RemoveItemForBorrowingApi(LabAPIGetView):
     queryset            = EquipmentCart.objects.all()
     serializer_class    = SlzEquipmentCart
-    permission_classes = [ AllowAny ]
+    permission_classes  = [ AllowAny ]
 
     def post(self, request, *args, **kwargs):
         account     = request.user.account
         idCart      = request.data['equipmentCart']
         EquipmentCart.objects.filter(id=idCart, user=account).delete()
         return redirect(reverse('equipmentcart-list'))
+
+class ConfirmBorringApi(LabAPIView):
+    queryset            = Order.objects.all()
+    permission_classes  = [ AllowAny ]
+
+    def post(self, request, *args, **kwargs):
+        account     = request.user.account
+        equipments  = EquipmentCart.objects.filter(user=account)
+        if not equipments.exists():
+            return redirect(reverse('equipmentcart-list'))
+        order = Order.objects.create(user=account)
+        for item in equipments:
+            equipment = Equipment.objects.get(id=item.equipment.id)
+            if equipment.quantity < item.quantity:
+                return redirect(reverse('equipmentcart-list'))
+            equipment.quantity -= item.quantity
+            equipment.save()
+            borrowing = Borrowing.objects.create(user=account, equipment=item.equipment, quantity=item.quantity)
+            order.equipment.add(borrowing)
+        equipments.delete()
+        return redirect(reverse('information-equipment'))
