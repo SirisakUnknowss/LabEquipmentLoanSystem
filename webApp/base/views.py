@@ -1,11 +1,13 @@
+# Django
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
+#Project
 from equipment.models import Equipment
-from borrowing.models import EquipmentCart
+from borrowing.models import EquipmentCart, Order
 
 class LabAPIView(GenericAPIView):
 
@@ -59,46 +61,46 @@ def homepage(request):
 def registerpage(request):
     return render(request, 'base/signup.html')
 
-def notificationspage(request):
+def check_login(request):
     if not(request.user.is_authenticated):
         return redirect(reverse('homepage'))
-    return render(request, 'pages/notifications_page.html')
+
+def notificationspage(request):
+    check_login(request)
+    orders = Order.objects.filter(user=request.user.account, status=Order.STATUS.OVERDUED)
+    context = { 'orders': orders }
+    return render(request, 'pages/notifications_page.html', context)
 
 def informationpage(request):
-    if not(request.user.is_authenticated):
-        return redirect(reverse('homepage'))
-    return render(request, 'pages/information_page.html')
+    check_login(request)
+    orders = Order.objects.filter(user=request.user.account).exclude(status=Order.STATUS.CANCELLED)
+    context = { 'orders': orders }
+    return render(request, 'pages/information_page.html', context)
 
 def borrowinghistorypage(request):
-    if not(request.user.is_authenticated):
-        return redirect(reverse('homepage'))
+    check_login(request)
     return render(request, 'pages/borrowing_history_page.html')
 
 def contactpage(request):
-    if not(request.user.is_authenticated):
-        return redirect(reverse('homepage'))
+    check_login(request)
     return render(request, 'pages/contact_page.html')
 
 def profilepage(request):
-    if not(request.user.is_authenticated):
-        return redirect(reverse('homepage'))
+    check_login(request)
     return render(request, 'pages/user_profile.html')
 
 def addequipmentpage(request):
-    if not(request.user.account.status == 'admin'):
-        return redirect(reverse('homepage'))
+    check_login(request)
     return render(request, 'pages/add_equipment.html')
 
 def equipmentlistpage(request):
-    if not(request.user.is_authenticated):
-        return redirect(reverse('homepage'))
+    check_login(request)
     equipments = Equipment.objects.all().values()
     context = { 'equipments': equipments }
     return render(request, 'pages/equipment_list_page.html', context)
 
 def equipmentdetailpage(request):
-    if not(request.user.is_authenticated):
-        return redirect(reverse('homepage'))
+    check_login(request)
     if request.method == 'GET':
         return redirect(reverse('equipment-list'))
     equipmentID = request.POST['EquipmentID']
@@ -110,9 +112,7 @@ def equipmentdetailpage(request):
         return redirect(reverse('equipment-list'))
 
 def equipmentcartlistpage(request):
-    if not(request.user.is_authenticated):
-        return redirect(reverse('homepage'))
+    check_login(request)
     equipmentsCart = EquipmentCart.objects.filter(user=request.user.account)
-    print('equipmentsCart ------------ ', equipmentsCart)
     context = { 'equipmentsCart': equipmentsCart }
     return render(request, 'pages/cart_equipment_page.html', context)

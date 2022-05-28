@@ -3,15 +3,15 @@
 <main class="main-content position-relative max-height-vh-100 h-100">
     <div class="container-fluid py-4">
 
-        <div class="row mt-4">
-            <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center">
+        <div class="row">
+            <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-3">
                 <h5>แจ้งเตือนการยืม-คืนอุปกรณ์วิทยาศาสตร์</h5>
             </div>
             {% if user.account.status == "user" %}
-            <div class="col-lg-2 col-md-4 col-12 text-end mt-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-12 text-end">
               <a href="{% url 'equipmentcart-list' %}"><button class="btn bg-gradient-warning w-100 mb-0 toast-btn" type="button" data-target="warningToast">ยืมอุปกรณ์</button></a>
             </div>
-            <div class="col-lg-2 col-md-4 col-12 text-end mt-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-12 text-end">
               <button class="btn bg-gradient-danger w-100 mb-0 toast-btn" type="button" data-target="warningToast">คืนอุปกรณ์</button>
             </div>
             {% endif %}
@@ -21,36 +21,57 @@
             <div class="card card-body mx-2 mx-md-1 mt-n4">
                 <div class="card-body px-0 pb-2">
                     <div class="table-responsive p-0">
+                        {% if orders %}
                         <table class="table align-items-center mb-0">
                             <thead>
                                 <tr>
-                                    <th class="text-center text-uppercase text-secondary text-s font-weight-bolder">รหัสนักศึกษา</th>
-                                    <th class="text-center text-uppercase text-secondary text-s font-weight-bolder">จำนวน</th>
-                                    <th class="text-center text-uppercase text-secondary text-s font-weight-bolder">วันที่ยืม</th>
-                                    <th class="text-center text-uppercase text-secondary text-s font-weight-bolder">วันที่คืน</th>
-                                    <th class="text-center text-uppercase text-secondary text-s font-weight-bolder">สถานะ</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">รหัสนักศึกษา</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">จำนวน</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่ยืม</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่คืน</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">สถานะ</th>
                                 </tr>
                             </thead>
                             <tbody>
+                            {% for order in orders %}
+                                {% ifequal order.status "overdued" %}
                                 <tr>
                                     <td class="align-middle text-center">
-                                        <span class="text-black text-xs font-weight-bold">5980115134</span>
+                                        <span class="text-secondary text-s">{{ order.user.studentID }}</span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <span class="text-black text-xs font-weight-bold">25</span>
+                                        <span class="text-secondary text-s">{{ order.equipment.all.count }}</span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <span class="text-black text-xs font-weight-bold">09/03/2022</span>
+                                        {% if order.user.dateReturn %}
+                                            <span class="text-secondary text-s">{{ order.user.dateBorrowing }}</span>
+                                        {% else %}
+                                            <span class="text-secondary text-s">-</span>
+                                        {% endif %}
                                     </td>
                                     <td class="align-middle text-center">
-                                        <span class="text-black text-xs font-weight-bold">17/03/2022</span>
+                                        {% if order.user.dateReturn %}
+                                            <span class="text-secondary text-s">{{ order.user.dateReturn }}</span>
+                                        {% else %}
+                                            <span class="text-secondary text-s">-</span>
+                                        {% endif %}
                                     </td>
                                     <td class="align-middle text-center text-sm">
-                                        <span class="badge badge-sm bg-gradient-danger">เกินกำหนด</span>
+                                        <span class="badge badge-sm bg-gradient-danger">เกินกำหนดคืน</span>
                                     </td>
                                 </tr>
+                                {% endifequal %}
+                            {% endfor %}
                             </tbody>
                         </table>
+                        {% else %}
+                            <div class="text-center mt-5 mb-5">
+                                <span class="text-secondary text-2xl d-block mb-3">ไม่มีแจ้งเตือนการยืม-คืนอุปกรณ์วิทยาศาสตร์</span>
+                                <a href="{% url 'information-equipment' %}">
+                                    <button class="btn bg-gradient-info" type="submit">ข้อมูลการยืม-คืนอุปกรณ์วิทยาศาสตร์</button>
+                                </a>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

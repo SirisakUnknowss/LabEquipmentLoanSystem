@@ -6290,16 +6290,16 @@ textarea.form-control-lg {
   margin-left: 6rem !important; }
 
 .mx-8 {
-  margin-right: 8rem !important;
-  margin-left: 8rem !important; }
+  margin-right: 8.5rem !important;
+  margin-left: 8.5rem !important; }
 
 .mx-9 {
   margin-right: 10rem !important;
   margin-left: 10rem !important; }
 
 .mx-10 {
-  margin-right: 12rem !important;
-  margin-left: 12rem !important; }
+  margin-right: 11rem !important;
+  margin-left: 11rem !important; }
 
 .mx-11 {
   margin-right: 14rem !important;
@@ -14049,7 +14049,7 @@ label,
   font-family: 'Material Icons Round';
   font-weight: normal;
   font-style: normal;
-  font-size: 20px;
+  font-size: 25px;
   /* Preferred icon size */
   display: inline-block;
   line-height: 1;

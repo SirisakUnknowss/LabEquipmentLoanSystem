@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from borrowing.models import EquipmentCart
+from borrowing.models import EquipmentCart, Order
 
 LEVEL_CLASS = [
     (1, '1'),
@@ -55,4 +55,14 @@ class Account(models.Model):
 
     @property
     def equipmentcartcount(self):
-        return EquipmentCart.objects.filter(user__studentID=self.studentID).count()
+        count = EquipmentCart.objects.filter(user__studentID=self.studentID).count()
+        if count > 9:
+            count = "9+"
+        return count
+
+    @property
+    def orderoverduedcount(self):
+        count = Order.objects.filter(user__studentID=self.studentID, status=Order.STATUS.OVERDUED).count()
+        if count > 9:
+            count = "9+"
+        return count
