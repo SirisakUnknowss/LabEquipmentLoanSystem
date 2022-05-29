@@ -66,3 +66,12 @@ class Account(models.Model):
         if count > 9:
             count = "9+"
         return count
+
+    @property
+    def orderwaitingcount(self):
+        if self.status == Account.STATUS.ADMIN:
+            count = Order.objects.filter(status=Order.STATUS.WAITING).count()
+            if count > 9:
+                count = "9+"
+            return count
+        return 0

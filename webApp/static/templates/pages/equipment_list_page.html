@@ -47,7 +47,10 @@
                   <label class="form-label">จำนวนที่ยืม : </label>
                   <input type="number" class="mb-3" id="quantity" name="quantity" min="1" max="{{ equipment.quantity }}">
                   <input type="hidden" value="{{ equipment.id }}" name="equipment" />
+                  {% if user.account.status == "admin" %}
+                  {% else %}
                   <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
+                  {% endif %}
                 </form>
               </div>
             </div>

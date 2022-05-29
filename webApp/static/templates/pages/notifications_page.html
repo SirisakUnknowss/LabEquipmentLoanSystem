@@ -28,13 +28,12 @@
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">รหัสนักศึกษา</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">จำนวน</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่ยืม</th>
-                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่คืน</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่อนุมัติ</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">สถานะ</th>
                                 </tr>
                             </thead>
                             <tbody>
                             {% for order in orders %}
-                                {% ifequal order.status "overdued" %}
                                 <tr>
                                     <td class="align-middle text-center">
                                         <span class="text-secondary text-s">{{ order.user.studentID }}</span>
@@ -43,7 +42,7 @@
                                         <span class="text-secondary text-s">{{ order.equipment.all.count }}</span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        {% if order.user.dateReturn %}
+                                        {% if order.user.dateBorrowing %}
                                             <span class="text-secondary text-s">{{ order.user.dateBorrowing }}</span>
                                         {% else %}
                                             <span class="text-secondary text-s">-</span>
@@ -51,16 +50,20 @@
                                     </td>
                                     <td class="align-middle text-center">
                                         {% if order.user.dateReturn %}
-                                            <span class="text-secondary text-s">{{ order.user.dateReturn }}</span>
+                                            <span class="text-secondary text-s">{{ order.user.dateApproved }}</span>
                                         {% else %}
                                             <span class="text-secondary text-s">-</span>
                                         {% endif %}
                                     </td>
                                     <td class="align-middle text-center text-sm">
-                                        <span class="badge badge-sm bg-gradient-danger">เกินกำหนดคืน</span>
+                                        {% ifequal order.status "waiting" %}
+                                            <span class="badge badge-sm bg-gradient-warning">รออนุมัติ</span>
+                                        {% endifequal %}
+                                        {% ifequal order.status "overdued" %}
+                                            <span class="badge badge-sm bg-gradient-danger">เกินกำหนดคืน</span>
+                                        {% endifequal %}
                                     </td>
                                 </tr>
-                                {% endifequal %}
                             {% endfor %}
                             </tbody>
                         </table>

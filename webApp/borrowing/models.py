@@ -32,7 +32,8 @@ class Order(models.Model):
         OVERDUED    = 'overdued', 'Overdued'
     user            = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.SET_NULL, related_name='accountOrder')
     equipment       = models.ManyToManyField(Borrowing, default=None)
-    dateBorrowing   = models.DateTimeField(blank=True, null=True, default=None)
+    dateBorrowing   = models.DateTimeField(blank=True, null=True, default=timezone.now)
+    dateApproved    = models.DateTimeField(blank=True, null=True, default=None)
     dateReturn      = models.DateTimeField(blank=True, null=True, default=None)
     approver        = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.SET_NULL, related_name='account')
     status          = models.CharField(null=True, blank=True, choices=STATUS.choices, default=STATUS.WAITING, max_length=20)
