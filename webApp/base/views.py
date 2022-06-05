@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+# Module
+from django.db.models import Q
 
 #Project
 from equipment.models import Equipment
@@ -72,13 +74,27 @@ def notificationspage(request):
 
 def informationpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
-    orders = Order.objects.filter(user=request.user.account).exclude(status=Order.STATUS.CANCELLED)
+    canceled = Q(status=Order.STATUS.CANCELLED)
+    completed = Q(status=Order.STATUS.COMPLETED)
+    disapproved = Q(status=Order.STATUS.DISAPPROVED)
+    overdued = Q(status=Order.STATUS.OVERDUED)
+    waiting = Q(status=Order.STATUS.WAITING)
+    approved = Q(status=Order.STATUS.APPROVED)
+    orders = Order.objects.filter(user=request.user.account).filter(waiting | approved)
     context = { 'orders': orders }
     return render(request, 'pages/information_page.html', context)
 
 def borrowinghistorypage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
-    return render(request, 'pages/borrowing_history_page.html')
+    canceled = Q(status=Order.STATUS.CANCELLED)
+    completed = Q(status=Order.STATUS.COMPLETED)
+    disapproved = Q(status=Order.STATUS.DISAPPROVED)
+    overdued = Q(status=Order.STATUS.OVERDUED)
+    waiting = Q(status=Order.STATUS.WAITING)
+    approved = Q(status=Order.STATUS.APPROVED)
+    orders = Order.objects.filter(user=request.user.account).filter(disapproved | canceled | completed)
+    context = { 'orders': orders }
+    return render(request, 'pages/borrowing_history_page.html', context)
 
 def contactpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
@@ -101,11 +117,12 @@ def equipmentlistpage(request):
 def equipmentdetailpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     if request.method == 'GET':
-        return redirect(reverse('equipment-list'))
+        return redirect(reverse('homepage'))
+    status      = request.POST['StatusBorrowing']
     equipmentID = request.POST['EquipmentID']
     try:
-        equipment = Equipment.objects.get(id=equipmentID)
-        context = { 'equipment': equipment }
+        order   = Order.objects.get(id=equipmentID, status=status)
+        context = { 'order': order, 'status': status }
         return render(request, 'pages/equipment_detail_page.html', context)
     except ObjectDoesNotExist:
         return redirect(reverse('equipment-list'))

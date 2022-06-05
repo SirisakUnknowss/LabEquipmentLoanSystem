@@ -48,24 +48,29 @@
                                         {% endif %}
                                     </td>
                                     <td class="align-middle text-center text-sm">
-                                        {% ifequal order.status "waiting" %}
-                                            <span class="badge badge-sm bg-gradient-warning">รออนุมัติ</span>
-                                        {% endifequal %}
-                                        {% ifequal order.status "approved" %}
-                                            <span class="badge badge-sm bg-gradient-info">อนุมัติแล้ว</span>
-                                        {% endifequal %}
-                                        {% ifequal order.status "canceled" %}
-                                            <span class="badge badge-sm bg-gradient-danger">ยกเลิก</span>
-                                        {% endifequal %}
-                                        {% ifequal order.status "disapproved" %}
-                                            <span class="badge badge-sm bg-gradient-danger">คำขอล้มเหลว</span>
-                                        {% endifequal %}
-                                        {% ifequal order.status "completed" %}
-                                            <span class="badge badge-sm bg-gradient-success">คืนเรียบร้อยแล้ว</span>
-                                        {% endifequal %}
-                                        {% ifequal order.status "overdued" %}
-                                            <span class="badge badge-sm bg-gradient-danger">เกินกำหนดคืน</span>
-                                        {% endifequal %}
+                                        <form id="confirm-equipment" method="post" action="{% url 'equipment-detail' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" value="{{ order.id }}" name="EquipmentID" />
+                                            <input type="hidden" value="{{ order.status }}" name="StatusBorrowing" />
+                                            {% ifequal order.status "waiting" %}
+                                                <button class="btn badge badge-sm bg-gradient-warning" type="submit">รออนุมัติ</button>
+                                            {% endifequal %}
+                                            {% ifequal order.status "approved" %}
+                                                <button class="btn badge badge-sm bg-gradient-info" type="submit">อนุมัติแล้ว</button>
+                                            {% endifequal %}
+                                            {% ifequal order.status "canceled" %}
+                                                <button class="btn badge badge-sm bg-gradient-danger" type="submit">ยกเลิก</button>
+                                            {% endifequal %}
+                                            {% ifequal order.status "disapproved" %}
+                                                <button class="btn badge badge-sm bg-gradient-danger" type="submit">คำขอล้มเหลว</button>
+                                            {% endifequal %}
+                                            {% ifequal order.status "completed" %}
+                                                <button class="btn badge badge-sm bg-gradient-success" type="submit">คืนเรียบร้อยแล้ว</button>
+                                            {% endifequal %}
+                                            {% ifequal order.status "overdued" %}
+                                                <button class="btn badge badge-sm bg-gradient-danger" type="submit">เกินกำหนดคืน</button>
+                                            {% endifequal %}
+                                        </form>
                                     </td>
                                 </tr>
                             {% endfor %}

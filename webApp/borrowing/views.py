@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from rest_framework.permissions import AllowAny
 from django.urls import reverse
 from django.shortcuts import redirect
@@ -5,6 +6,7 @@ from django.db.models import F
 #Project
 from base.views import LabAPIGetView, LabAPIView
 from equipment.models import Equipment
+from account.models import Account
 from .models import Borrowing, EquipmentCart, Order
 from .serializers import SlzEquipmentCartInput, SlzEquipmentCart
 
@@ -69,3 +71,64 @@ class ConfirmBorringApi(LabAPIView):
             order.equipment.add(borrowing)
         equipments.delete()
         return redirect(reverse('information-equipment'))
+
+class DisapprovedBorringApi(LabAPIView):
+    queryset            = Order.objects.all()
+    permission_classes  = [ AllowAny ]
+
+    def post(self, request, *args, **kwargs):
+        account     = request.user.account
+        orderID     = self.request.data.get("orderID")
+        if account.status != Account.STATUS.ADMIN:
+            return redirect(reverse('notifications-forgetten'))
+        order       = Order.objects.filter(id=orderID)
+        if not order.exists():
+            return redirect(reverse('notifications-forgetten'))
+        order.update(status=Order.STATUS.DISAPPROVED)
+        return redirect(reverse('notifications-forgetten'))
+
+class ApprovedBorringApi(LabAPIView):
+    queryset            = Order.objects.all()
+    permission_classes  = [ AllowAny ]
+
+    def post(self, request, *args, **kwargs):
+        account     = request.user.account
+        orderID     = self.request.data.get("orderID")
+        if account.status != Account.STATUS.ADMIN:
+            return redirect(reverse('notifications-forgetten'))
+        order       = Order.objects.filter(id=orderID)
+        if not order.exists():
+            return redirect(reverse('notifications-forgetten'))
+        order.update(
+            status=Order.STATUS.APPROVED,
+            approver=account,
+            dateApproved=datetime.now(),
+            dateReturn=datetime.now() + timedelta(days=7)
+        )
+        return redirect(reverse('notifications-forgetten'))
+
+class CancelBorringApi(LabAPIView):
+    queryset            = Order.objects.all()
+    permission_classes  = [ AllowAny ]
+
+    def post(self, request, *args, **kwargs):
+        account     = request.user.account
+        orderID     = self.request.data.get("orderID")
+        order       = Order.objects.filter(id=orderID, user=account)
+        if not order.exists():
+            return redirect(reverse('information-equipment'))
+        order.update( status=Order.STATUS.CANCELLED)
+        return redirect(reverse('borrowing-history'))
+
+class RemoveBorringApi(LabAPIView):
+    queryset            = Order.objects.all()
+    permission_classes  = [ AllowAny ]
+
+    def post(self, request, *args, **kwargs):
+        account     = request.user.account
+        orderID     = self.request.data.get("orderID")
+        order       = Order.objects.filter(id=orderID, user=account)
+        if not order.exists():
+            return redirect(reverse('borrowing-history'))
+        order.delete()
+        return redirect(reverse('borrowing-history'))

@@ -42,22 +42,27 @@
                                         <span class="text-secondary text-s">{{ order.equipment.all.count }}</span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        {% if order.user.dateBorrowing %}
-                                            <span class="text-secondary text-s">{{ order.user.dateBorrowing }}</span>
+                                        {% if order.dateBorrowing %}
+                                            <span class="text-secondary text-s">{{ order.dateBorrowing }}</span>
                                         {% else %}
                                             <span class="text-secondary text-s">-</span>
                                         {% endif %}
                                     </td>
                                     <td class="align-middle text-center">
-                                        {% if order.user.dateReturn %}
-                                            <span class="text-secondary text-s">{{ order.user.dateApproved }}</span>
+                                        {% if order.dateReturn %}
+                                            <span class="text-secondary text-s">{{ order.dateApproved }}</span>
                                         {% else %}
                                             <span class="text-secondary text-s">-</span>
                                         {% endif %}
                                     </td>
                                     <td class="align-middle text-center text-sm">
                                         {% ifequal order.status "waiting" %}
-                                            <span class="badge badge-sm bg-gradient-warning">รออนุมัติ</span>
+                                            <form id="confirm-equipment" method="post" action="{% url 'equipment-detail' %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" value="{{ order.id }}" name="EquipmentID" />
+                                                <input type="hidden" value="{{ order.status }}" name="StatusBorrowing" />
+                                                <button class="btn badge badge-sm bg-gradient-warning" type="submit">รออนุมัติ</button>
+                                            </form>
                                         {% endifequal %}
                                         {% ifequal order.status "overdued" %}
                                             <span class="badge badge-sm bg-gradient-danger">เกินกำหนดคืน</span>

@@ -25,34 +25,41 @@
                             </thead>
                             <tbody>
                             {% for order in orders %}
-                                {% ifequal order.status "completed" %}
-                                <tr>
-                                    <td class="align-middle text-center">
-                                        <span class="text-secondary text-s">{{ order.user.studentID }}</span>
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        <span class="text-secondary text-s">{{ order.equipment.all.count }}</span>
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        {% if order.user.dateBorrowing %}
-                                            <span class="text-secondary text-s">{{ order.user.dateBorrowing }}</span>
-                                        {% else %}
-                                            <span class="text-secondary text-s">-</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        {% if order.user.dateReturn %}
-                                            <span class="text-secondary text-s">{{ order.user.dateApproved }}</span>
-                                        {% else %}
-                                            <span class="text-secondary text-s">-</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="align-middle text-center text-sm">
-                                        <span class="badge badge-sm bg-gradient-info">เพิ่มเติม</span>
-                                        <span class="badge badge-sm bg-gradient-danger">ลบประวัติ</span>
-                                    </td>
-                                </tr>
-                                {% endifequal %}
+                            <tr>
+                                <td class="align-middle text-center">
+                                    <span class="text-secondary text-s">{{ order.user.studentID }}</span>
+                                </td>
+                                <td class="align-middle text-center">
+                                    <span class="text-secondary text-s">{{ order.equipment.all.count }}</span>
+                                </td>
+                                <td class="align-middle text-center">
+                                    {% if order.user.dateBorrowing %}
+                                        <span class="text-secondary text-s">{{ order.user.dateBorrowing }}</span>
+                                    {% else %}
+                                        <span class="text-secondary text-s">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="align-middle text-center">
+                                    {% if order.user.dateReturn %}
+                                        <span class="text-secondary text-s">{{ order.user.dateApproved }}</span>
+                                    {% else %}
+                                        <span class="text-secondary text-s">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="align-middle text-center text-sm">
+                                    <form class="align-items-center text-center d-inline-block" id="confirm-equipment" method="post" action="{% url 'equipment-detail' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{ order.id }}" name="EquipmentID" />
+                                        <input type="hidden" value="{{ order.status }}" name="StatusBorrowing" />
+                                        <button class="btn badge badge-sm bg-gradient-info" type="submit">เพิ่มเติม</button>
+                                    </form>
+                                    <form class="align-items-center text-center d-inline-block" id="confirm-equipment" method="post" action="{% url 'removeBorringApi' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{ order.id }}" name="orderID" />
+                                        <button class="btn badge badge-sm bg-gradient-danger" type="submit">ลบประวัติ</button>
+                                    </form>
+                                </td>
+                            </tr>
                             {% endfor %}
                             </tbody>
                         </table>
