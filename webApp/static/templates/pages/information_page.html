@@ -70,6 +70,9 @@
                                             {% ifequal order.status "overdued" %}
                                                 <button class="btn badge badge-sm bg-gradient-danger" type="submit">เกินกำหนดคืน</button>
                                             {% endifequal %}
+                                            {% ifequal order.status "returned" %}
+                                                <button class="btn badge badge-sm bg-gradient-info" type="submit">คืนอุปกรณ์</button>
+                                            {% endifequal %}
                                         </form>
                                     </td>
                                 </tr>

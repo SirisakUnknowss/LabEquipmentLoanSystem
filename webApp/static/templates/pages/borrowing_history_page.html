@@ -33,15 +33,15 @@
                                     <span class="text-secondary text-s">{{ order.equipment.all.count }}</span>
                                 </td>
                                 <td class="align-middle text-center">
-                                    {% if order.user.dateBorrowing %}
-                                        <span class="text-secondary text-s">{{ order.user.dateBorrowing }}</span>
+                                    {% if order.dateBorrowing %}
+                                        <span class="text-secondary text-s">{{ order.dateBorrowing }}</span>
                                     {% else %}
                                         <span class="text-secondary text-s">-</span>
                                     {% endif %}
                                 </td>
                                 <td class="align-middle text-center">
-                                    {% if order.user.dateReturn %}
-                                        <span class="text-secondary text-s">{{ order.user.dateApproved }}</span>
+                                    {% if order.dateReturn %}
+                                        <span class="text-secondary text-s">{{ order.dateApproved }}</span>
                                     {% else %}
                                         <span class="text-secondary text-s">-</span>
                                     {% endif %}

@@ -8,10 +8,14 @@
       </div>
       {% if user.account.status == "user" %}
       <div class="col-lg-2 col-md-4 col-12 text-end">
-        <a href="{% url 'equipmentcart-list' %}"><button class="btn bg-gradient-warning w-100 mb-0 toast-btn" type="button" data-target="warningToast">ยืมอุปกรณ์</button></a>
+          <a href="{% url 'equipmentcart-list' %}">
+            <button class="btn bg-gradient-warning w-100 mb-0 toast-btn" type="button" data-target="warningToast">ยืมอุปกรณ์</button>
+          </a>
       </div>
       <div class="col-lg-2 col-md-4 col-12 text-end">
-        <button class="btn bg-gradient-danger w-100 mb-0 toast-btn" type="button" data-target="warningToast">คืนอุปกรณ์</button>
+          <a href="{% url 'information-equipment' %}">
+              <button class="btn bg-gradient-danger w-100 mb-0 toast-btn" type="button" data-target="warningToast">คืนอุปกรณ์</button>
+          </a>
       </div>
       {% endif %}
     </div>
@@ -43,12 +47,11 @@
                 <span class="d-block mb-3">จำนวนที่มี : {{ equipment.quantity }}</span>
                 <form id="add-equipment" method="post" action="{% url 'addItemForBorrowingApi' %}">
                   {% csrf_token %}
-                  
+                  {% if user.account.status == "admin" %}
+                  {% else %}
                   <label class="form-label">จำนวนที่ยืม : </label>
                   <input type="number" class="mb-3" id="quantity" name="quantity" min="1" max="{{ equipment.quantity }}">
                   <input type="hidden" value="{{ equipment.id }}" name="equipment" />
-                  {% if user.account.status == "admin" %}
-                  {% else %}
                   <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
                   {% endif %}
                 </form>

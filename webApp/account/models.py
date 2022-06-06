@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from borrowing.models import EquipmentCart, Order
+# Module
+from django.db.models import Q
 
 LEVEL_CLASS = [
     (1, '1'),
@@ -70,7 +72,9 @@ class Account(models.Model):
     @property
     def orderwaitingcount(self):
         if self.status == Account.STATUS.ADMIN:
-            count = Order.objects.filter(status=Order.STATUS.WAITING).count()
+            returned    = Q(status=Order.STATUS.RETURNED)
+            waiting     = Q(status=Order.STATUS.WAITING)
+            count       = Order.objects.filter(returned | waiting).count()
             if count > 9:
                 count = "9+"
             return count

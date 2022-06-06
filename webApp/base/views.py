@@ -68,32 +68,39 @@ def notificationspage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     orders = Order.objects.filter(user=request.user.account, status=Order.STATUS.OVERDUED)
     if request.user.account.status == Account.STATUS.ADMIN:
-        orders = Order.objects.filter(status=Order.STATUS.WAITING)
-    context = { 'orders': orders }
+        returned    = Q(status=Order.STATUS.RETURNED)
+        waiting     = Q(status=Order.STATUS.WAITING)
+        orders      = Order.objects.filter(waiting | returned)
+    context         = { 'orders': orders }
     return render(request, 'pages/notifications_page.html', context)
 
 def informationpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
-    canceled = Q(status=Order.STATUS.CANCELLED)
-    completed = Q(status=Order.STATUS.COMPLETED)
-    disapproved = Q(status=Order.STATUS.DISAPPROVED)
-    overdued = Q(status=Order.STATUS.OVERDUED)
-    waiting = Q(status=Order.STATUS.WAITING)
-    approved = Q(status=Order.STATUS.APPROVED)
-    orders = Order.objects.filter(user=request.user.account).filter(waiting | approved)
-    context = { 'orders': orders }
+    canceled        = Q(status=Order.STATUS.CANCELLED)
+    completed       = Q(status=Order.STATUS.COMPLETED)
+    disapproved     = Q(status=Order.STATUS.DISAPPROVED)
+    overdued        = Q(status=Order.STATUS.OVERDUED)
+    returned        = Q(status=Order.STATUS.RETURNED)
+    waiting         = Q(status=Order.STATUS.WAITING)
+    approved        = Q(status=Order.STATUS.APPROVED)
+    orders          = Order.objects.filter(waiting | approved | returned)
+    if request.user.account.status == Account.STATUS.USER:
+        orders      = orders.filter(user=request.user.account)
+    context         = { 'orders': orders }
     return render(request, 'pages/information_page.html', context)
 
 def borrowinghistorypage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
-    canceled = Q(status=Order.STATUS.CANCELLED)
-    completed = Q(status=Order.STATUS.COMPLETED)
-    disapproved = Q(status=Order.STATUS.DISAPPROVED)
-    overdued = Q(status=Order.STATUS.OVERDUED)
-    waiting = Q(status=Order.STATUS.WAITING)
-    approved = Q(status=Order.STATUS.APPROVED)
-    orders = Order.objects.filter(user=request.user.account).filter(disapproved | canceled | completed)
-    context = { 'orders': orders }
+    canceled        = Q(status=Order.STATUS.CANCELLED)
+    completed       = Q(status=Order.STATUS.COMPLETED)
+    disapproved     = Q(status=Order.STATUS.DISAPPROVED)
+    overdued        = Q(status=Order.STATUS.OVERDUED)
+    waiting         = Q(status=Order.STATUS.WAITING)
+    approved        = Q(status=Order.STATUS.APPROVED)
+    orders          = Order.objects.filter(disapproved | canceled | completed)
+    if request.user.account.status == Account.STATUS.USER:
+        orders      = orders.filter(user=request.user.account)
+    context         = { 'orders': orders }
     return render(request, 'pages/borrowing_history_page.html', context)
 
 def contactpage(request):

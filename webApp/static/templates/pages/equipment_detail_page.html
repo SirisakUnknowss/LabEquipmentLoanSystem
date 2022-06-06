@@ -2,75 +2,84 @@
 {% block content %}
 <main class="main-content position-relative max-height-vh-100 h-100">
   <div class="container-fluid py-4">
-
     <div class="row">
       <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-3">
         <h5 class="mx-3">รายระเอียดการยืม-คืนอุปกรณ์วิทยาศาสตร์</h5>
-        
         {% ifequal order.status "waiting" %}
-          <button class="badge badge-sm bg-gradient-warning" type="submit">รออนุมัติ</button>
+        <span class="badge badge-sm bg-gradient-warning">รออนุมัติ</span>
         {% endifequal %}
         {% ifequal order.status "approved" %}
-          <span class="badge badge-sm bg-gradient-info" type="submit">อนุมัติแล้ว</button>
+        <span class="badge badge-sm bg-gradient-info">อนุมัติแล้ว</span>
         {% endifequal %}
         {% ifequal order.status "canceled" %}
-          <span class="badge badge-sm bg-gradient-danger" type="submit">ยกเลิก</button>
+        <span class="badge badge-sm bg-gradient-danger">ยกเลิก</span>
         {% endifequal %}
         {% ifequal order.status "disapproved" %}
-          <span class="badge badge-sm bg-gradient-danger" type="submit">คำขอล้มเหลว</button>
+        <span class="badge badge-sm bg-gradient-danger">คำขอล้มเหลว</span>
         {% endifequal %}
         {% ifequal order.status "completed" %}
-          <span class="badge badge-sm bg-gradient-success" type="submit">คืนเรียบร้อยแล้ว</button>
+        <span class="badge badge-sm bg-gradient-success">คืนเรียบร้อยแล้ว</span>
         {% endifequal %}
         {% ifequal order.status "overdued" %}
-          <span class="badge badge-sm bg-gradient-danger" type="submit">เกินกำหนดคืน</button>
+        <span class="badge badge-sm bg-gradient-danger">เกินกำหนดคืน</span>
+        {% endifequal %}
+        {% ifequal order.status "returned" %}
+        <span class="badge badge-sm bg-gradient-info">คืนอุปกรณ์</span>
         {% endifequal %}
       </div>
     </div>
 
     <div class="row mt-4">
-      <div class="card card-body mx-2 mx-md-1 mt-5 mb-5">
+      <div class="card card-body mx-2 mx-md-1 mt-n4">
         <div class="card-header p-3">
         <h5 class="mb-3">ข้อมูลการยืมอุปกรณ์วิทยาศาสตร์</h5>
         <div class="align-items-center col-6">
-          <p class="text-sm text-start mb-0">
+          <p class="text-s text-start mb-0">
             ผู้ยืมอุปกรณ์ : {{ order.user.firstname }} {{ order.user.lastname }}
           </p>
-          <p class="text-sm text-start mb-0">
+          <p class="text-s text-start mb-0">
             ผู้อนุมัติ : {{ order.approver.firstname }} {{ order.approver.lastname }}
           </p>
-          <p class="text-sm text-start mb-0">
+          <p class="text-s text-start mb-0">
             วันที่ยืม : {{ order.dateBorrowing|date:"d/m/Y H:m:s" }}
           </p>
-          <p class="text-sm text-start mb-0">
+          <p class="text-s text-start mb-0">
             วันที่อนุมัติ : {{ order.dateApproved|date:"d/m/Y H:m:s" }}
           </p>
-          <p class="text-sm text-start mb-0">
+          <p class="text-s text-start mb-0">
             วันที่คืนอุปกรณ์ : {{ order.dateReturn|date:"d/m/Y H:m:s" }}
           </p>
         </div>
             
-        <div class="align-items-center col-6">
-          {% if status == "waiting" and user.account.status == "admin" %}
-            <form class="align-items-end text-end col-md-10 mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'approvedBorringApi' %}">
+        <div class="align-items-start col-12">
+          {% if user.account.status == "admin" %}
+            {% if status == "waiting" %}
+            <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'approvedBorringApi' %}">
               {% csrf_token %}
               <input type="hidden" value="{{ order.id }}" name="orderID" />
               <button class="btn bg-gradient-success" type="submit">อนุมัติ</button>
             </form>
-            <form class="align-items-end text-end mx-2 d-inline" id="confirm-equipment" method="post" action="{% url 'disapprovedBorringApi' %}">
+            <form class="align-items-start text-start mx-2 d-inline" id="confirm-equipment" method="post" action="{% url 'disapprovedBorringApi' %}">
               {% csrf_token %}
               <input type="hidden" value="{{ order.id }}" name="orderID" />
               <button class="btn bg-gradient-danger" type="submit">ไม่อนุมัติ</button>
             </form>
+            {% elif status == "returned" %}
+            <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'confirmreturnApi' %}">
+              {% csrf_token %}
+              <input type="hidden" value="{{ order.id }}" name="orderID" />
+              <button class="btn bg-gradient-success" type="submit">ยืนยันการคืนอุปกรณ์</button>
+            </form>
+            {% endif %}
           {% elif user.account.status == "user" %}
             {% if status == "waiting" %}
-            <form class="align-items-end text-end col-md-11 mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'cancelBorringApi' %}">
+            <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'cancelBorringApi' %}">
               {% csrf_token %}
               <input type="hidden" value="{{ order.id }}" name="orderID" />
               <button class="btn bg-gradient-danger" type="submit">ยกเลิก</button>
             </form>
-            {% elif status == "approved"%}
-            <form class="align-items-end text-end col-md-11 mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'cancelBorringApi' %}">
+            {% elif status == "approved" %}
+            <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'returningApi' %}">
               {% csrf_token %}
               <input type="hidden" value="{{ order.id }}" name="orderID" />
               <button class="btn bg-gradient-danger" type="submit">คืนอุปกรณ์</button>

@@ -30,6 +30,7 @@ class Order(models.Model):
         DISAPPROVED = 'disapproved', 'Disapproved'
         COMPLETED   = 'completed', 'Completed'
         OVERDUED    = 'overdued', 'Overdued'
+        RETURNED    = 'returned', 'Returned'
     user            = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.SET_NULL, related_name='accountOrder')
     equipment       = models.ManyToManyField(Borrowing, default=None)
     dateBorrowing   = models.DateTimeField(blank=True, null=True, default=timezone.now)
