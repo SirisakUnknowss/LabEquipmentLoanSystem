@@ -13,12 +13,12 @@ from .models import Equipment, getClassPath
 class ListEquipment(LabListView):
     queryset            = Equipment.objects.all()
     serializer_class    = SlzEquipment
-    permission_classes = [ AllowAny ]
+    permission_classes  = [ AllowAny ]
 
 class AddEquipment(LabAPIGetView):
     queryset            = Equipment.objects.all()
     serializer_class    = SlzEquipmentInput
-    permission_classes = [ AllowAny ]
+    permission_classes  = [ AllowAny ]
 
     def post(self, request, *args, **kwargs):
         account = request.user.account
@@ -50,3 +50,15 @@ class AddEquipment(LabAPIGetView):
         equipment.image = file_url
         equipment.save()
         return equipment
+        
+class RemoveEquipment(LabAPIGetView):
+    queryset            = Equipment.objects.all()
+    serializer_class    = SlzEquipmentInput
+    permission_classes = [ AllowAny ]
+
+    def post(self, request, *args, **kwargs):
+        account = request.user.account
+        if account.status != "admin":
+            raise ValidationError('Please login with admin account.')
+        Equipment.objects.filter(id=request.POST["equipment"]).delete()
+        return redirect(reverse('equipment-list'))

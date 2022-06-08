@@ -45,16 +45,21 @@
                   {% ifequal equipment.unit "Millimeter" %}mm{% endifequal %}
                 </span>
                 <span class="d-block mb-3">จำนวนที่มี : {{ equipment.quantity }}</span>
-                <form id="add-equipment" method="post" action="{% url 'addItemForBorrowingApi' %}">
-                  {% csrf_token %}
                   {% if user.account.status == "admin" %}
+                  <form id="add-equipment" method="post" action="{% url 'removeEquipmentApi' %}">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ equipment.id }}" name="equipment" />
+                    <button class="btn bg-gradient-danger" type="submit">ลบข้อมูล</button>
+                  </form>
                   {% else %}
-                  <label class="form-label">จำนวนที่ยืม : </label>
-                  <input type="number" class="mb-3" id="quantity" name="quantity" min="1" max="{{ equipment.quantity }}">
-                  <input type="hidden" value="{{ equipment.id }}" name="equipment" />
-                  <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
+                  <form id="add-equipment" method="post" action="{% url 'addItemForBorrowingApi' %}">
+                    {% csrf_token %}
+                    <label class="form-label">จำนวนที่ยืม : </label>
+                    <input type="number" class="mb-3" id="quantity" name="quantity" min="1" max="{{ equipment.quantity }}">
+                    <input type="hidden" value="{{ equipment.id }}" name="equipment" />
+                    <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
+                  </form>
                   {% endif %}
-                </form>
               </div>
             </div>
           </div>

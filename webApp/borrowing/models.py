@@ -7,16 +7,16 @@ from equipment.models import Equipment
 # Create your models here.
 
 class EquipmentCart(models.Model):
-    user        = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.SET_NULL, related_name='accountEquipmentCart')
-    equipment   = models.ForeignKey(Equipment, null=True, blank=True, on_delete=models.SET_NULL, related_name='equipmentEquipmentCart')
+    user        = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.CASCADE, related_name='accountEquipmentCart')
+    equipment   = models.ForeignKey(Equipment, null=True, blank=True, on_delete=models.CASCADE, related_name='equipmentEquipmentCart')
     quantity    = models.IntegerField(default=0)
 
     def __str__(self):
         return self.equipment.name + str(self.equipment.size)
 
 class Borrowing(models.Model):
-    user        = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.SET_NULL, related_name='accountBorrowing')
-    equipment   = models.ForeignKey(Equipment, null=True, blank=True, on_delete=models.SET_NULL, related_name='equipmentBorrowing')
+    user        = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.CASCADE, related_name='accountBorrowing')
+    equipment   = models.ForeignKey(Equipment, null=True, blank=True, on_delete=models.CASCADE, related_name='equipmentBorrowing')
     quantity    = models.IntegerField(default=0)
 
     def __str__(self):
@@ -26,12 +26,12 @@ class Order(models.Model):
     class STATUS(models.TextChoices):
         WAITING     = 'waiting', 'Waiting'
         APPROVED    = 'approved', 'Approved'
-        CANCELLED   = 'canceled', 'Canceled'
+        CANCELED   = 'canceled', 'Canceled'
         DISAPPROVED = 'disapproved', 'Disapproved'
         COMPLETED   = 'completed', 'Completed'
         OVERDUED    = 'overdued', 'Overdued'
         RETURNED    = 'returned', 'Returned'
-    user            = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.SET_NULL, related_name='accountOrder')
+    user            = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.CASCADE, related_name='accountOrder')
     equipment       = models.ManyToManyField(Borrowing, default=None)
     dateBorrowing   = models.DateTimeField(blank=True, null=True, default=timezone.now)
     dateApproved    = models.DateTimeField(blank=True, null=True, default=None)

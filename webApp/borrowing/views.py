@@ -117,7 +117,7 @@ class CancelBorringApi(LabAPIView):
         order       = Order.objects.filter(id=orderID, user=account)
         if not order.exists():
             return redirect(reverse('information-equipment'))
-        order.update( status=Order.STATUS.CANCELLED)
+        order.update( status=Order.STATUS.CANCELED)
         return redirect(reverse('borrowing-history'))
 
 class RemoveBorringApi(LabAPIView):

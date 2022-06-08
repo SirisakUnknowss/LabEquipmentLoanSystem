@@ -6,4 +6,5 @@ from . import views
 urlpatterns = [
     # path('register', views.user_register, name='registerApi'),
     path('add', views.AddEquipment.as_view(), name='addEquipmentApi'),
+    path('remove', views.RemoveEquipment.as_view(), name='removeEquipmentApi'),
 ]
