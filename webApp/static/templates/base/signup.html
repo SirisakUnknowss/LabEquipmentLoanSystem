@@ -13,8 +13,76 @@
                     <div class="card z-index-0 fadeIn3 fadeInBottom">
                         <div class="card-body">
                             <div class="right">
+                                {% if user.account.status == "admin" %}
+                                <a href="{% url 'usermanagementpage' %}"><img src="{{ STATIC_URL }}/images/cancel.png" /></a>
+                                {% else %}
                                 <a href="{% url 'homepage' %}"><img src="{{ STATIC_URL }}/images/cancel.png" /></a>
+                                {% endif %}
                             </div>
+                            {% if account %}
+                            <h4 class="text-black font-weight-bolder text-center mt-2 mb-0">แก้ไขข้อมูลผู้ใช้งาน</h4>
+                            <div class="mt-5 mb-3">
+                                <span class="text-black">รหัสนักศึกษา : </span>
+                                <span class="text-black">{{ account.studentID }}</span>
+                            </div>
+                            
+                            <form role="form" class="text-start" id="login-form" method="post" action="{% url 'updateAccoutApi' %}">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{ account.id }}" name="accountID" />
+                                <input type="hidden" value="{{ account.username }}" name="username" />
+                                <div class="input-group input-group-outline mb-3">
+                                    <select class="form-select" id="id_nameprefix" name="nameprefix" required>
+                                        <option value="">-------- คำนำหน้า --------</option>
+                                        <option value="Mr.">นาย</option>
+                                        <option value="Mrs.">นาง</option>
+                                            <option value="Miss">นางสาว</option>
+                                    </select>
+                                </div>
+                                <div class="input-group input-group-outline my-3 is-filled">
+                                    <label class="form-label">ชื่อ</label>
+                                    <input type="text" class="form-control" id="id_firstname" name="firstname" value="{{ account.firstname }}" required>
+                                </div>
+                                <div class="input-group input-group-outline mb-3 is-filled">
+                                    <label class="form-label">นามสกุล</label>
+                                    <input type="text" class="form-control" id="id_lastname" name="lastname" value="{{ account.lastname }}" place required>
+                                </div>
+                                <div class="input-group input-group-outline mb-3">
+                                    <select class="form-select" id="id_branch" name="branch" required>
+                                        <option value="">-------- สาขา --------</option>
+                                        <option value="B-Ed_Chemistry">สาขาวิชาเคมี (คบ.)</option>
+                                        <option value="B-S_Chemistry">สาขาวิชาเคมี (วท.บ.)</option>
+                                        <option value="B-Ed_Physical ">สาขาวิชาฟิสิกส์ (คบ.)</option>
+                                        <option value="B-S_Physical ">สาขาวิชาฟิสิกส์ (วท.บ.)</option>
+                                        <option value="B-Ed_Biology">สาขาวิชาชีววิทยา (คบ.)</option>
+                                        <option value="B-S_Biology">สาขาวิชาชีววิทยา (วท.บ.)</option>
+                                        <option value="Other_Other">อื่น ๆ</option>
+                                    </select>
+                                </div>
+                                <div class="input-group input-group-outline mb-3">
+                                    <select class="form-select" id="id_levelclass" name="levelclass" required>
+                                        <option value="">-------- ชั้นปี --------</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                                <div class="input-group input-group-outline mb-3 is-filled">
+                                    <label class="form-label">เบอร์มือถือ</label>
+                                    <input type="tel" class="form-control" id="id_phone" name="phone" pattern="[0-9]{3}[0-9]{3}[0-9]{4}" value="{{ account.phone }}" required>
+                                </div>
+                                <div class="input-group input-group-outline mb-3 is-filled">
+                                    <label class="form-label">อีเมล์</label>
+                                    <input type="email" class="form-control" id="id_email" name="email" value="{{ account.email }}" required>
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">บันทึกข้อมูล</button>
+                                </div>
+                            </form>
+
+                            {% else %}
+
                             <h4 class="text-black font-weight-bolder text-center mt-2 mb-0">ลงทะเบียนเข้าใช้งาน</h4>
                             <form role="form" class="text-start" id="login-form" method="post" action="{% url 'registerApi' %}">
                                 {% csrf_token %}
@@ -44,7 +112,7 @@
                                 </div>
                                 <div class="input-group input-group-outline mb-3">
                                     <label class="form-label">นามสกุล</label>
-                                    <input type="text" class="form-control" id="id_lastname" name="lastname" required>
+                                    <input type="text" class="form-control" id="id_lastname" name="lastname" place required>
                                 </div>
                                 <div class="input-group input-group-outline mb-3">
                                     <select class="form-select" id="id_branch" name="branch" required>
@@ -80,6 +148,8 @@
                                     <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">ลงทะเบียน</button>
                                 </div>
                             </form>
+                            {% endif %}
+                            
                         </div>
                     </div>
                 </div>

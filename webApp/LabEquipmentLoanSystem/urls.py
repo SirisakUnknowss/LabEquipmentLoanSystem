@@ -29,6 +29,8 @@ urlpatterns = [
     path('information', baseViews.informationpage, name='information-equipment'),
     path('history-borrowing', baseViews.borrowinghistorypage, name='borrowing-history'),
     path('analysis', baseViews.analysispage, name='analysispage'),
+    path('user/management', baseViews.usermanagementpage, name='usermanagementpage'),
+    path('user/edit', baseViews.usereditpage, name='managepage'),
     path('contactpage', baseViews.contactpage, name='contact-us'),
     path('account/profile', baseViews.profilepage, name='user-profile'),
     path('api/account/', include('account.urls')),

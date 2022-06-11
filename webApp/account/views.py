@@ -6,7 +6,7 @@ from django.http import Http404
 from django.http.response import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-from .form import AuthenForm, RegisterForm
+from .form import AuthenForm, RegisterForm, UpdateForm
 from .models import Account
 from .serializers import SlzAccountCreate
 
@@ -17,7 +17,7 @@ def user_login(request):
         raise Http404("A Page does not exist")
     form = AuthenForm(request.POST)
     if not form.is_valid():
-        return HttpResponse(form.errors, content_type='application/json')
+        return redirect(reverse('homepage'))
     try:
         account = Account.objects.get(studentID=form['username'].data, password=form['password'].data)
         user = account.user
@@ -41,6 +41,10 @@ def user_register(request):
     user    = create_user_data(form)
     account = createAccount(user, form)
     user    = account.user
+    if request.user.is_authenticated:
+        account = request.user.account
+        if account.status == "admin":
+            return redirect(reverse('usermanagementpage'))
     login(request, user)
     return redirect(reverse('homepage'))
 
@@ -102,3 +106,48 @@ def split_branch(value:str):
     strSplit = value.split('_')
     data = { 'branch': strSplit[1], 'faculty': strSplit[0] }
     return data
+
+def user_edit(request):
+    if request.method == "GET":
+        raise Http404("A Page does not exist")
+    if request.user.account.status != Account.STATUS.ADMIN:
+        return redirect(reverse('homepage'))
+    form = UpdateForm(request.POST)
+    if not form.is_valid():
+        return HttpResponse(form.errors, content_type='application/json')
+    if request.POST['accountID']:
+        user = Account.objects.get(id=request.POST['accountID'])
+        branch = split_branch(form['branch'].data)
+        data = {
+            "user": user.id,
+            "nameprefix": form['nameprefix'].data,
+            "firstname": form['firstname'].data,
+            "lastname": form['lastname'].data,
+            "email": form['email'].data,
+            "phone": form['phone'].data,
+            "levelclass": form['levelclass'].data,
+            "branch": branch['branch'],
+            "faculty": branch['faculty'],
+            "status": 'user'
+        }
+        Account.objects.filter(id=request.POST['accountID']).update(
+            nameprefix=data['nameprefix'],
+            firstname=data['firstname'],
+            lastname=data['lastname'],
+            email=data['email'],
+            phone=data['phone'],
+            levelclass=data['levelclass'],
+            branch=data['branch'],
+            faculty=data['faculty'],
+            status=data['status'],
+            )
+    return redirect(reverse('usermanagementpage'))
+
+def delete_account(request):
+    if request.method == "GET":
+        raise Http404("A Page does not exist")
+    if request.user.account.status != Account.STATUS.ADMIN:
+        return redirect(reverse('homepage'))
+    if request.POST['accountID']:
+        Account.objects.filter(id=request.POST['accountID']).delete()
+    return redirect(reverse('usermanagementpage'))

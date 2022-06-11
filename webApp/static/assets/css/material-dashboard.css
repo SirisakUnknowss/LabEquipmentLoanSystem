@@ -17084,12 +17084,15 @@ input[type=number] {
   width: 33.33%;
 }
 .landing-box-text {
-  display: flex;
   align-items: center;
   float: right;
+  display: inline-flex;
+  vertical-align: middle;
+  text-align: right !important;
   font-size: 18px;
   font-style: bold;
   padding-right: 1rem;
+  margin: auto;
   height: 100%;
   width: 50%;
 }

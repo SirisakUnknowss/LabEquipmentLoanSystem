@@ -1,0 +1,49 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+    <div class="container-fluid py-4">
+
+        <div class="row">
+            <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center">
+                <h5>จัดการข้อมูลผู้ใช้บริการระบบยืม - คืนอุปกรณ์วิทยาศาสตร์</h5>
+            </div>
+        </div>
+
+        {% if user.account.status == "admin" %}
+        <div class="row mt-4">
+            <div class="col-lg-5 col-md-5 m-3 p-5">
+                <a href="{% url 'registerpage' %}">
+                    <div class="card-header p-0 position-relative mt-n4 z-index-2 bg-transparent">
+                        <div class="bg-gradient-faded-success shadow-success border-radius-lg p-4">
+                            <span class="text-white">เพิ่มข้อมูลผู้ใช้งาน</span>
+                            <div class="landing-box-image">
+                                <img src="{{ STATIC_URL }}/images/add-user.png" />
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-5 col-md-5 m-3 p-5">
+                <a href="{% url 'managepage' %}">
+                    <div class="card-header p-0 position-relative mt-n4 z-index-2 bg-transparent">
+                        <div class="bg-gradient-faded-warning shadow-warning border-radius-lg p-4">
+                            <span class="text-white">จัดการข้อมูลผู้ใช้งาน</span>
+                            <div class="landing-box-image">
+                                <img src="{{ STATIC_URL }}/images/edit-user.png" />
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-lg-12 col-md-12 mt-3 mb-4">
+            <div class="card-body mb-n3 text-center">
+              <p>กรุณาเข้าสู่ระบบโดย Admin เท่านั้น</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+    <div class="container-fluid py-4">
+        <div class="row mt-4 mb-4">
+            <div class="card card-body mx-2 mx-md-1 mt-n4">
+                <div class="card-header">
+                    <h5>จัดการข้อมูลผู้ใช้งาน</h5>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-4 col-md-8 col-12 mx-auto">
+                        <form role="form" class="text-start" id="login-form" method="post" action="{% url 'managepage' %}">
+                        {% csrf_token %}
+                        <div class="input-group input-group-outline mb-2">
+                            <label class="form-label">รหัสนักศึกษา</label>
+                            <input type="text" class="form-control" id="id_username" name="username" onfocus="focused(this)" onfocusout="defocused(this)">
+                            <input type="hidden" value="view" name="status" />
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn bg-gradient-primary w-100 mb-2">ค้นหา</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+                {% if account %}
+                    {% if  account == "notfound" %}
+                    <div class="row">
+                        <div class="col-lg-4 col-md-8 col-12 mx-auto">
+                            <div class="card-body mb-n3 text-center">
+                                <p>ไม่พบข้อมูลผู้ใช้งาน</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    {% if status == "view" %}
+                    <div class="row">
+                        <div class="col-lg-4 col-md-8 col-12 mx-auto mt-5 mb-3">
+                            {% comment %} <div class="row gx-4 mb-2">
+                                <div class="col-auto">
+                                    <div class="avatar avatar-xl position-relative">
+                                        <img src="{{ STATIC_URL }}/images/profile.png" alt="profile_image" class="w-100 border-radius-section shadow-sm">
+                                    </div>
+                                </div>
+                            </div> {% endcomment %}
+        
+                            <ul class="list-group">
+                                <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">ชื่อ - นามสกุล </strong> &nbsp; {{ account.firstname }} &nbsp; {{ user.account.lastname }}</li>
+                                <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">รหัสนักศึกษา </strong> &nbsp; {{ account.studentID }}</li>
+                                <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">สาขา </strong> &nbsp; {{ account.branch }}</li>
+                                <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">เบอร์โทรติดต่อ </strong> &nbsp; {{ account.phone }}</li>
+                                <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">อีเมล์ </strong> &nbsp; {{ account.email }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-4 col-md-8 col-12 mx-auto">
+                            <form class="align-items-center text-start mx-2 d-inline-block" id="edit-account" method="post" action="{% url 'registerpage' %}">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{ account.id }}" name="accountID" />
+                                <button class="btn bg-gradient-warning" type="submit">แก้ไขข้อมูล</button>
+                            </form>
+                            <form class="align-items-center text-start mx-2 d-inline" id="confirm-equipment" method="post" action="{% url 'deleteAccount' %}">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{ account.id }}" name="accountID" />
+                                <button class="btn bg-gradient-danger" type="submit">ลบบัญชี</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {% endif %}
+                    {% endif %}
+                {% else %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+    <script>
+        let name_page = ""
+    </script>
+{% endblock %}

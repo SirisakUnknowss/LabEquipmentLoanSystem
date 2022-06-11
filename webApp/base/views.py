@@ -62,6 +62,10 @@ def homepage(request):
     return render(request, 'base/index.html')
 
 def registerpage(request):
+    if  request.method == 'POST' and request.POST['accountID']:
+        account = Account.objects.get(id=request.POST['accountID'])
+        context = { 'account': account }
+        return render(request, 'base/signup.html', context)
     return render(request, 'base/signup.html')
 
 def notificationspage(request):
@@ -106,8 +110,18 @@ def borrowinghistorypage(request):
 
 def analysispage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
-    context = { 'orders': orderAll() }
+    context = { 'orders': orderAll(), 'accounts': accountAll() }
     return render(request, 'pages/analysis_page.html', context)
+    
+def accountAll():
+    admin               = Q(status=Account.STATUS.ADMIN)
+    user                = Q(status=Account.STATUS.USER)
+    account             = dict()
+    accounts            = Account.objects.all()
+    account['all']      = accounts.count()
+    account['user']     = accounts.filter(user).count()
+    account['admin']    = accounts.filter(admin).count()
+    return account
 
 def orderAll():
     waiting     = Q(status=Order.STATUS.WAITING)
@@ -167,3 +181,25 @@ def equipmentcartlistpage(request):
     equipmentsCart = EquipmentCart.objects.filter(user=request.user.account)
     context = { 'equipmentsCart': equipmentsCart }
     return render(request, 'pages/cart_equipment_page.html', context)
+
+def usermanagementpage(request):
+    if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    return render(request, 'pages/user_management_page.html')
+
+def usereditpage(request):
+    if not(request.user.is_authenticated) or request.user.account.status != Account.STATUS.ADMIN:
+        return redirect(reverse('homepage'))
+    context = dict()
+    if request.method == 'POST':
+        status      = request.POST['status']
+        username    = request.POST['username']
+        account     = Account.objects.filter(studentID=username)
+        context['account'] = 'notfound'
+        context['status'] = ''
+        if account.exists():
+            context['account'] = account[0]
+            context['status'] = 'view'
+            if status == 'edit':
+                context['status'] = 'edit'
+    return render(request, 'pages/manage_user_page.html', context)
+    
