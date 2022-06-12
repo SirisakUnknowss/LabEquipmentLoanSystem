@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
@@ -35,9 +35,15 @@ def user_register(request):
         raise Http404("A Page does not exist")
     form = RegisterForm(request.POST)
     if not form.is_valid():
-        return HttpResponse(form.errors, content_type='application/json')
-    check_account_exist(form)
-    check_password(form)
+        context = { 'form': form.errors }
+        return redirect(reverse('registerpage', kwargs=context))
+    account = Account.objects.filter(studentID=form['username'].value)
+    if account.exists():
+        context = { 'accountExists': 'บัญชีผู้ใช้งานนี้มีอยู่แล้ว' }
+        return render(request, 'base/signup.html', context)
+    if form['password'].value != form['repassword'].value:
+        context = { 'password': 'รหัสผ่านไม่ตรงกัน' }
+        return render(request, 'base/signup.html', context)
     user    = create_user_data(form)
     account = createAccount(user, form)
     user    = account.user
@@ -56,15 +62,6 @@ def create_user_data(form:RegisterForm):
         is_active=True
         )
     return user
-
-def check_account_exist(form:RegisterForm):
-    account = Account.objects.filter(studentID=form['username'].value)
-    if account.exists():
-        return Http404("Already have this account.")
-
-def check_password(form:RegisterForm):
-    if form['password'].value != form['repassword'].value:
-        return Http404("Password and confirm password does not match.")
     
 def createAccount(user:User, form:RegisterForm):
     branch = split_branch(form['branch'].data)
@@ -80,6 +77,7 @@ def createAccount(user:User, form:RegisterForm):
         "levelclass": form['levelclass'].data,
         "branch": branch['branch'],
         "faculty": branch['faculty'],
+        "category":form['category'].data,
         "status": 'user'
     }
     serializer = SlzAccountCreate(data=data)
@@ -97,6 +95,7 @@ def createAccount(user:User, form:RegisterForm):
         levelclass=data['levelclass'],
         branch=data['branch'],
         faculty=data['faculty'],
+        category=data['category'],
         status=data['status'],
         )
     account.save()
@@ -128,6 +127,7 @@ def user_edit(request):
             "levelclass": form['levelclass'].data,
             "branch": branch['branch'],
             "faculty": branch['faculty'],
+            "category":form['category'].data,
             "status": 'user'
         }
         Account.objects.filter(id=request.POST['accountID']).update(
@@ -139,6 +139,7 @@ def user_edit(request):
             levelclass=data['levelclass'],
             branch=data['branch'],
             faculty=data['faculty'],
+            category=data['category'],
             status=data['status'],
             )
     return redirect(reverse('usermanagementpage'))

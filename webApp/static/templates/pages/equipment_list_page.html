@@ -46,16 +46,21 @@
                 </span>
                 <span class="d-block mb-3">จำนวนที่มี : {{ equipment.quantity }}</span>
                   {% if user.account.status == "admin" %}
+                  <form id="add-equipment" method="post" action="{% url 'addequipmentpage' %}">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ equipment.id }}" name="EquipmentID" />
+                    <button class="btn bg-gradient-warning w-75" type="submit">แก้ไขข้อมูล</button>
+                  </form>
                   <form id="add-equipment" method="post" action="{% url 'removeEquipmentApi' %}">
                     {% csrf_token %}
                     <input type="hidden" value="{{ equipment.id }}" name="equipment" />
-                    <button class="btn bg-gradient-danger" type="submit">ลบข้อมูล</button>
+                    <button class="btn bg-gradient-danger w-75" type="submit">ลบข้อมูล</button>
                   </form>
                   {% else %}
                   <form id="add-equipment" method="post" action="{% url 'addItemForBorrowingApi' %}">
                     {% csrf_token %}
                     <label class="form-label">จำนวนที่ยืม : </label>
-                    <input type="number" class="mb-3" id="quantity" name="quantity" min="1" max="{{ equipment.quantity }}">
+                    <input type="number" class="mb-3" id="quantity" name="quantity" min="1" value="0" max="{{ equipment.quantity }}">
                     <input type="hidden" value="{{ equipment.id }}" name="equipment" />
                     <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
                   </form>

@@ -155,6 +155,15 @@ def profilepage(request):
 
 def addequipmentpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    if request.method == 'POST':
+        equipmentID = request.POST['EquipmentID']
+        equipment = Equipment.objects.filter(id=equipmentID)
+        if equipment.exists():
+            context = { 'equipment': equipment.first() }
+            return render(request, 'pages/add_equipment.html', context)
+        else:
+            return redirect(reverse('equipment-list'))
+
     return render(request, 'pages/add_equipment.html')
 
 def equipmentlistpage(request):

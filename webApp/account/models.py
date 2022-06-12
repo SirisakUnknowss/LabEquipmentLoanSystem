@@ -35,6 +35,15 @@ class Account(models.Model):
         EIGHT   = 8, '8'
         NINE    = 9, '9'
         TEN     = 10, '10'
+
+    class CATEGORY(models.TextChoices):
+        STUDENT         = 'student', 'student'
+        TEACHER         = 'teacher', 'teacher'
+        PERSONNEL       = 'personnel', 'personnel'
+        OTHER           = 'other', 'other'
+        USER            = 'user', 'user'
+        NOTSPECIFIED    = 'notSpecified', 'notSpecified'
+        
     """
     Inherited fields:
     password, last_login, is_active
@@ -50,6 +59,7 @@ class Account(models.Model):
     levelclass  = models.CharField(max_length=2, choices=LEVEL_CLASS.choices, null=True, blank=True)
     branch      = models.CharField(max_length=100, null=True, blank=True)
     faculty     = models.CharField(max_length=100, null=True, blank=True)
+    category    = models.CharField(max_length=20, choices=CATEGORY.choices, null=True, blank=True)
     status      = models.CharField(max_length=10, choices=STATUS.choices, null=True, blank=True)
 
     def __str__(self):

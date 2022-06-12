@@ -3,6 +3,7 @@ from django.core.files.storage import FileSystemStorage
 from rest_framework.permissions import AllowAny
 from django.urls import reverse
 from django.shortcuts import redirect
+from django.db.models import F
 from rest_framework.exceptions import ValidationError
 #Project
 from base.views import LabListView, LabAPIGetView
@@ -33,23 +34,28 @@ class AddEquipment(LabAPIGetView):
     
     def perform_create(self, serializer):
         validated = serializer.validated_data
-        equipment = Equipment(
-            name        = validated.get("name"),
-            quantity    = validated.get("quantity"),
-            size        = validated.get("size"),
-            unit        = validated.get("unit"),
-        )
-        equipment.save()
-        if not(self.request.FILES['upload']):
+        equipment = Equipment.objects.filter(name=validated.get("name"), size=validated.get("size"))
+        if equipment.exists():
+            equipment.update(quantity=F('quantity') + validated.get("quantity"))
+            return equipment.first()
+        else:
+            equipment = Equipment(
+                name        = validated.get("name"),
+                quantity    = validated.get("quantity"),
+                size        = validated.get("size"),
+                unit        = validated.get("unit"),
+            )
+            equipment.save()
+            if not(self.request.FILES.get('upload', False)):
+                return equipment
+            upload      = self.request.FILES['upload']
+            fss         = FileSystemStorage()
+            name        = getClassPath(equipment, validated.get("name"))
+            file        = fss.save(name, upload)
+            file_url    = fss.url(file)
+            equipment.image = file_url
+            equipment.save()
             return equipment
-        upload      = self.request.FILES['upload']
-        fss         = FileSystemStorage()
-        name        = getClassPath(equipment, validated.get("name"))
-        file        = fss.save(name, upload)
-        file_url    = fss.url(file)
-        equipment.image = file_url
-        equipment.save()
-        return equipment
         
 class RemoveEquipment(LabAPIGetView):
     queryset            = Equipment.objects.all()
@@ -61,4 +67,32 @@ class RemoveEquipment(LabAPIGetView):
         if account.status != "admin":
             raise ValidationError('Please login with admin account.')
         Equipment.objects.filter(id=request.POST["equipment"]).delete()
+        return redirect(reverse('equipment-list'))
+
+class EditEquipment(LabAPIGetView):
+    queryset            = Equipment.objects.all()
+    serializer_class    = SlzEquipmentInput
+    permission_classes = [ AllowAny ]
+
+    def post(self, request, *args, **kwargs):
+        account = request.user.account
+        if account.status != "admin":
+            raise ValidationError('Please login with admin account.')
+        equipment = Equipment.objects.filter(id=request.POST["equipment"])
+        if not equipment.exists():
+            return redirect(reverse('equipment-list'))
+        equipment.update(
+            name=request.POST["name"],
+            size=request.POST["size"],
+            quantity=request.POST["quantity"],
+            unit=request.POST["unit"],
+            )
+        if not(request.FILES.get('upload', False)):
+            return redirect(reverse('equipment-list'))
+        upload      = self.request.FILES['upload']
+        fss         = FileSystemStorage()
+        name        = getClassPath(equipment[0], request.POST["name"])
+        file        = fss.save(name, upload)
+        file_url    = fss.url(file)
+        equipment.update(image=file_url)
         return redirect(reverse('equipment-list'))

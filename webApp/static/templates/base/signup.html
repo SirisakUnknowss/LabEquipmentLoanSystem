@@ -88,15 +88,18 @@
                                 {% csrf_token %}
                                 <div class="input-group input-group-outline my-3">
                                     <label class="form-label">รหัสนักศึกษา</label>
-                                    <input type="number" class="form-control numInputWrapper" id="id_username" name="username" required>
+                                    <input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" class="form-control numInputWrapper" minlength="10" maxlength="10" id="id_username" name="username" required>
                                 </div>
+                                {% if accountExists %}<span class="text-danger mb-2">{{ accountExists }}</span>{% endif %}
+                                
                                 <div class="input-group input-group-outline mb-3">
                                     <label class="form-label">รหัสผ่าน</label>
-                                    <input type="password" class="form-control" id="id_password" name="password" required>
+                                    <input type="password" class="form-control" id="id_password" name="password" minlength="8" required>
                                 </div>
+                                {% if password %}<span class="text-danger mb-2">{{ password }}</span>{% endif %}
                                 <div class="input-group input-group-outline mb-3">
                                     <label class="form-label">ยืนยันรหัสผ่าน</label>
-                                    <input type="password" class="form-control" id="id_repassword" name="repassword" required>
+                                    <input type="password" class="form-control" id="id_repassword" name="repassword" minlength="8" required>
                                 </div>
                                 <div class="input-group input-group-outline mb-3">
                                     <select class="form-select" id="id_nameprefix" name="nameprefix" required>
@@ -134,6 +137,7 @@
                                         <option value="3">3</option>
                                         <option value="4">4</option>
                                         <option value="5">5</option>
+                                        <option value="0">ไม่ระบุ</option>
                                     </select>
                                 </div>
                                 <div class="input-group input-group-outline mb-3">
@@ -143,6 +147,16 @@
                                 <div class="input-group input-group-outline mb-3">
                                     <label class="form-label">อีเมล์</label>
                                     <input type="email" class="form-control" id="id_email" name="email" required>
+                                </div>
+                                <div class="input-group input-group-outline mb-3">
+                                    <select class="form-select" id="id_category" name="category" required>
+                                        <option value="">-------- สถานะ --------</option>
+                                        <option value="student">นักศึกษา</option>
+                                        <option value="teacher">อาจารย์</option>
+                                        <option value="personnel">บุคลากร</option>
+                                        <option value="other">อื่นๆ</option>
+                                        <option value="notSpecified">ไม่ระบุ</option>
+                                    </select>
                                 </div>
                                 <div class="text-center">
                                     <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">ลงทะเบียน</button>
