@@ -41,13 +41,13 @@
             ผู้อนุมัติ : {{ order.approver.firstname }} {{ order.approver.lastname }}
           </p>
           <p class="text-s text-start mb-0">
-            วันที่ยืม : {{ order.dateBorrowing|date:"d/m/Y H:m:s" }}
+            วันที่ยืม : {% load tz %}{{ order.dateBorrowing|timezone:'Asia/Bangkok'|date:"d/m/Y เวลา H:m น." }}
           </p>
           <p class="text-s text-start mb-0">
-            วันที่อนุมัติ : {{ order.dateApproved|date:"d/m/Y H:m:s" }}
+            วันที่อนุมัติ : {% load tz %}{{ order.dateApproved|timezone:'Asia/Bangkok'|date:"d/m/Y เวลา H:m น." }}
           </p>
           <p class="text-s text-start mb-0">
-            วันที่คืนอุปกรณ์ : {{ order.dateReturn|date:"d/m/Y H:m:s" }}
+            วันที่คืนอุปกรณ์ : {% load tz %}{{ order.dateReturn|timezone:'Asia/Bangkok'|date:"d/m/Y เวลา H:m น." }}
           </p>
         </div>
             

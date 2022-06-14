@@ -89,10 +89,12 @@ class EditEquipment(LabAPIGetView):
             )
         if not(request.FILES.get('upload', False)):
             return redirect(reverse('equipment-list'))
+        equipment:Equipment = equipment[0]
         upload      = self.request.FILES['upload']
         fss         = FileSystemStorage()
-        name        = getClassPath(equipment[0], request.POST["name"])
+        name        = getClassPath(equipment, request.POST["name"])
         file        = fss.save(name, upload)
         file_url    = fss.url(file)
-        equipment.update(image=file_url)
+        equipment.image = file_url
+        equipment.save()
         return redirect(reverse('equipment-list'))

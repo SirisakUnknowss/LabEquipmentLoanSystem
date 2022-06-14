@@ -84,7 +84,8 @@ class Account(models.Model):
         if self.status == Account.STATUS.ADMIN:
             returned    = Q(status=Order.STATUS.RETURNED)
             waiting     = Q(status=Order.STATUS.WAITING)
-            count       = Order.objects.filter(returned | waiting).count()
+            overdued    = Q(status=Order.STATUS.OVERDUED)
+            count       = Order.objects.filter(returned | waiting | overdued).count()
             if count > 9:
                 count = "9+"
             return count

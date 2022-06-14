@@ -1,3 +1,4 @@
+import random
 from django.db import models
 from django.utils.html import mark_safe
 
@@ -5,7 +6,7 @@ from django.utils.html import mark_safe
 
 def getClassPath(instance, filename):
     className = instance.__class__.__name__
-    filename  = instance.name + str(instance.size) + str(instance.unit) + ".png"
+    filename  = str(random.randrange(1, 100)) + instance.unit + str(instance.size) + str(instance.unit) + ".png"
     return "{}/{}".format(className, filename)
 
 class Equipment(models.Model):

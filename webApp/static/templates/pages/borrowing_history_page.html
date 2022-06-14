@@ -34,14 +34,14 @@
                                 </td>
                                 <td class="align-middle text-center">
                                     {% if order.dateBorrowing %}
-                                        <span class="text-secondary text-s">{{ order.dateBorrowing }}</span>
+                                        <span class="text-secondary text-s">{% load tz %}{{ order.dateBorrowing|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
                                     {% else %}
                                         <span class="text-secondary text-s">-</span>
                                     {% endif %}
                                 </td>
                                 <td class="align-middle text-center">
                                     {% if order.dateReturn %}
-                                        <span class="text-secondary text-s">{{ order.dateApproved }}</span>
+                                        <span class="text-secondary text-s">{% load tz %}{{ order.dateApproved|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
                                     {% else %}
                                         <span class="text-secondary text-s">-</span>
                                     {% endif %}

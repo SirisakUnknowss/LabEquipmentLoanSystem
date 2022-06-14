@@ -34,14 +34,6 @@ class RegisterForm(forms.Form):
     levelclass  = forms.ChoiceField(choices=Account.LEVEL_CLASS.choices)
     category    = forms.ChoiceField(choices=Account.CATEGORY.choices)
     branch      = forms.CharField(max_length=50)
-    
-    def clean_username(self):
-        username = self.cleaned_data['username']
-        try:
-            User.objects.get(username=username)
-            raise forms.ValidationError(u'Username "%s" is already in use.' % username)
-        except User.DoesNotExist:
-            return username
 
 class UpdateForm(forms.Form):
     nameprefix  = forms.CharField(max_length=10)

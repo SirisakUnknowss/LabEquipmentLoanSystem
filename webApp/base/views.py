@@ -1,4 +1,5 @@
 # Django
+from datetime import datetime
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
@@ -55,10 +56,17 @@ class LabListPaginatedView(LabAPIView):
         self.response["result"] = serializer.data
         return Response(self.response)
 
+def checkOverDued(request):
+    orders = Order.objects.filter(user=request.user.account, status=Order.STATUS.APPROVED)
+    if request.user.account.status == Account.STATUS.ADMIN:
+        orders = Order.objects.filter(status=Order.STATUS.APPROVED)
+    orders = orders.filter(dateReturn__lt=datetime.now()).update(status=Order.STATUS.OVERDUED)
+
 # Create your views here.
 def homepage(request):
     if not(request.user.is_authenticated):
         return render(request, 'base/login.html')
+    checkOverDued(request)
     return render(request, 'base/index.html')
 
 def registerpage(request):
@@ -71,15 +79,18 @@ def registerpage(request):
 def notificationspage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     orders = Order.objects.filter(user=request.user.account, status=Order.STATUS.OVERDUED)
+    checkOverDued(request)
     if request.user.account.status == Account.STATUS.ADMIN:
         returned    = Q(status=Order.STATUS.RETURNED)
         waiting     = Q(status=Order.STATUS.WAITING)
-        orders      = Order.objects.filter(waiting | returned)
+        overdued    = Q(status=Order.STATUS.OVERDUED)
+        orders      = Order.objects.filter(waiting | returned | overdued)
     context         = { 'orders': orders }
     return render(request, 'pages/notifications_page.html', context)
 
 def informationpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    checkOverDued(request)
     waiting     = Q(status=Order.STATUS.WAITING)
     approved    = Q(status=Order.STATUS.APPROVED)
     overdued    = Q(status=Order.STATUS.OVERDUED)
@@ -95,6 +106,7 @@ def informationpage(request):
 
 def borrowinghistorypage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    checkOverDued(request)
     waiting     = Q(status=Order.STATUS.WAITING)
     approved    = Q(status=Order.STATUS.APPROVED)
     overdued    = Q(status=Order.STATUS.OVERDUED)
@@ -110,6 +122,7 @@ def borrowinghistorypage(request):
 
 def analysispage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    checkOverDued(request)
     context = { 'orders': orderAll(), 'accounts': accountAll() }
     return render(request, 'pages/analysis_page.html', context)
     
@@ -147,10 +160,12 @@ def orderAll():
 
 def contactpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    checkOverDued(request)
     return render(request, 'pages/contact_page.html')
 
 def profilepage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    checkOverDued(request)
     return render(request, 'pages/user_profile.html')
 
 def addequipmentpage(request):
@@ -168,12 +183,14 @@ def addequipmentpage(request):
 
 def equipmentlistpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    checkOverDued(request)
     equipments = Equipment.objects.all().values()
     context = { 'equipments': equipments }
     return render(request, 'pages/equipment_list_page.html', context)
 
 def equipmentdetailpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    checkOverDued(request)
     if request.method == 'GET':
         return redirect(reverse('homepage'))
     status      = request.POST['StatusBorrowing']
@@ -187,12 +204,14 @@ def equipmentdetailpage(request):
 
 def equipmentcartlistpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    checkOverDued(request)
     equipmentsCart = EquipmentCart.objects.filter(user=request.user.account)
     context = { 'equipmentsCart': equipmentsCart }
     return render(request, 'pages/cart_equipment_page.html', context)
 
 def usermanagementpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    checkOverDued(request)
     return render(request, 'pages/user_management_page.html')
 
 def usereditpage(request):
