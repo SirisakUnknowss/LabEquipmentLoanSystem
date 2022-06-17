@@ -166,7 +166,16 @@ def contactpage(request):
 def profilepage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
-    return render(request, 'pages/user_profile.html')
+    approved    = Q(status=Order.STATUS.APPROVED)
+    overdued    = Q(status=Order.STATUS.OVERDUED)
+    returned    = Q(status=Order.STATUS.RETURNED)
+    
+    context     = { }
+    if request.user.account.status == Account.STATUS.USER:
+        orders  = Order.objects.filter(approved | returned | overdued)
+        orders  = orders.filter(user=request.user.account)
+        context = { 'orders': orders }
+    return render(request, 'pages/user_profile.html', context)
 
 def addequipmentpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))

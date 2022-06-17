@@ -14,6 +14,7 @@ class Equipment(models.Model):
     quantity    = models.IntegerField(default=0)
     size        = models.IntegerField(null=True, blank=True)
     unit        = models.CharField(max_length=100, null=True, blank=True)
+    brand       = models.CharField(max_length=100, null=True, blank=True)
     image       = models.ImageField(upload_to=getClassPath, max_length=100, null=True, blank=True)
 
     @property

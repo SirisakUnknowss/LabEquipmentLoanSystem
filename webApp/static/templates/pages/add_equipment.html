@@ -5,7 +5,7 @@
         <div class="row mt-4">
             <div class="card card-body mx-2 mx-md-1 mt-n4">
                 <div class="card-header">
-                    <h5>เพิ่มอุปกรณ์เคมี</h5>
+                    <h5>เพิ่มอุปกรณ์วิทยาศาตร์</h5>
                 </div>
                 <div class="container">
                     <!--Simple Form-->
@@ -30,6 +30,10 @@
                             <input type="text" class="form-control" id="id_name" name="name" value="{{ equipment.name }}" required>
                         </div>
                         <div class="input-group input-group-outline my-3 is-filled">
+                            <label class="form-label">ยี่ห้อ</label>
+                            <input type="text" class="form-control" id="id_brand" name="brand" value="{{ equipment.brand }}" required>
+                        </div>
+                        <div class="input-group input-group-outline my-3 is-filled">
                             <label class="form-label">ขนาด</label>
                             <input type="number" class="form-control numInputWrapper" id="id_size" name="size" value="{{ equipment.size }}" required>
                         </div>
@@ -40,6 +44,9 @@
                                 <option value="Celsius">&#8451;</option>
                                 <option value="CubicCentimeter">cm³</option>
                                 <option value="Millimeter">mm</option>
+                                <option value="Milliliter">mL</option>
+                                <option value="Centimeter">cm</option>
+                                <option value="Liter">L</option>
                             </select>
                         </div>
                         <div class="input-group input-group-outline my-3 is-filled">
@@ -76,6 +83,9 @@
                                 <option value="Celsius">&#8451;</option>
                                 <option value="CubicCentimeter">cm³</option>
                                 <option value="Millimeter">mm</option>
+                                <option value="Milliliter">mL</option>
+                                <option value="Centimeter">cm</option>
+                                <option value="Liter">L</option>
                             </select>
                         </div>
                         <div class="input-group input-group-outline my-3">
@@ -86,6 +96,9 @@
                         <input type="file" name="upload" accept="image/*">
                         <br>
                         <button class="btn bg-gradient-success my-4" type="submit">ยืนยัน</button>
+                        <a class="" href="{% url 'equipment-list' %}">
+                            <span class="btn bg-gradient-danger my-4">ยกเลิก</span>
+                        </a>
                     </form>
                     {% endif %}
                 </div>

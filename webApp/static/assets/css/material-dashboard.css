@@ -17086,12 +17086,11 @@ input[type=number] {
 .landing-box-text {
   align-items: center;
   float: right;
-  display: inline-flex;
+  display: inline;
   vertical-align: middle;
-  text-align: right !important;
+  text-align: end;
   font-size: 18px;
   font-style: bold;
-  padding-right: 1rem;
   margin: auto;
   height: 100%;
   width: 50%;

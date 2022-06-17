@@ -105,11 +105,13 @@
                 {% for equipment in order.equipment.all %}
                   <tr>
                     <td class="align-middle text-center col-md-2">
-                      {% if equipment.equipment.image %}
-                      <img src="{{ equipment.equipment.image }}" class="image-equipments img-fluid shadow border-radius-xl" />
-                      {% else %}
-                      <img src="{{ STATIC_URL }}/images/equipment/PlaceHolder.png" class="image-equipments border-radius-xl" />
-                      {% endif %}
+                      <div class="chart">
+                        {% if equipment.equipment.image %}
+                        <img src="{{ equipment.equipment.image }}" class="image-equipments img-fluid shadow border-radius-xl" />
+                        {% else %}
+                        <img src="{{ STATIC_URL }}/images/equipment/PlaceHolder.png" class="image-equipments border-radius-xl" />
+                        {% endif %}
+                      </div>
                     </td>
                     <td class="align-middle text-center">
                       <span class="text-secondary text-s">{{ equipment.equipment.name }}</span>
@@ -121,6 +123,9 @@
                       {% ifequal equipment.equipment.unit "Celsius" %}&#8451;{% endifequal %}
                       {% ifequal equipment.equipment.unit "CubicCentimeter" %}cm³{% endifequal %}
                       {% ifequal equipment.equipment.unit "Millimeter" %}mm{% endifequal %}
+                      {% ifequal equipment.equipment.unit "Milliliter" %}mL{% endifequal %}
+                      {% ifequal equipment.equipment.unit "Centimeter" %}cm{% endifequal %}
+                      {% ifequal equipment.equipment.unit "Liter" %}L{% endifequal %}
                     </span>
                     </td>
                     <td class="align-middle text-center">

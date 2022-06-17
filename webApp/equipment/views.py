@@ -34,7 +34,7 @@ class AddEquipment(LabAPIGetView):
     
     def perform_create(self, serializer):
         validated = serializer.validated_data
-        equipment = Equipment.objects.filter(name=validated.get("name"), size=validated.get("size"))
+        equipment = Equipment.objects.filter(name=validated.get("name"), size=validated.get("size"), brand=validated.get("brand"))
         if equipment.exists():
             equipment.update(quantity=F('quantity') + validated.get("quantity"))
             return equipment.first()
