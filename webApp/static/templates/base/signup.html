@@ -194,6 +194,18 @@
 {% block js %}
 {{ block.super }}
     <script>
+        document.getElementById('id_branch').onchange = function() {
+            var index = this.selectedIndex;
+            var valueText = this.children[index].value.trim();
+            console.log(valueText)
+            if (valueText == "Other") {
+                document.getElementById("branchOther").className = "input-group input-group-outline mb-3 is-filled";
+                document.getElementById("id_branchOther").setAttribute('required', '')
+            }else {
+                document.getElementById("branchOther").className = "d-none";
+                document.getElementById("id_branchOther").removeAttribute('required');
+            }
+        }
         function checkInp()
         {
             firstname = document.forms["formSignin"]["firstname"].value;
@@ -204,16 +216,5 @@
                 return false;
             }
         }
-        document.getElementById('id_branch').onchange = function() {
-            var index = this.selectedIndex;
-            var valueText = this.children[index].value.trim();
-            if (valueText == "Other") {
-                document.getElementById("branchOther").className = "input-group input-group-outline mb-3 is-filled";
-                document.getElementById("id_branchOther").setAttribute('required', '')
-            }else {
-                document.getElementById("branchOther").className = "d-none";
-                document.getElementById("id_branchOther").removeAttribute('required');
-            }
-          }
     </script>
 {% endblock %}
