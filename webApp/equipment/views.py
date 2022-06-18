@@ -40,7 +40,7 @@ class AddEquipment(LabAPIGetView):
             return equipment.first()
         else:
             unit = validated.get("unit")
-            if unit == 'Other':
+            if unit == 'Other_Other':
                 unit = self.request.POST['unitOther']
             equipment = Equipment(
                 name        = validated.get("name"),
@@ -86,7 +86,7 @@ class EditEquipment(LabAPIGetView):
             return redirect(reverse('equipment-list'))
             
         unit = request.POST["unit"]
-        if unit == 'Other':
+        if unit == 'Other_Other':
             unit = self.request.POST['unitOther']
         equipment.update(
             name=request.POST["name"],
