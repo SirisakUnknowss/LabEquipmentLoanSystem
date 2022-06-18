@@ -100,7 +100,7 @@ class ApprovedBorringApi(LabAPIView):
         if not order.exists():
             return redirect(reverse('notifications-forgetten'))
         for item in order[0].equipment.all():
-            equipment = Equipment.objects.get(id=item.id)
+            equipment = Equipment.objects.get(id=item.equipment.id)
             equipment.statistics += 1
         order.update(
             status=Order.STATUS.APPROVED,
