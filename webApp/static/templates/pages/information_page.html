@@ -19,6 +19,7 @@
                                 <tr>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">รหัสนักศึกษา</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">จำนวน</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่ยืม</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่อนุมัติ</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่คืน</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">สถานะ</th>
@@ -35,6 +36,13 @@
                                     </td>
                                     <td class="align-middle text-center">
                                         {% if order.dateBorrowing %}
+                                            <span class="text-secondary text-s">{% load tz %}{{ order.dateBorrowing|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
+                                        {% else %}
+                                            <span class="text-secondary text-s">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        {% if order.dateApproved %}
                                             <span class="text-secondary text-s">{% load tz %}{{ order.dateApproved|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
                                         {% else %}
                                             <span class="text-secondary text-s">-</span>
