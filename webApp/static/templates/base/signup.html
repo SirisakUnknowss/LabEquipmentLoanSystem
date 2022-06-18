@@ -58,6 +58,10 @@
                                         <option value="Other_Other">อื่น ๆ</option>
                                     </select>
                                 </div>
+                                <div id="branchOther" class="d-none">
+                                    <label class="form-label">ระบุสาขา</label>
+                                    <input type="text" class="form-control" id="id_branchOther" name="branchOther" required>
+                                </div>
                                 <div class="input-group input-group-outline mb-3">
                                     <select class="form-select" id="id_levelclass" name="levelclass" required>
                                         <option value="">-------- ชั้นปี --------</option>
@@ -96,7 +100,7 @@
                             <h4 class="text-black font-weight-bolder text-center mt-2 mb-3">ลงทะเบียนเข้าใช้งาน</h4>
                             <form role="form" class="text-start" id="login-form" name="formSignin" onsubmit="return checkInp()" method="post" action="{% url 'registerApi' %}">
                                 {% csrf_token %}
-                                <p class="text-secondary mb-n3">***กรณีที่ไม่ใช่นักศึกษาให้ใช้เป็นเบอร์โทรศัพท์</p>
+                                <p class="text-secondary text-xs mb-n3 text-danger">*กรณีที่ไม่ใช่นักศึกษาให้ใช้เป็นเบอร์โทรศัพท์</p>
                                 <div class="input-group input-group-outline my-3">
                                     <label class="form-label">รหัสนักศึกษา</label>
                                     <input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" class="form-control numInputWrapper" minlength="10" maxlength="10" id="id_username" name="username" required>
@@ -139,6 +143,10 @@
                                         <option value="B-S_Biology">สาขาวิชาชีววิทยา (วท.บ.)</option>
                                         <option value="Other_Other">อื่น ๆ</option>
                                     </select>
+                                </div>
+                                <div id="branchOther" class="d-none">
+                                    <label class="form-label">ระบุสาขา</label>
+                                    <input type="text" class="form-control" id="id_branchOther" name="branchOther" required>
                                 </div>
                                 <div class="input-group input-group-outline mb-3">
                                     <select class="form-select" id="id_levelclass" name="levelclass" required>
@@ -196,5 +204,16 @@
                 return false;
             }
         }
+        document.getElementById('id_branch').onchange = function() {
+            var index = this.selectedIndex;
+            var valueText = this.children[index].value.trim();
+            if (valueText == "Other") {
+                document.getElementById("branchOther").className = "input-group input-group-outline mb-3 is-filled";
+                document.getElementById("id_branchOther").setAttribute('required', '')
+            }else {
+                document.getElementById("branchOther").className = "d-none";
+                document.getElementById("id_branchOther").removeAttribute('required');
+            }
+          }
     </script>
 {% endblock %}

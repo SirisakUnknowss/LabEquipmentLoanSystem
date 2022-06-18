@@ -49,7 +49,7 @@ def user_register(request):
         context = { 'password': 'รหัสผ่านไม่ตรงกัน' }
         return render(request, 'base/signup.html', context)
     user    = create_user_data(form)
-    account = createAccount(user, form)
+    account = createAccount(request, user, form)
     user    = account.user
     if request.user.is_authenticated:
         account = request.user.account
@@ -67,8 +67,11 @@ def create_user_data(form:RegisterForm):
         )
     return user
     
-def createAccount(user:User, form:RegisterForm):
+def createAccount(request, user:User, form:RegisterForm):
     branch = split_branch(form['branch'].data)
+    branchs = request.POST['branch']
+    if branchs == 'Other':
+        branch['branch'] = request.POST['branchOther']
     data = {
         "user": user.id,
         "studentID": form['username'].data,
@@ -121,6 +124,9 @@ def user_edit(request):
     if request.POST['accountID']:
         user = Account.objects.get(id=request.POST['accountID'])
         branch = split_branch(form['branch'].data)
+        branchs = request.POST['branch']
+        if branchs == 'Other':
+            branch['branch'] = request.POST['branchOther']
         data = {
             "user": user.id,
             "nameprefix": form['nameprefix'].data,
