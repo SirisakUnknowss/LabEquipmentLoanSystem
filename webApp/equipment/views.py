@@ -39,11 +39,14 @@ class AddEquipment(LabAPIGetView):
             equipment.update(quantity=F('quantity') + validated.get("quantity"))
             return equipment.first()
         else:
+            unit = validated.get("unit")
+            if unit == 'Other':
+                unit = self.request.POST['unitOther']
             equipment = Equipment(
                 name        = validated.get("name"),
                 quantity    = validated.get("quantity"),
                 size        = validated.get("size"),
-                unit        = validated.get("unit"),
+                unit        = unit,
             )
             equipment.save()
             if not(self.request.FILES.get('upload', False)):
@@ -81,11 +84,15 @@ class EditEquipment(LabAPIGetView):
         equipment = Equipment.objects.filter(id=request.POST["equipment"])
         if not equipment.exists():
             return redirect(reverse('equipment-list'))
+            
+        unit = request.POST["unit"]
+        if unit == 'Other':
+            unit = self.request.POST['unitOther']
         equipment.update(
             name=request.POST["name"],
             size=request.POST["size"],
             quantity=request.POST["quantity"],
-            unit=request.POST["unit"],
+            unit=unit,
             )
         if not(request.FILES.get('upload', False)):
             return redirect(reverse('equipment-list'))

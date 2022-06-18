@@ -12,6 +12,7 @@ from django.db.models import Q
 from equipment.models import Equipment
 from borrowing.models import EquipmentCart, Order
 from account.models import Account
+from base.models import DataWeb
 
 class LabAPIView(GenericAPIView):
 
@@ -128,7 +129,7 @@ def analysispage(request):
 
 def topEquipment():
     equipments = Equipment.objects.all().order_by('-statistics')
-    return equipments[:5]
+    return equipments
     
 def accountAll():
     admin               = Q(status=Account.STATUS.ADMIN)
@@ -165,7 +166,9 @@ def orderAll():
 def contactpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
-    return render(request, 'pages/contact_page.html')
+    dataWeb = DataWeb.objects.all().first()
+    context = { 'dataWeb': dataWeb }
+    return render(request, 'pages/contact_page.html', context)
 
 def profilepage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))

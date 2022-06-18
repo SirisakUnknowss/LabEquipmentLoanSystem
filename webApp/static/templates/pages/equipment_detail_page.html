@@ -3,10 +3,11 @@
 <main class="main-content position-relative max-height-vh-100 h-100">
   <div class="container-fluid py-4">
     <div class="row">
-      <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-3">
+      <div class="col-lg-12 col-md-10 col-8 d-flex align-items-center mb-3">
         <h5 class="mx-3">รายระเอียดการยืม-คืนอุปกรณ์วิทยาศาสตร์</h5>
         {% ifequal order.status "waiting" %}
         <span class="badge badge-sm bg-gradient-warning">รออนุมัติ</span>
+        <span class="text-secondary ms-2">** อนุมัติภายใน 24 ชั่วโมง ณ วันทำการ</span>
         {% endifequal %}
         {% ifequal order.status "approved" %}
         <span class="badge badge-sm bg-gradient-info">อนุมัติแล้ว</span>

@@ -46,7 +46,12 @@
                                 <option value="Centimeter">cm</option>
                                 <option value="Celsius">&#8451;</option>
                                 <option value="NotSpecified">ไม่ระบุ</option>
+                                <option value="Other">อื่น ๆ</option>
                             </select>
+                        </div>
+                        <div id="unitOther" class="d-none">
+                            <label class="form-label">ระบุหน่วยวัด</label>
+                            <input type="text" class="form-control" id="id_unitOther" name="unitOther" value="{{ equipment.unit }}" required>
                         </div>
                         <div class="input-group input-group-outline my-3 is-filled">
                             <label class="form-label">จำนวน</label>
@@ -88,7 +93,12 @@
                                 <option value="Centimeter">cm</option>
                                 <option value="Celsius">&#8451;</option>
                                 <option value="NotSpecified">ไม่ระบุ</option>
+                                <option value="Other">อื่น ๆ</option>
                             </select>
+                        </div>
+                        <div id="unitOther" class="d-none">
+                            <label class="form-label">ระบุหน่วยวัด</label>
+                            <input type="text" class="form-control" id="id_unitOther" name="unitOther" required>
                         </div>
                         <div class="input-group input-group-outline my-3">
                             <label class="form-label">จำนวน</label>
@@ -108,4 +118,20 @@
         </div>
     </div>
 </main>
+{% endblock %}
+{% block js %}
+{{ block.super }}
+    <script>
+        document.getElementsByTagName('select')[0].onchange = function() {
+            var index = this.selectedIndex;
+            var valueText = this.children[index].value.trim();
+            if (valueText == "Other") {
+                document.getElementById("unitOther").className = "input-group input-group-outline my-3 is-filled";
+                document.getElementById("id_unitOther").setAttribute('required', '')
+            }else {
+                document.getElementById("unitOther").className = "d-none";
+                document.getElementById("id_unitOther").removeAttribute('required');
+            }
+          }
+    </script>
 {% endblock %}

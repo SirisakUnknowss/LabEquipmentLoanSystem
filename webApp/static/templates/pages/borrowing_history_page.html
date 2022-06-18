@@ -53,11 +53,13 @@
                                         <input type="hidden" value="{{ order.status }}" name="StatusBorrowing" />
                                         <button class="btn badge badge-sm bg-gradient-info" type="submit">เพิ่มเติม</button>
                                     </form>
+                                    {% if user.account.status == "admin" %}
                                     <form class="align-items-center text-center d-inline-block" id="confirm-equipment" method="post" action="{% url 'removeBorringApi' %}">
                                         {% csrf_token %}
                                         <input type="hidden" value="{{ order.id }}" name="orderID" />
                                         <button class="btn badge badge-sm bg-gradient-danger" type="submit">ลบประวัติ</button>
                                     </form>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}
