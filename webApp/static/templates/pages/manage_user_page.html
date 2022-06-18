@@ -23,8 +23,8 @@
                         </form>
                     </div>
                 </div>
-                {% if account %}
-                    {% if  account == "notfound" %}
+                {% if accounts %}
+                    {% if  accounts == "notfound" %}
                     <div class="row">
                         <div class="col-lg-4 col-md-8 col-12 mx-auto">
                             <div class="card-body mb-n3 text-center">
@@ -33,43 +33,46 @@
                         </div>
                     </div>
                     {% else %}
-                    {% if status == "view" %}
-                    <div class="row">
-                        <div class="col-lg-4 col-md-8 col-12 mx-auto mt-5 mb-3">
-                            {% comment %} <div class="row gx-4 mb-2">
-                                <div class="col-auto">
-                                    <div class="avatar avatar-xl position-relative">
-                                        <img src="{{ STATIC_URL }}/images/profile.png" alt="profile_image" class="w-100 border-radius-section shadow-sm">
-                                    </div>
-                                </div>
-                            </div> {% endcomment %}
-        
-                            <ul class="list-group">
-                                <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">ชื่อ - นามสกุล </strong> &nbsp; {{ account.firstname }} &nbsp; {{ user.account.lastname }}</li>
-                                <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">รหัสนักศึกษา </strong> &nbsp; {{ account.studentID }}</li>
-                                <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">สาขา </strong> &nbsp; {{ account.branch }}</li>
-                                <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">เบอร์โทรติดต่อ </strong> &nbsp; {{ account.phone }}</li>
-                                <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">อีเมล์ </strong> &nbsp; {{ account.email }}</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-lg-4 col-md-8 col-12 mx-auto">
-                            <form class="align-items-center text-start mx-2 d-inline-block" id="edit-account" method="post" action="{% url 'registerpage' %}">
-                                {% csrf_token %}
-                                <input type="hidden" value="{{ account.id }}" name="accountID" />
-                                <button class="btn bg-gradient-warning" type="submit">แก้ไขข้อมูล</button>
-                            </form>
-                            <form class="align-items-center text-start mx-2 d-inline" id="confirm-equipment" method="post" action="{% url 'deleteAccount' %}">
-                                {% csrf_token %}
-                                <input type="hidden" value="{{ account.id }}" name="accountID" />
-                                <button class="btn bg-gradient-danger" type="submit">ลบบัญชี</button>
-                            </form>
-                        </div>
-                    </div>
 
-                    {% endif %}
+                    <table class="table align-items-center mb-0 mt-5">
+                            <thead>
+                                <tr>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">รหัสนักศึกษา</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">ชื่อ - สกุล</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">สาขา</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">การจัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for account in accounts %}
+                            <tr>
+                                <td class="align-middle text-center">
+                                    <span class="text-secondary text-s">{{ account.studentID }}</span>
+                                </td>
+                                <td class="align-middle text-center">
+                                    <span class="text-secondary text-s">{{ account.firstname }}  {{ account.lastname }}</span>
+                                </td>
+                                <td class="align-middle text-center">
+                                    <span class="text-secondary text-s">{{ account.branch }}</span>
+                                </td>
+                                <td class="align-middle text-center text-sm">
+                                    <form class="align-items-center text-center d-inline-block" id="register-account" method="post" action="{% url 'registerpage' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{ account.id }}" name="accountID" />
+                                        <button class="btn bg-gradient-warning" type="submit">แก้ไขข้อมูล</button>
+                                    </form>
+                                    <form class="align-items-center text-center d-inline-block" id="delete-account" method="post" action="{% url 'deleteAccount' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{ account.id }}" name="accountID" />
+                                        <button class="btn bg-gradient-danger" type="submit">ลบบัญชี</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+
                     {% endif %}
                 {% else %}
                 {% endif %}

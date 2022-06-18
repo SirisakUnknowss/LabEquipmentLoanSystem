@@ -123,8 +123,12 @@ def borrowinghistorypage(request):
 def analysispage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
-    context = { 'orders': orderAll(), 'accounts': accountAll() }
+    context = { 'orders': orderAll(), 'accounts': accountAll(), 'equipments': topEquipment() }
     return render(request, 'pages/analysis_page.html', context)
+
+def topEquipment():
+    equipments = Equipment.objects.all().order_by('-statistics')
+    return equipments[:5]
     
 def accountAll():
     admin               = Q(status=Account.STATUS.ADMIN)
@@ -193,7 +197,11 @@ def addequipmentpage(request):
 def equipmentlistpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
-    equipments = Equipment.objects.all().values()
+    equipments = Equipment.objects.all().order_by('name')
+    if request.method == 'POST':
+        nameequipment   = request.POST['nameequipment']
+        name            = Q(name__contains=nameequipment)
+        equipments      = Equipment.objects.filter(name).order_by('name')
     context = { 'equipments': equipments }
     return render(request, 'pages/equipment_list_page.html', context)
 
@@ -227,14 +235,19 @@ def usereditpage(request):
     if not(request.user.is_authenticated) or request.user.account.status != Account.STATUS.ADMIN:
         return redirect(reverse('homepage'))
     context = dict()
+    context['accounts'] = Account.objects.all().order_by('id')
     if request.method == 'POST':
         status      = request.POST['status']
         username    = request.POST['username']
-        account     = Account.objects.filter(studentID=username)
-        context['account'] = 'notfound'
+        studentID   = Q(studentID__contains=username)
+        firstname   = Q(firstname__contains=username)
+        lastname    = Q(lastname__contains=username)
+        branch      = Q(branch__contains=username)
+        accounts    = Account.objects.filter(studentID | firstname | lastname | branch).order_by('id')
+        context['accounts'] = 'notfound'
         context['status'] = ''
-        if account.exists():
-            context['account'] = account[0]
+        if accounts.exists():
+            context['accounts'] = accounts
             context['status'] = 'view'
             if status == 'edit':
                 context['status'] = 'edit'

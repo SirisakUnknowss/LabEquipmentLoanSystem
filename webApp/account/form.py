@@ -42,4 +42,5 @@ class UpdateForm(forms.Form):
     email       = forms.EmailField(max_length=50)
     phone       = forms.CharField(max_length=10)
     levelclass  = forms.ChoiceField(choices=Account.LEVEL_CLASS.choices)
+    category    = forms.ChoiceField(choices=Account.CATEGORY.choices)
     branch      = forms.CharField(max_length=50)

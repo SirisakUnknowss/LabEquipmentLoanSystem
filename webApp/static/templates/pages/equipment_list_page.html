@@ -19,6 +19,21 @@
       </div>
       {% endif %}
     </div>
+    
+    <div class="row">
+      <div class="col-lg-4 col-md-8 col-12 mx-auto mt-1 mb-1 py-1">
+          <form role="form" class="text-start" id="login-form" method="post" action="{% url 'equipment-list' %}">
+          {% csrf_token %}
+          <div class="input-group input-group-outline mb-2">
+              <label class="form-label">ชื่ออุปกรณ์</label>
+              <input type="text" class="form-control bg-gradient-faded-white" id="id_nameequipment" name="nameequipment" onfocus="focused(this)" onfocusout="defocused(this)">
+          </div>
+          <div class="text-center">
+              <button type="submit" class="btn bg-gradient-primary w-100 mb-2">ค้นหา</button>
+          </div>
+          </form>
+      </div>
+  </div>
     <div class="row mt-4">
       {% if equipments %}
         {% for equipment in equipments %}
