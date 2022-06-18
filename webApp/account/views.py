@@ -70,7 +70,7 @@ def create_user_data(form:RegisterForm):
 def createAccount(request, user:User, form:RegisterForm):
     branch = split_branch(form['branch'].data)
     branchs = request.POST['branch']
-    if branchs == 'Other':
+    if branchs == 'Other_Other':
         branch['branch'] = request.POST['branchOther']
     data = {
         "user": user.id,
@@ -125,7 +125,7 @@ def user_edit(request):
         user = Account.objects.get(id=request.POST['accountID'])
         branch = split_branch(form['branch'].data)
         branchs = request.POST['branch']
-        if branchs == 'Other':
+        if branchs == 'Other_Other':
             branch['branch'] = request.POST['branchOther']
         data = {
             "user": user.id,
