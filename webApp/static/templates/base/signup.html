@@ -100,14 +100,14 @@
                             <h4 class="text-black font-weight-bolder text-center mt-2 mb-3">ลงทะเบียนเข้าใช้งาน</h4>
                             <form role="form" class="text-start" id="login-form" name="formSignin" onsubmit="return checkInp()" method="post" action="{% url 'registerApi' %}">
                                 {% csrf_token %}
-                                <p class="text-secondary text-xs mb-n3 text-danger">*กรณีที่ไม่ใช่นักศึกษาให้ใช้เป็นเบอร์โทรศัพท์</p>
                                 <div class="input-group input-group-outline my-3">
                                     <label class="form-label">รหัสนักศึกษา</label>
                                     <input type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" class="form-control numInputWrapper" minlength="10" maxlength="10" id="id_username" name="username" required>
                                 </div>
                                 {% if accountExists %}<span class="text-danger mb-2">{{ accountExists }}</span>{% endif %}
+                                <p class="text-secondary text-xs mb-n3 text-danger mt-n2">*กรณีที่ไม่ใช่นักศึกษาให้ใช้เป็นเบอร์โทรศัพท์</p>
                                 
-                                <div class="input-group input-group-outline mb-3">
+                                <div class="input-group input-group-outline mt-4 mb-3">
                                     <label class="form-label">รหัสผ่าน</label>
                                     <input type="password" class="form-control" id="id_password" name="password" minlength="8" required>
                                 </div>
@@ -174,8 +174,11 @@
                                         <option value="teacher">อาจารย์</option>
                                         <option value="personnel">บุคลากร</option>
                                         <option value="other">อื่นๆ</option>
-                                        <option value="notSpecified">ไม่ระบุ</option>
                                     </select>
+                                </div>
+                                <div id="categoryOther" class="d-none">
+                                    <label class="form-label">ระบุสถานะ</label>
+                                    <input type="text" class="form-control" id="id_categoryOther" name="categoryOther" required>
                                 </div>
                                 <div class="text-center">
                                     <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">ลงทะเบียน</button>
@@ -204,6 +207,18 @@
             }else {
                 document.getElementById("branchOther").className = "d-none";
                 document.getElementById("id_branchOther").removeAttribute('required');
+            }
+        }
+        document.getElementById('id_category').onchange = function() {
+            var index = this.selectedIndex;
+            var valueText = this.children[index].value.trim();
+            console.log(valueText)
+            if (valueText == "other") {
+                document.getElementById("categoryOther").className = "input-group input-group-outline mb-3 is-filled";
+                document.getElementById("id_categoryOther").setAttribute('required', '')
+            }else {
+                document.getElementById("categoryOther").className = "d-none";
+                document.getElementById("id_categoryOther").removeAttribute('required');
             }
         }
         function checkInp()

@@ -70,8 +70,11 @@ def create_user_data(form:RegisterForm):
 def createAccount(request, user:User, form:RegisterForm):
     branch = split_branch(form['branch'].data)
     branchs = request.POST['branch']
+    category = request.POST['category']
     if branchs == 'Other_Other':
         branch['branch'] = request.POST['branchOther']
+    if category == 'other':
+        category = request.POST['categoryOther']
     data = {
         "user": user.id,
         "studentID": form['username'].data,
@@ -84,7 +87,7 @@ def createAccount(request, user:User, form:RegisterForm):
         "levelclass": form['levelclass'].data,
         "branch": branch['branch'],
         "faculty": branch['faculty'],
-        "category":form['category'].data,
+        "category": category,
         "status": 'user'
     }
     serializer = SlzAccountCreate(data=data)
@@ -122,11 +125,14 @@ def user_edit(request):
     if not form.is_valid():
         return HttpResponse(form.errors, content_type='application/json')
     if request.POST['accountID']:
-        user = Account.objects.get(id=request.POST['accountID'])
-        branch = split_branch(form['branch'].data)
-        branchs = request.POST['branch']
+        user        = Account.objects.get(id=request.POST['accountID'])
+        branch      = split_branch(form['branch'].data)
+        branchs     = request.POST['branch']
+        category    = request.POST['category']
         if branchs == 'Other_Other':
             branch['branch'] = request.POST['branchOther']
+        if category == 'other':
+            category = request.POST['categoryOther']
         data = {
             "user": user.id,
             "nameprefix": form['nameprefix'].data,
@@ -137,7 +143,7 @@ def user_edit(request):
             "levelclass": form['levelclass'].data,
             "branch": branch['branch'],
             "faculty": branch['faculty'],
-            "category":form['category'].data,
+            "category": category,
             "status": 'user'
         }
         Account.objects.filter(id=request.POST['accountID']).update(
