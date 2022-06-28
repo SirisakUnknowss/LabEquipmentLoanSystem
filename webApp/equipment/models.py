@@ -12,7 +12,7 @@ def getClassPath(instance, filename):
 class Equipment(models.Model):
     name        = models.CharField(max_length=100, null=True, blank=True)
     quantity    = models.IntegerField(default=0)
-    size        = models.IntegerField(null=True, blank=True)
+    size        = models.FloatField(null=True, blank=True)
     unit        = models.CharField(max_length=100, null=True, blank=True)
     brand       = models.CharField(max_length=100, null=True, blank=True)
     statistics  = models.IntegerField(default=0)
