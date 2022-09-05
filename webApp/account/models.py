@@ -25,6 +25,7 @@ class Account(models.Model):
         ADMIN   = 'admin', 'admin'
     
     class LEVEL_CLASS(models.TextChoices):
+        ZERO    = 0, '0'
         ONE     = 1, '1'
         TWO     = 2, '2'
         THREE   = 3, '3'
