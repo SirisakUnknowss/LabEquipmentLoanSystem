@@ -61,6 +61,7 @@ class Account(models.Model):
     branch      = models.CharField(max_length=100, null=True, blank=True)
     faculty     = models.CharField(max_length=100, null=True, blank=True)
     category    = models.CharField(max_length=20, choices=CATEGORY.choices, null=True, blank=True)
+    categoryOther = models.CharField(max_length=100, null=True, blank=True)
     status      = models.CharField(max_length=10, choices=STATUS.choices, null=True, blank=True)
 
     def __str__(self):

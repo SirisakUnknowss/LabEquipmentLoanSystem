@@ -19,7 +19,9 @@ def user_login(request):
     if not form.is_valid():
         return redirect(reverse('homepage'))
     try:
-        account = Account.objects.get(studentID=form['username'].data, password=form['password'].data)
+        username = form['username'].data
+        password = form['password'].data
+        account = Account.objects.get(studentID=username, password=password)
         user = account.user
         login(request, user)
         return redirect(reverse('homepage'))
@@ -43,11 +45,8 @@ def user_register(request):
         context = { 'accountExists': 'บัญชีผู้ใช้งานนี้มีอยู่แล้ว' }
         print(f" ------- {context} ------- ")
         return render(request, 'base/signup.html', context)
-    user = User.objects.filter(username=form['username'].data, )
-    if user.exists():
-        context = { 'accountExists': 'บัญชีผู้ใช้งานนี้มีอยู่แล้ว' }
-        print(f" ------- {context} ------- ")
-        return render(request, 'base/signup.html', context)
+    user = User.objects.filter(username=form['username'].data)
+    user.delete()
     if form['password'].data != form['repassword'].data:
         context = { 'password': 'รหัสผ่านไม่ตรงกัน' }
         print(f" ------- {context} ------- ")
@@ -77,8 +76,7 @@ def createAccount(request, user:User, form:RegisterForm):
     category = request.POST['category']
     if branchs == 'Other_Other':
         branch['branch'] = request.POST['branchOther']
-    if category == 'other':
-        category = request.POST['categoryOther']
+    categoryOther = request.POST['categoryOther']
     data = {
         "user": user.id,
         "studentID": form['username'].data,
@@ -92,6 +90,7 @@ def createAccount(request, user:User, form:RegisterForm):
         "branch": branch['branch'],
         "faculty": branch['faculty'],
         "category": category,
+        "categoryOther": categoryOther,
         "status": 'user'
     }
     serializer = SlzAccountCreate(data=data)
@@ -110,6 +109,7 @@ def createAccount(request, user:User, form:RegisterForm):
         branch=data['branch'],
         faculty=data['faculty'],
         category=data['category'],
+        categoryOther=data['categoryOther'],
         status=data['status'],
         )
     account.save()
