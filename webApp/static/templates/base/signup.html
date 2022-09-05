@@ -40,11 +40,11 @@
                                 </div>
                                 <div class="input-group input-group-outline my-3 is-filled">
                                     <label class="form-label">ชื่อ</label>
-                                    <input type="text" class="form-control" id="id_firstname" name="firstname" value="{{ account.firstname }}" required>
+                                    <input type="text" class="form-control" id="id_firstname" name="firstname" value="{{ account.firstname }}" required pattern="[^0-9]*">
                                 </div>
                                 <div class="input-group input-group-outline mb-3 is-filled">
                                     <label class="form-label">นามสกุล</label>
-                                    <input type="text" class="form-control" id="id_lastname" name="lastname" value="{{ account.lastname }}" place required>
+                                    <input type="text" class="form-control" id="id_lastname" name="lastname" value="{{ account.lastname }}" place required pattern="[^0-9]*">
                                 </div>
                                 <div class="input-group input-group-outline mb-3">
                                     <select class="form-select" id="id_branch" name="branch" required>
@@ -126,11 +126,11 @@
                                 </div>
                                 <div class="input-group input-group-outline my-3">
                                     <label class="form-label">ชื่อ</label>
-                                    <input type="text" class="form-control" id="id_firstname" name="firstname" required pattern="[a-zA-Z]*" >
+                                    <input type="text" class="form-control" id="id_firstname" name="firstname" required pattern="[^0-9]*">
                                 </div>
                                 <div class="input-group input-group-outline mb-3">
                                     <label class="form-label">นามสกุล</label>
-                                    <input type="text" class="form-control" id="id_lastname" name="lastname" place required pattern="[a-zA-Z]*" >
+                                    <input type="text" class="form-control" id="id_lastname" name="lastname" place required pattern="[^0-9]*">
                                 </div>
                                 <div class="input-group input-group-outline mb-3">
                                     <select class="form-select" id="id_branch" name="branch" required>
