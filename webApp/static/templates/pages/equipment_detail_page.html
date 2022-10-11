@@ -85,7 +85,7 @@
               <input type="hidden" value="{{ order.id }}" name="orderID" />
               <button class="btn bg-gradient-danger" type="submit">ยกเลิก</button>
             </form>
-            {% elif status == "approved" %}
+            {% else %}
             <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'returningApi' %}">
               {% csrf_token %}
               <input type="hidden" value="{{ order.id }}" name="orderID" />
