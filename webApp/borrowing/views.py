@@ -144,7 +144,11 @@ class ReturningApi(LabAPIView):
     def post(self, request, *args, **kwargs):
         account     = request.user.account
         orderID     = self.request.data.get("orderID")
-        order       = Order.objects.filter(id=orderID, user=account, status=Order.STATUS.APPROVED)
+        if account.status != Account.STATUS.ADMIN:
+            order = Order.objects.filter(id=orderID)
+            order.update(status=Order.STATUS.RETURNED, dateReturn=datetime.now())
+            return redirect(reverse('information-equipment'))
+        order = Order.objects.filter(id=orderID, user=account, status=Order.STATUS.APPROVED)
         if not order.exists():
             return redirect(reverse('information-equipment'))
         order.update(status=Order.STATUS.RETURNED, dateReturn=datetime.now())

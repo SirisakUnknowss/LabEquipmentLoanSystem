@@ -77,6 +77,12 @@
               <input type="hidden" value="{{ order.id }}" name="orderID" />
               <button class="btn bg-gradient-success" type="submit">ยืนยันการคืนอุปกรณ์</button>
             </form>
+            {% elif status == "overdued" %}
+            <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'returningApi' %}">
+              {% csrf_token %}
+              <input type="hidden" value="{{ order.id }}" name="orderID" />
+              <button class="btn bg-gradient-danger" type="submit">คืนอุปกรณ์</button>
+            </form>
             {% endif %}
           {% elif user.account.status == "user" %}
             {% if status == "waiting" %}
@@ -85,7 +91,7 @@
               <input type="hidden" value="{{ order.id }}" name="orderID" />
               <button class="btn bg-gradient-danger" type="submit">ยกเลิก</button>
             </form>
-            {% else %}
+            {% elif status == "approved" %}
             <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'returningApi' %}">
               {% csrf_token %}
               <input type="hidden" value="{{ order.id }}" name="orderID" />
