@@ -94,11 +94,7 @@ def informationpage(request):
     checkOverDued(request)
     waiting     = Q(status=Order.STATUS.WAITING)
     approved    = Q(status=Order.STATUS.APPROVED)
-    overdued    = Q(status=Order.STATUS.OVERDUED)
     returned    = Q(status=Order.STATUS.RETURNED)
-    canceled    = Q(status=Order.STATUS.CANCELED)
-    completed   = Q(status=Order.STATUS.COMPLETED)
-    disapproved = Q(status=Order.STATUS.DISAPPROVED)
     orders      = Order.objects.filter(waiting | approved | returned)
     if request.user.account.status == Account.STATUS.USER:
         orders  = orders.filter(user=request.user.account)
@@ -108,10 +104,6 @@ def informationpage(request):
 def borrowinghistorypage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
-    waiting     = Q(status=Order.STATUS.WAITING)
-    approved    = Q(status=Order.STATUS.APPROVED)
-    overdued    = Q(status=Order.STATUS.OVERDUED)
-    returned    = Q(status=Order.STATUS.RETURNED)
     canceled    = Q(status=Order.STATUS.CANCELED)
     completed   = Q(status=Order.STATUS.COMPLETED)
     disapproved = Q(status=Order.STATUS.DISAPPROVED)
@@ -128,7 +120,7 @@ def analysispage(request):
     return render(request, 'pages/analysis_page.html', context)
 
 def topEquipment():
-    equipments = Equipment.objects.all().order_by('-statistics')
+    equipments = Equipment.objects.all().order_by('-statistics').filter(statistics__gt=1)
     return equipments
     
 def accountAll():

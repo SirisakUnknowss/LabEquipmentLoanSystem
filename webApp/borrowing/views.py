@@ -153,6 +153,23 @@ class ReturningApi(LabAPIView):
             return redirect(reverse('information-equipment'))
         order.update(status=Order.STATUS.RETURNED, dateReturn=datetime.now())
         return redirect(reverse('information-equipment'))
+    
+class BorrowAgainApi(LabAPIView):
+    queryset            = Order.objects.all()
+    permission_classes  = [ AllowAny ]
+
+    def post(self, request, *args, **kwargs):
+        account     = request.user.account
+        orderID     = self.request.data.get("orderID")
+        if account.status == Account.STATUS.ADMIN:
+            order = Order.objects.filter(id=orderID)
+            order.update(status=Order.STATUS.RETURNED, dateReturn=datetime.now())
+            return redirect(reverse('notifications-forgetten'))
+        order = Order.objects.filter(id=orderID, user=account, status=Order.STATUS.APPROVED)
+        if not order.exists():
+            return redirect(reverse('information-equipment'))
+        order.update(status=Order.STATUS.WAITING, dateReturn=datetime.now())
+        return redirect(reverse('information-equipment'))
 
 class ConfirmreturnApi(LabAPIView):
     queryset            = Order.objects.all()

@@ -169,3 +169,4 @@ cython_debug/
 .DS_Store
 docker-compose.yaml
 web/item/test/testcase.csv
+webApp/static/media/Equipment/*

@@ -45,7 +45,7 @@
             ผู้ยืมอุปกรณ์ : {{ order.user.firstname }} {{ order.user.lastname }}
           </p>
           <p class="text-s text-start mb-0">
-            ผู้อนุมัติ : {{ order.approver.firstname }} {{ order.approver.lastname }}
+            ผู้อนุมัติ : {% if order.approver.firstname %} {{ order.approver.firstname }} {% endif %} {% if order.approver.lastname %} {{ order.approver.lastname }} {% endif %}
           </p>
           <p class="text-s text-start mb-0">
             วันที่ยืม : {% load tz %}{{ order.dateBorrowing|timezone:'Asia/Bangkok'|date:"d/m/Y เวลา H:m น." }}
@@ -96,6 +96,11 @@
               {% csrf_token %}
               <input type="hidden" value="{{ order.id }}" name="orderID" />
               <button class="btn bg-gradient-danger" type="submit">คืนอุปกรณ์</button>
+            </form>
+            <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'borrowAgainApi' %}">
+              {% csrf_token %}
+              <input type="hidden" value="{{ order.id }}" name="orderID" />
+              <button class="btn bg-gradient-warning" type="submit">ยืมอุปกรณ์ต่อ</button>
             </form>
             {% endif %}
           {% endif %}

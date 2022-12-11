@@ -12,5 +12,6 @@ urlpatterns = [
     path('cancel', views.CancelBorringApi.as_view(), name='cancelBorringApi'),
     path('delete', views.RemoveBorringApi.as_view(), name='removeBorringApi'),
     path('returning', views.ReturningApi.as_view(), name='returningApi'),
+    path('', views.BorrowAgainApi.as_view(), name='borrowAgainApi'),
     path('confirmreturn', views.ConfirmreturnApi.as_view(), name='confirmreturnApi'),    
 ]
