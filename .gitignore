@@ -170,3 +170,4 @@ cython_debug/
 docker-compose.yaml
 web/item/test/testcase.csv
 webApp/static/media/Equipment/*
+*.csv

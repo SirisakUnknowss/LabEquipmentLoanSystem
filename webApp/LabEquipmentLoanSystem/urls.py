@@ -28,6 +28,8 @@ urlpatterns = [
     path('notifications', baseViews.notificationspage, name='notifications-forgetten'),
     path('information', baseViews.informationpage, name='information-equipment'),
     path('history-borrowing', baseViews.borrowinghistorypage, name='borrowing-history'),
+    path('export/api/user', baseViews.ExportUserData.as_view(), name='ExportUserData'),
+    path('export/api/borrowing', baseViews.ExportBorrowingData.as_view(), name='ExportBorrowingData'),
     path('analysis', baseViews.analysispage, name='analysispage'),
     path('user/management', baseViews.usermanagementpage, name='usermanagementpage'),
     path('user/edit', baseViews.usereditpage, name='managepage'),
@@ -42,4 +44,7 @@ urlpatterns = [
     #borrowing
     path('api/borrowing/', include('borrowing.urls')),
     path('equipment/borrowing', baseViews.equipmentcartlistpage, name='equipmentcart-list'),
+    #scientific instruments
+    # path('scientificInstruments/calendar', baseViews.scientificinstrumentscalendarpage, name='scientific-instruments-calendar'),
+    # path('scientificInstruments/list', baseViews.scientificinstrumentslistpage, name='scientific-instruments-list'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

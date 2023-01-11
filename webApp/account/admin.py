@@ -1,8 +1,18 @@
+# Python
+from import_export import resources
+from import_export.fields import Field
+# Django
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin, ImportMixin, ExportMixin
 
 # Project
 from .models import Account
+
+class AccountResource(resources.ModelResource): 
+    class Meta:
+        model = Account
+        exclude = ('id', 'user', 'password', 'nameprefix', 'levelclass', 'branch', 'faculty')
+        export_order = ('studentID', 'email', 'firstname', 'lastname', 'phone', 'category', 'categoryOther', 'status')
 
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):

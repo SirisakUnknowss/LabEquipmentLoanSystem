@@ -13967,6 +13967,10 @@ label,
 
 .bg-gradient-landing-btn {
   background-image: linear-gradient(195deg, #1A7575 0%, #1A7575 100%); }
+.bg-scientific-instruments {
+  background-image: linear-gradient(195deg, #5CB55C 0%, #5CB55C 100%); }
+.bg-scientific-instruments-count-today {
+  background-image: linear-gradient(195deg, #488EE0 0%, #488EE0 100%); }
 .bg-gradient-primary {
   background-image: linear-gradient(195deg, #4C925B 0%, #4C925B 100%); }
 
@@ -13990,6 +13994,9 @@ label,
 
 .bg-gradient-dark {
   background-color: #E9E9E9; }
+
+.bg-green-dark {
+  background-color: #042A2C; }
 
 .bg-gradient-faded-primary {
   background-image: radial-gradient(370px circle at 80% 50%, rgba(233, 30, 99, 0.6) 0, #c1134e 100%); }
@@ -17104,4 +17111,13 @@ input[type=number] {
 .image-equipments {
   height: 100%;
   width: auto;
+}
+
+.scientific-instruments-box-text {
+  float: right;
+  display: inline;
+  font-size: 28px;
+  margin: auto;
+  padding-right: 20px;
+  height: 100%;
 }

@@ -1,18 +1,25 @@
-# Django
+# Python
+import json, os, time, csv
 from datetime import datetime
+# Django
+from django.http import FileResponse
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 # Module
 from django.db.models import Q
 
 #Project
-from equipment.models import Equipment
-from borrowing.models import EquipmentCart, Order
 from account.models import Account
+from account.admin import AccountResource
 from base.models import DataWeb
+from borrowing.admin import OrderModelAdmin, OrderModelResource
+from borrowing.models import EquipmentCart, Order
+from equipment.models import Equipment
+from settings.base import MEDIA_ROOT
 
 class LabAPIView(GenericAPIView):
 
@@ -247,4 +254,76 @@ def usereditpage(request):
             if status == 'edit':
                 context['status'] = 'edit'
     return render(request, 'pages/manage_user_page.html', context)
+
+class ExportUserData(LabAPIView):
+    permission_classes = [ AllowAny ]
+
+    def get(self, request, *args, **kwargs):
+        filePath = self.writeFile()
+        # self.response['result'] = filePath
+        return self.download_file(filePath)
     
+    def download_file(self, file_path):
+        response = FileResponse(open(file_path, 'rb'), as_attachment=True)
+        response['Content-Disposition'] = 'attachment; filename="userdata.csv"'
+        response['Content-Type'] = 'application/octet-stream'
+        return response
+
+    def writeFile(self):
+        userFileDir = "UserData"
+        dirPath = "{}/{}".format(MEDIA_ROOT, userFileDir)
+        if not(os.path.exists(dirPath)):
+            os.makedirs(dirPath)
+        # datestr = str(time.strftime("%Y%m%d_%H%M%S"))
+        fileName = "userdata.csv"
+        filePath = "{}/{}".format(dirPath, fileName)
+        dataset = AccountResource().export()
+        with open(filePath, "w") as f:
+            f.write(dataset.csv)
+        return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, fileName)
+
+class ExportBorrowingData(LabAPIView):
+    permission_classes = [ AllowAny ]
+
+    def get(self, request, *args, **kwargs):
+        parameter_value = request.GET['getData']
+        filePath, fileName = self.writeFile(parameter_value)
+        # self.response['result'] = filePath
+        return self.download_file(filePath, fileName)
+    
+    def download_file(self, file_path, fileName):
+        response = FileResponse(open(file_path, 'rb'), as_attachment=True)
+        response['Content-Disposition'] = f'attachment; filename="{fileName}"'
+        response['Content-Type'] = 'application/octet-stream'
+        return response
+
+    def writeFile(self, parameter_value):
+        userFileDir = "OrderData"
+        dirPath = "{}/{}".format(MEDIA_ROOT, userFileDir)
+        if not(os.path.exists(dirPath)):
+            os.makedirs(dirPath)
+        # datestr = str(time.strftime("%Y%m%d_%H%M%S"))
+        queryset = Order.objects.filter(status=parameter_value)
+        fileName = f"{parameter_value}Data.csv"
+        if parameter_value == '':
+            queryset = Order.objects.all()
+            fileName = "allData.csv"
+        filePath = "{}/{}".format(dirPath, fileName)
+        dataset = OrderModelResource().export(queryset=queryset)
+        with open(filePath, "w") as f:
+            f.write(dataset.csv)
+        return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, fileName), fileName
+
+
+def scientificinstrumentscalendarpage(request):
+    if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    checkOverDued(request)
+    context = {  }
+    return render(request, 'pages/scientific_instruments_calendar_page.html', context)
+
+def scientificinstrumentslistpage(request):
+    if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    checkOverDued(request)
+    equipmentsCart = EquipmentCart.objects.filter(user=request.user.account)
+    context = { 'equipmentsCart': equipmentsCart }
+    return render(request, 'pages/scientific_instruments_list_page.html', context)
