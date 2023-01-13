@@ -5,6 +5,9 @@
     <div class="row">
       <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-3">
         <h5>รายการอุปกรณ์วิทยาศาสตร์</h5>
+        {% if user.account.status == "admin" %}
+        <button class="btn bg-green-dark mb-4 mt-n2 ms-2 toast-btn text-white" id="exportEquipmentAllButton" type="button" data-target="warningToast">Download...</button>
+        {% endif %}
       </div>
       {% if user.account.status == "user" %}
       <div class="col-lg-2 col-md-4 col-12 text-end">
@@ -118,5 +121,7 @@
 {{ block.super }}
     <script>
         let name_page = "id_equipment_list_page"
+        const urlExportData = "{% url 'ExportEquipments' %}"
     </script>
+    <script src="{{ STATIC_URL }}js/exportEquipment.js"></script>
 {% endblock %}

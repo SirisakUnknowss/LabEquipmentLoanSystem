@@ -314,6 +314,32 @@ class ExportBorrowingData(LabAPIView):
             f.write(dataset.csv)
         return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, fileName), fileName
 
+class ExportEquipments(LabAPIView):
+    permission_classes = [ AllowAny ]
+
+    def get(self, request, *args, **kwargs):
+        filePath, fileName = self.writeFile()
+        return self.download_file(filePath, fileName)
+    
+    def download_file(self, file_path, fileName):
+        response = FileResponse(open(file_path, 'rb'), as_attachment=True)
+        response['Content-Disposition'] = f'attachment; filename="{fileName}"'
+        response['Content-Type'] = 'application/octet-stream'
+        return response
+
+    def writeFile(self):
+        userFileDir = "OrderData"
+        dirPath = "{}/{}".format(MEDIA_ROOT, userFileDir)
+        if not(os.path.exists(dirPath)):
+            os.makedirs(dirPath)
+        queryset = Equipment.objects.all()
+        fileName = f"EquipmentsData.csv"
+        filePath = "{}/{}".format(dirPath, fileName)
+        dataset = OrderModelResource().export(queryset=queryset)
+        with open(filePath, "w") as f:
+            f.write(dataset.csv)
+        return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, fileName), fileName
+
 
 def scientificinstrumentscalendarpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))

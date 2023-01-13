@@ -79,7 +79,9 @@
                             <div class="text-center pt-3">
                                 <h1 class="mb-0 text-info">{{ orders.all }}</h1>
                                 <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
                                 <button class="btn bg-green-dark mb-0 mt-3 toast-btn text-white" id="exportAllOrderButton" type="button" data-target="warningToast">Download...</button>
+                                {% endif %}
                             </div>
                         </div>
                         <hr class="dark horizontal my-0">
@@ -98,7 +100,9 @@
                             <div class="text-center pt-3">
                                 <h1 class="mb-0 text-success">{{ orders.approved }}</h1>
                                 <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
                                 <button class="btn bg-green-dark mb-0 mt-3 toast-btn text-white" id="exportApprovedOrderButton" type="button" data-target="warningToast">Download...</button>
+                                {% endif %}
                             </div>
                         </div>
                         <hr class="dark horizontal my-0">
@@ -117,7 +121,9 @@
                             <div class="text-center pt-3">
                                 <h1 class="mb-0 text-success">{{ orders.completed }}</h1>
                                 <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
                                 <button class="btn bg-green-dark mb-0 mt-3 toast-btn text-white" id="exportCompletedOderButton" type="button" data-target="warningToast">Download...</button>
+                                {% endif %}
                             </div>
                         </div>
                         <hr class="dark horizontal my-0">
@@ -136,7 +142,9 @@
                             <div class="text-center pt-3">
                                 <h1 class="mb-0 text-warning">{{ orders.waiting }}</h1>
                                 <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
                                 <button class="btn bg-green-dark mb-0 mt-3 toast-btn text-white" id="exportWaittingOrderButton" type="button" data-target="warningToast">Download...</button>
+                                {% endif %}
                             </div>
                         </div>
                         <hr class="dark horizontal my-0">
@@ -155,7 +163,9 @@
                             <div class="text-center pt-3">
                                 <h1 class="mb-0 text-warning">{{ orders.returned }}</h1>
                                 <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
                                 <button class="btn bg-green-dark mb-0 mt-3 toast-btn text-white" id="exportReturnedOrderButton" type="button" data-target="warningToast">Download...</button>
+                                {% endif %}
                             </div>
                         </div>
                         <hr class="dark horizontal my-0">
@@ -174,7 +184,9 @@
                             <div class="text-center pt-3">
                                 <h1 class="mb-0 text-danger">{{ orders.canceled }}</h1>
                                 <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
                                 <button class="btn bg-green-dark mb-0 mt-3 toast-btn text-white" id="exportCanceledOrderButton" type="button" data-target="warningToast">Download...</button>
+                                {% endif %}
                             </div>
                         </div>
                         <hr class="dark horizontal my-0">
@@ -193,7 +205,9 @@
                             <div class="text-center pt-3">
                                 <h1 class="mb-0 text-danger">{{ orders.disapproved }}</h1>
                                 <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
                                 <button class="btn bg-green-dark mb-0 mt-3 toast-btn text-white" id="exportDisapprovedOrderButton" type="button" data-target="warningToast">Download...</button>
+                                {% endif %}
                             </div>
                         </div>
                         <hr class="dark horizontal my-0">
@@ -212,7 +226,9 @@
                             <div class="text-center pt-3">
                                 <h1 class="mb-0 text-danger">{{ orders.overdued }}</h1>
                                 <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
                                 <button class="btn bg-green-dark mb-0 mt-3 toast-btn text-white" id="exportOverduedOrderButton" type="button" data-target="warningToast">Download...</button>
+                                {% endif %}
                             </div>
                         </div>
                         <hr class="dark horizontal my-0">
@@ -231,7 +247,9 @@
             </div>
             <div class="row">
                 <div class="col-lg-2 col-md-4 col-12">
-                    <button class="btn bg-green-dark mb-4 mt-n2 toast-btn text-white" id="exportMostEquipmentrButton" type="button" data-target="warningToast">Download...</button>
+                    {% if user.account.status == "admin" %}
+                    <button class="btn bg-green-dark mb-4 mt-n2 toast-btn text-white" id="exportMostEquipmentButton" type="button" data-target="warningToast">Download...</button>
+                    {% endif %}
                 </div>
             </div>
 

@@ -40,6 +40,7 @@ urlpatterns = [
     path('api/equipment/', include('equipment.urls')),
     path('equipment/add', baseViews.addequipmentpage, name='addequipmentpage'),
     path('equipment/list', baseViews.equipmentlistpage, name='equipment-list'),
+    path('export/api/equipments', baseViews.ExportEquipments.as_view(), name='ExportEquipments'),
     path('equipment/detail', baseViews.equipmentdetailpage, name='equipment-detail'),
     #borrowing
     path('api/borrowing/', include('borrowing.urls')),
