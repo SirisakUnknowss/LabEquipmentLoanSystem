@@ -71,5 +71,5 @@ exportOverduedOrderButton.addEventListener('click', (event) => {
 })
 exportMostEquipmentButton.addEventListener('click', (event) => {
     nameFile = "mostEquipmenData.csv"
-    requestContent(urlExportMostEquipment)
+    requestContent(urlExportData + "?getData=Most")
 })

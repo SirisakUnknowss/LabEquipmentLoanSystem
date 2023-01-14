@@ -24,5 +24,5 @@ const exportEquipmentAllButton = document.querySelector("#exportEquipmentAllButt
 
 exportEquipmentAllButton.addEventListener('click', (event) => {
     nameFile = "equipmentAllData.csv"
-    requestContent(urlExportData)
+    requestContent(urlExportData + "?getData=")
 })

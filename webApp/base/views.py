@@ -318,7 +318,8 @@ class ExportEquipments(LabAPIView):
     permission_classes = [ AllowAny ]
 
     def get(self, request, *args, **kwargs):
-        filePath, fileName = self.writeFile()
+        parameter_value = request.GET['getData']
+        filePath, fileName = self.writeFile(parameter_value)
         return self.download_file(filePath, fileName)
     
     def download_file(self, file_path, fileName):
@@ -327,13 +328,15 @@ class ExportEquipments(LabAPIView):
         response['Content-Type'] = 'application/octet-stream'
         return response
 
-    def writeFile(self):
+    def writeFile(self, parameter_value):
         userFileDir = "OrderData"
         dirPath = "{}/{}".format(MEDIA_ROOT, userFileDir)
         if not(os.path.exists(dirPath)):
             os.makedirs(dirPath)
         queryset = Equipment.objects.all()
-        fileName = f"EquipmentsData.csv"
+        if parameter_value != "":
+            queryset = Equipment.objects.all().order_by('-statistics').filter(statistics__gt=1)
+        fileName = f"Equipments{parameter_value}Data.csv"
         filePath = "{}/{}".format(dirPath, fileName)
         dataset = OrderModelResource().export(queryset=queryset)
         with open(filePath, "w") as f:
