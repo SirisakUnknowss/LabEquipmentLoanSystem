@@ -60,11 +60,16 @@
                         <h2 class="my-4">เพิ่มรูปภาพ</h2>
                         <input type="file" name="upload" accept="image/*">
                         <br>
-                        <div class="col-12">
-                            <button class="btn bg-gradient-success my-4" type="submit">บันทึกข้อมูล</button>
-                            <a class="" href="{% url 'equipment-list' %}">
-                                <span class="btn bg-gradient-danger my-4">ยกเลิก</span>
-                            </a>
+                        
+                        <div class="row">
+                            <div class="col-lg-6 col-sm-12 col-12">
+                                <button class="btn bg-gradient-success my-4 w-75" type="submit">ยืนยัน</button>
+                            </div>
+                            <div class="col-lg-6 col-sm-12 col-12 mt-sm-0 mt-2">
+                                <a class="" href="{% url 'equipment-list' %}">
+                                    <span class="btn bg-gradient-danger my-4 w-75">ยกเลิก</span>
+                                </a>
+                            </div>
                         </div>
                     </form>
                     
@@ -107,10 +112,16 @@
                         <h2 class="my-4">เพิ่มรูปภาพ</h2>
                         <input type="file" name="upload" accept="image/*">
                         <br>
-                        <button class="btn bg-gradient-success my-4" type="submit">ยืนยัน</button>
-                        <a class="" href="{% url 'equipment-list' %}">
-                            <span class="btn bg-gradient-danger my-4">ยกเลิก</span>
-                        </a>
+                        <div class="row">
+                            <div class="col-lg-6 col-sm-12 col-12">
+                                <button class="btn bg-gradient-success my-4 w-75" type="submit">ยืนยัน</button>
+                            </div>
+                            <div class="col-lg-6 col-sm-12 col-12 mt-sm-0 mt-2">
+                                <a class="" href="{% url 'equipment-list' %}">
+                                    <span class="btn bg-gradient-danger my-4 w-75">ยกเลิก</span>
+                                </a>
+                            </div>
+                        </div>
                     </form>
                     {% endif %}
                 </div>

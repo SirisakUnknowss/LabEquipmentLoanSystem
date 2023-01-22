@@ -46,6 +46,8 @@ urlpatterns = [
     path('api/borrowing/', include('borrowing.urls')),
     path('equipment/borrowing', baseViews.equipmentcartlistpage, name='equipmentcart-list'),
     #scientific instruments
-    # path('scientificInstruments/calendar', baseViews.scientificinstrumentscalendarpage, name='scientific-instruments-calendar'),
-    # path('scientificInstruments/list', baseViews.scientificinstrumentslistpage, name='scientific-instruments-list'),
+    path('api/scientificInstruments/', include('scientificInstrument.urls')),
+    path('scientificInstruments/calendar', baseViews.scientificinstrumentscalendarpage, name='scientific-instruments-calendar'),
+    path('scientificInstruments/list', baseViews.scientificinstrumentslistpage, name='scientific-instruments-list'),
+    path('scientificInstruments/add', baseViews.addscientificinstrumentspage, name='addscientificinstrumentspage'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

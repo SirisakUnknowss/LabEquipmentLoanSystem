@@ -2,10 +2,11 @@
 import json, os, time, csv
 from datetime import datetime
 # Django
-from django.http import FileResponse
-from django.urls import reverse
-from django.shortcuts import render, redirect
+from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import FileResponse
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -19,6 +20,7 @@ from base.models import DataWeb
 from borrowing.admin import OrderModelAdmin, OrderModelResource
 from borrowing.models import EquipmentCart, Order
 from equipment.models import Equipment
+from scientificInstrument.models import ScientificInstrument, Booking
 from settings.base import MEDIA_ROOT
 
 class LabAPIView(GenericAPIView):
@@ -184,16 +186,15 @@ def profilepage(request):
     return render(request, 'pages/user_profile.html', context)
 
 def addequipmentpage(request):
-    if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    if not(request.user.is_authenticated) or request.user.account.status != Account.STATUS.ADMIN:
+        return redirect(reverse('homepage'))
     if request.method == 'POST':
         equipmentID = request.POST['EquipmentID']
         equipment = Equipment.objects.filter(id=equipmentID)
         if equipment.exists():
             context = { 'equipment': equipment.first() }
             return render(request, 'pages/add_equipment.html', context)
-        else:
-            return redirect(reverse('equipment-list'))
-
+        return redirect(reverse('equipment-list'))
     return render(request, 'pages/add_equipment.html')
 
 def equipmentlistpage(request):
@@ -204,7 +205,8 @@ def equipmentlistpage(request):
         nameequipment   = request.POST['nameequipment']
         name            = Q(name__contains=nameequipment)
         equipments      = Equipment.objects.filter(name).order_by('name')
-    context = { 'equipments': equipments }
+    equipmentsJson = serializers.serialize("json", equipments)
+    context = { 'equipments': equipments, 'equipmentsJson': equipmentsJson }
     return render(request, 'pages/equipment_list_page.html', context)
 
 def equipmentdetailpage(request):
@@ -347,12 +349,44 @@ class ExportEquipments(LabAPIView):
 def scientificinstrumentscalendarpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
-    context = {  }
+    context = { 'scientificInstruments': scientificInstruments(), 'bookings': bookings() }
     return render(request, 'pages/scientific_instruments_calendar_page.html', context)
+
+def scientificInstruments():
+    scientificInstrumentsAll        = ScientificInstrument.objects.all()
+    scientificInstrument            = dict()
+    scientificInstrument['all']    = scientificInstrumentsAll.count()
+    scientificInstrument['data']    = scientificInstrumentsAll
+    return scientificInstrument
+
+def bookings():
+    bookingsAll         = Booking.objects.all()
+    booking             = dict()
+    booking['all']     = bookingsAll.count()
+    booking['data']    = bookingsAll
+    return booking
 
 def scientificinstrumentslistpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
-    equipmentsCart = EquipmentCart.objects.filter(user=request.user.account)
-    context = { 'equipmentsCart': equipmentsCart }
+    scientificInstruments = ScientificInstrument.objects.all().order_by('number')
+    if request.method == 'POST':
+        nameScientificInstrument    = request.POST['nameScientificInstrument']
+        name                        = Q(name__contains=nameScientificInstrument)
+        number                      = Q(number__contains=nameScientificInstrument)
+        scientificInstruments       = ScientificInstrument.objects.filter(name | number).order_by('name')
+    scientificInstrumentsJson = serializers.serialize("json", scientificInstruments)
+    context = { 'scientificInstruments': scientificInstruments, 'scientificInstrumentsJson': scientificInstrumentsJson }
     return render(request, 'pages/scientific_instruments_list_page.html', context)
+
+def addscientificinstrumentspage(request):
+    if not(request.user.is_authenticated) or request.user.account.status != Account.STATUS.ADMIN:
+        return redirect(reverse('homepage'))
+    if request.method == 'POST':
+        scientificInstrumentID = request.POST['ScientificInstrumentID']
+        scientificInstrument = ScientificInstrument.objects.filter(id=scientificInstrumentID)
+        if scientificInstrument.exists():
+            context = { 'scientificInstrument': scientificInstrument.first() }
+            return render(request, 'pages/add_scientific_instruments.html', context)
+        return redirect(reverse('scientific-instruments-list'))
+    return render(request, 'pages/add_scientific_instruments.html')

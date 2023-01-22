@@ -1,0 +1,27 @@
+<!-- Modal -->
+<div class="modal fade" id="modalEquipmentDelete" tabindex="-1" role="dialog" aria-labelledby="modalEquipmentDelete" aria-modal="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content pb-4 ps-4 pe-4">
+            <form id="formDeleteEquipment" method="post" action="{% url 'removeEquipmentApi' %}">
+                {% csrf_token %}
+                <input type="hidden" id="equipmentDelete" name="equipment">
+                <div class="modal-header">
+                    <h5 class="modal-title w-100" id="exampleModalLabel">ยืนยันการลบข้อมูล</h5>
+                </div>
+                <div class="modal-body text-center">
+                    <p>คุณต้องการลบ</p>
+                    <h3 id="nameDelete"></h3>
+                    <p>ออกจากระบบหรือไม่?</p>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <button id="dismissModalEquipmentDelete" type="button" class="btn bg-gradient-danger w-100" data-dismiss="modal">ยกเลิก</button>
+                    </div>
+                    <div class="col-6">
+                        <button type="submit" id="confirmDeleteNumber" class="btn bg-gradient-primary w-100">ตกลง</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

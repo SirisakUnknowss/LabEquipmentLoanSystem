@@ -1,0 +1,108 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+  <div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-3">
+        <h5>รายการเครื่องมือวิทยาศาตร์</h5>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-lg-4 col-md-8 col-12 mx-auto mt-1 mb-1 py-1">
+          <form role="form" class="text-start" id="login-form" method="post" action="{% url 'scientific-instruments-list' %}">
+          {% csrf_token %}
+          <div class="input-group input-group-outline mb-2">
+              <label class="form-label">ชื่อเครื่องมือ | รหัส</label>
+              <input type="text" class="form-control bg-gradient-faded-white" id="id_nameScientificInstrument" name="nameScientificInstrument" onfocus="focused(this)" onfocusout="defocused(this)">
+          </div>
+          <div class="text-center">
+              <button type="submit" class="btn bg-gradient-primary w-100 mb-2">ค้นหา</button>
+          </div>
+          </form>
+      </div>
+  </div>
+    <div class="row mt-4">
+      {% if scientificInstruments %}
+        {% for scientificInstrument in scientificInstruments %}
+          <div class="col-xl-4 col-lg-6 col-md-10 col-sm-12 col-12 mt-3 mb-4">
+            <div class="card z-index-2 ">
+              <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+                <div class="mt-5">
+                  <h5 class="mt-1">{{ scientificInstrument.name }}</h5>
+                  <span class="mb-1 text-sm-center">รหัส : {{ scientificInstrument.number }}</span>
+                  <div class="chart-scientificInstruments mt-1 mb-3">
+                    {% if scientificInstrument.image %}
+                      <img src="{{ scientificInstrument.image }}" class="image-scientificInstruments img-fluid border-radius-xl" />
+                    {% else %}
+                      <img src="{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png" class="image-scientificInstruments border-radius-xl" />
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="card-body mb-n3 text-center">
+                  {% if user.account.status == "admin" %}
+                  <div class="row">
+                    <div class="col-6">
+                      <form id="add-scientificInstrument" method="post" action="{% url 'addscientificinstrumentspage' %}">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ scientificInstrument.id }}" name="ScientificInstrumentID" />
+                        <button class="btn bg-gradient-warning w-100" type="submit">แก้ไขข้อมูล</button>
+                      </form>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn bg-gradient-danger w-100" onclick="showConfirmDelete({{ scientificInstrument.id }})">ลบข้อมูล</button>
+                    </div>
+                  </div>
+                  {% else %}
+                  <div class="row">
+                    <div class="col-6">
+                      <form id="add-scientificInstrument" method="post" action="{% url 'scientific-instruments-list' %}">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ scientificInstrument.id }}" name="ScientificInstrumentID" />
+                        <button class="btn bg-gradient-primary w-100" type="submit">จอง</button>
+                      </form>
+                    </div>
+                    <div class="col-6">
+                      <button id="scientificInstrumentDetail" class="btn bg-gradient-warning w-100" onclick="showDetail({{ scientificInstrument.id }})" data-bs-toggle="modal" data-bs-target="#modalScientificDetail">รายละเอียด</button>
+                    </div>
+                  </div>
+                  {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="col-lg-12 col-md-12 mt-3 mb-4">
+          <div class="card-body mb-n3 text-center">
+            <p>ไม่พบรายการเครื่องมือวิทยาศาตร์</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  {% include 'pages/popUpScientificDetail.html' %}
+  {% include 'pages/popUpconfirmDeleteScientific.html' %}
+  
+  {% if user.account.status == "admin" %}
+  <div class="fixed-plugin ps">
+    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2" href="{% url 'addscientificinstrumentspage' %}">
+      <i class="material-icons py-2">add</i>
+    </a> 
+  </div>
+  {% endif %}
+</main>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script>
+    const scientificInstrumentsJson = JSON.parse('{{ scientificInstrumentsJson | safe }}')
+    let urlPlaceHolder = "{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png"
+    let name_page = "id_equipment_list_page"
+    console.log(scientificInstrumentsJson)
+  </script>
+  
+  <script src="{{ STATIC_URL }}js/scientificDetail.js"></script>
+{% endblock %}

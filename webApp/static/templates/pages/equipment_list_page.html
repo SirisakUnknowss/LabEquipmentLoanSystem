@@ -67,16 +67,19 @@
                 </span>
                 <span class="d-block mb-3">จำนวนที่มี : {{ equipment.quantity }}</span>
                   {% if user.account.status == "admin" %}
-                  <form id="add-equipment" method="post" action="{% url 'addequipmentpage' %}">
-                    {% csrf_token %}
-                    <input type="hidden" value="{{ equipment.id }}" name="EquipmentID" />
-                    <button class="btn bg-gradient-warning w-75" type="submit">แก้ไขข้อมูล</button>
-                  </form>
-                  <form id="add-equipment" method="post" action="{% url 'removeEquipmentApi' %}">
-                    {% csrf_token %}
-                    <input type="hidden" value="{{ equipment.id }}" name="equipment" />
-                    <button class="btn bg-gradient-danger w-75" type="submit">ลบข้อมูล</button>
-                  </form>
+
+                  <div class="row">
+                    <div class="col-6">
+                      <form id="add-equipment" method="post" action="{% url 'addequipmentpage' %}">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ equipment.id }}" name="EquipmentID" />
+                        <button class="btn bg-gradient-warning w-100" type="submit">แก้ไขข้อมูล</button>
+                      </form>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn bg-gradient-danger w-100" onclick="showConfirmDelete({{ equipment.id }})">ลบข้อมูล</button>
+                    </div>
+                  </div>
                   {% else %}
                     {% if equipment.quantity == 0 %}
                     <label class="form-label">จำนวนที่ยืม : </label>
@@ -106,6 +109,7 @@
       {% endif %}
     </div>
   </div>
+  {% include 'pages/popUpconfirmDeleteEquipment.html' %}
   
   {% if user.account.status == "admin" %}
   <div class="fixed-plugin ps">
@@ -119,9 +123,13 @@
 
 {% block js %}
 {{ block.super }}
-    <script>
-        let name_page = "id_equipment_list_page"
-        const urlExportData = "{% url 'ExportEquipments' %}"
-    </script>
-    <script src="{{ STATIC_URL }}js/exportEquipment.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+
+  <script>
+    const equipmentsJson = JSON.parse('{{ equipmentsJson | safe }}')
+      let name_page = "id_equipment_list_page"
+      const urlExportData = "{% url 'ExportEquipments' %}"
+  </script>
+  <script src="{{ STATIC_URL }}js/equipmentDetail.js"></script>
+  <script src="{{ STATIC_URL }}js/exportEquipment.js"></script>
 {% endblock %}

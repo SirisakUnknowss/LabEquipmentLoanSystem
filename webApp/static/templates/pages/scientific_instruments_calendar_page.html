@@ -1,0 +1,125 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% block head_css_site %}
+{{ block.super }}
+  
+<link href="{{ STATIC_URL }}fullcalendar/packages/core/main.css" rel="stylesheet" />
+<link href="{{ STATIC_URL }}fullcalendar/packages/daygrid/main.css" rel="stylesheet" />
+{% endblock head_css_site %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+  <div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-lg-10 col-md-6 col-8 d-flex align-items-center mb-3">
+        <h5>รายการเครื่องมือวิทยาศาตร์</h5>
+      </div>
+      <div class="col-lg-2 col-md-4 col-12 text-end">
+          <a href="{% url 'scientific-instruments-list' %}">
+            <button class="btn bg-green-dark w-100 mb-0 toast-btn text-white" type="button" data-target="warningToast">จองใช้งาน</button>
+          </a>
+      </div>
+    </div>
+    <div class="row mb-3 mt-3">
+      <div class="col-lg-3 col-md-4 mt-4 mb-3">
+        <div class="card">
+          <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-success shadow-success text-center border-radius-xl mt-n4 position-absolute">
+                  <i class="material-icons opacity-10">biotech</i>
+              </div>
+              <div class="text-end pt-1">
+                  <p class="text-lg mb-0 text-capitalize">เครื่องมือวิทยาศาตร์</p>
+                  <h2 class="mb-0 text-success">{{ scientificInstruments.all }}</h2>
+              </div>
+          </div>
+          <div class="card-footer p-3">
+              
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-4 mt-4 mb-3">
+        <div class="card">
+          <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-info shadow-success text-center border-radius-xl mt-n4 position-absolute">
+                  <i class="material-icons opacity-10">event_available</i>
+              </div>
+              <div class="text-end pt-1">
+                  <p class="text-lg mb-0 text-capitalize">จำนวนจองวันนี้</p>
+                  <h2 class="mb-0 text-info">{{ bookings.all }}</h2>
+              </div>
+          </div>
+          <div class="card-footer p-3">
+              
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-lg-4 col-md-8 col-12 mx-auto mt-1 mb-1 py-1">
+          <form role="form" class="text-start" id="login-form" method="post" action="{% url 'equipment-list' %}">
+          {% csrf_token %}
+          <div class="input-group input-group-outline mb-2">
+              <label class="form-label">ชื่ออุปกรณ์</label>
+              <input type="text" class="form-control bg-gradient-faded-white" id="id_nameequipment" name="nameequipment" onfocus="focused(this)" onfocusout="defocused(this)">
+          </div>
+          <div class="text-center">
+              <button type="submit" class="btn bg-gradient-primary w-100 mb-2">ค้นหา</button>
+          </div>
+          </form>
+      </div>
+  </div>
+    <div class="row mt-4">
+      <div class="card mt-3 mb-7 p-5">
+        <div id='calendar-container'>
+          <div id='calendar'></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+    <script>
+        let name_page = "id_equipment_list_page"
+        let todaystr = {{ today|date:"Y-m-d" }}
+
+        document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+  
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
+        height: 'parent',
+        header: {
+          left: 'prev,next today',
+          center: 'title',
+          //right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+        },
+        defaultView: 'dayGridMonth',
+        defaultDate: todaystr,
+        navLinks: true, // can click day/week names to navigate views
+        editable: true,
+        eventLimit: true, // allow "more" link when too many events
+        events: [
+          {
+            title: 'All Day Event',
+            start: '2022-02-01',
+          },
+          {
+            title: 'Click for Google',
+            url: 'http://google.com/',
+            start: '2020-02-28'
+          }
+        ]
+      });
+  
+      calendar.render();
+    });
+    </script>
+
+    <script src="{{ STATIC_URL }}fullcalendar/packages/core/main.js"></script>
+    <script src="{{ STATIC_URL }}fullcalendar/packages/interaction/main.js"></script>
+    <script src="{{ STATIC_URL }}fullcalendar/packages/daygrid/main.js"></script>
+    <script src="{{ STATIC_URL }}fullcalendar/packages/timegrid/main.js"></script>
+    <script src="{{ STATIC_URL }}fullcalendar/packages/list/main.js"></script>
+{% endblock %}

@@ -197,7 +197,7 @@ a {
   color: #4C925B;
   text-decoration: none; }
   a:hover {
-    color: #4C925B;
+    color: #1A73E8;
     text-decoration: none; }
 
 a:not([href]):not([class]), a:not([href]):not([class]):hover {
@@ -311,7 +311,9 @@ button,
 [type="button"],
 [type="reset"],
 [type="submit"] {
-  -webkit-appearance: button; }
+  /* -webkit-appearance: button; */
+  cursor: pointer;
+}
   button:not(:disabled),
   [type="button"]:not(:disabled),
   [type="reset"]:not(:disabled),
@@ -358,7 +360,8 @@ legend {
 
 [type="search"] {
   outline-offset: -2px;
-  -webkit-appearance: textfield; }
+  /* -webkit-appearance: textfield;  */
+}
 
 /* rtl:raw:
 [type="tel"],
@@ -4620,6 +4623,7 @@ textarea.form-control-lg {
   display: flex;
   flex-shrink: 0;
   align-items: center;
+  text-align: center;
   justify-content: space-between;
   padding: 1rem 1rem;
   border-bottom: 1px solid #dee2e6;
@@ -4635,8 +4639,11 @@ textarea.form-control-lg {
 
 .modal-body {
   position: relative;
+  -webkit-box-flex: 1;
+  -ms-flex: 1 1 auto;
   flex: 1 1 auto;
-  padding: 1rem; }
+  padding: 1rem;
+}
 
 .modal-footer {
   display: flex;
@@ -17074,6 +17081,9 @@ input[type=number] {
 .pointer {
   cursor: pointer;
 }
+.cursor-default {
+  cursor: default;
+}
 .main-content {
   margin-left: 17.125rem;
   background-color: #E5E5E5;
@@ -17081,6 +17091,10 @@ input[type=number] {
 
 .chart {
   height: 10rem;
+}
+
+.chart-scientificInstruments {
+  height: 15rem;
 }
 .landing-box-image {
   align-items: center;
@@ -17113,6 +17127,11 @@ input[type=number] {
   width: auto;
 }
 
+.image-scientificInstruments {
+  height: 100%;
+  width: auto;
+}
+
 .scientific-instruments-box-text {
   float: right;
   display: inline;
@@ -17120,4 +17139,28 @@ input[type=number] {
   margin: auto;
   padding-right: 20px;
   height: 100%;
+}
+
+.left-items {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  text-align: center;
+  height: auto;
+}
+
+.center-items {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: auto;
+}
+
+.right-items {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  text-align: center;
+  height: auto; 
 }

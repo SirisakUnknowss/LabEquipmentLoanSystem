@@ -1,0 +1,39 @@
+<!-- Modal -->
+<div class="modal fade" id="modalScientificDetail" tabindex="-1" role="dialog" aria-labelledby="modalScientificDetail" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title w-100" id="exampleModalLabel">รายละเอียด</h5>
+                <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="py-3 pe-1 me-10 ms-10 ms-sm-1 me-sm-1">
+                    <div class="chart-scientificInstruments center-items">
+                        <img  id="imageDisplay" src="{{ scientificInstrument.image }}" class="image-scientificInstruments border-radius-xl w-50" />
+                    </div>
+                </div>
+                <input type="hidden" value="{{ scientificInstrument.id }}" name="scientificInstrument" />
+                <div class="input-group input-group-static mb-4 is-filled">
+                    <label class="text-bold text-black">ชื่อเครื่องมือ</label>
+                <input type="text" class="form-control cursor-default" id="id_name" name="name" value="{{ scientificInstrument.name }}" readonly>
+                </div>
+                <div class="input-group input-group-static mb-4 is-filled">
+                    <label class="text-bold text-black" class="text-bold text-black">รหัสประจำเครื่อง</label>
+                    <input type="text" class="form-control cursor-default" id="id_number" name="number" value="{{ scientificInstrument.number }}" readonly>
+                </div>
+                <div class="input-group input-group-static mb-4 is-filled">
+                    <label class="text-bold text-black">สถานที่</label>
+                    <input type="text" class="form-control cursor-default" id="id_place" name="place" value="{{ scientificInstrument.place }}" readonly>
+                </div>
+                <div class="input-group input-group-static mb-4 is-filled">
+                    <label class="text-bold text-black">รายละเอียด</label>
+                    <input type="text" class="form-control cursor-default" id="id_detail" name="detail" value="{{ scientificInstrument.detail }}" readonly>
+                </div>
+                <div class="input-group input-group-static mb-4 is-filled">
+                    <label class="text-bold text-black">หมายเหตุ</label>
+                    <input type="text" class="form-control cursor-default" id="id_annotation" name="annotation" value="{{ scientificInstrument.annotation }}" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
