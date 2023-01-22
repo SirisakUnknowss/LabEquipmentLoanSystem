@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'equipment.apps.EquipmentConfig',
     'borrowing.apps.BorrowingConfig',
+    'scientificInstrument.apps.ScientificinstrumentConfig',
 ]
 
 MIDDLEWARE = [
