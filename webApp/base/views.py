@@ -88,15 +88,30 @@ def registerpage(request):
 
 def notificationspage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
-    orders = Order.objects.filter(user=request.user.account, status=Order.STATUS.OVERDUED)
+    account = request.user.account
     checkOverDued(request)
-    if request.user.account.status == Account.STATUS.ADMIN:
+    orders = getOrders(account)
+    bookings = getBookings(account)
+    context         = { 'orders': orders, 'bookings': bookings.order_by('-dateBooking', '-timeBooking') }
+    return render(request, 'pages/notifications_page.html', context)
+
+def getOrders(account: Account):
+    orders = Order.objects.filter(user=account, status=Order.STATUS.OVERDUED)
+    if account.status == Account.STATUS.ADMIN:
         returned    = Q(status=Order.STATUS.RETURNED)
         waiting     = Q(status=Order.STATUS.WAITING)
         overdued    = Q(status=Order.STATUS.OVERDUED)
         orders      = Order.objects.filter(waiting | returned | overdued)
-    context         = { 'orders': orders }
-    return render(request, 'pages/notifications_page.html', context)
+    return orders
+
+def getBookings(account: Account):
+    waiting     = Q(status=Order.STATUS.WAITING)
+    approved    = Q(status=Order.STATUS.APPROVED)
+    bookings = Booking.objects.filter(user=account).filter(approved | waiting)
+    if account.status == Account.STATUS.ADMIN:
+        waiting     = Q(status=Order.STATUS.WAITING)
+        bookings      = Booking.objects.filter(waiting)
+    return bookings
 
 def informationpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
@@ -390,3 +405,28 @@ def addscientificinstrumentspage(request):
             return render(request, 'pages/add_scientific_instruments.html', context)
         return redirect(reverse('scientific-instruments-list'))
     return render(request, 'pages/add_scientific_instruments.html')
+
+def informationscientificInstrumentspage(request):
+    if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    checkOverDued(request)
+    waiting     = Q(status=Order.STATUS.WAITING)
+    approved    = Q(status=Order.STATUS.APPROVED)
+    bookings    = Booking.objects.filter(waiting | approved)
+    if request.user.account.status == Account.STATUS.USER:
+        bookings  = bookings.filter(user=request.user.account)
+    context     = { 'bookings': bookings.order_by('-dateBooking', '-timeBooking') }
+    return render(request, 'pages/scientificInstruments/information_page.html', context)
+
+def detailscientificInstrumentpage(request):
+    if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    checkOverDued(request)
+    if request.method == 'GET':
+        return redirect(reverse('homepage'))
+    status      = request.POST['StatusBooking']
+    bookingID   = request.POST['bookingID']
+    try:
+        booking   = Booking.objects.get(id=bookingID, status=status)
+        context = { 'booking': booking, 'status': status }
+        return render(request, 'pages/scientificInstruments/detail_page.html', context)
+    except ObjectDoesNotExist:
+        return redirect(reverse('information-scientificInstrument'))

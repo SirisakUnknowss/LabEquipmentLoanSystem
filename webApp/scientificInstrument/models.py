@@ -1,5 +1,6 @@
 #Python
 import random
+import datetime
 #Django
 from django.db import models
 from django.utils.html import mark_safe
@@ -38,11 +39,24 @@ class ScientificInstrument(models.Model):
         return self.name
 
 class Booking(models.Model):
+    class Time(models.TextChoices):
+        _9_00     = '09:00 - 10:00'
+        _10_00    = '10:00 - 11:00'
+        _11_00    = '11:00 - 12:00'
+        _12_00    = '12:00 - 13:00'
+        _13_00    = '13:00 - 14:00'
+        _14_00    = '14:00 - 15:00'
+        _15_00    = '15:00 - 16:00'
+        _16_00    = '16:00 - 17:00'
+        _17_00    = '17:00 - 18:00'
+        _18_00    = '18:00 - 19:00'
+    
     user                    = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.CASCADE, related_name='accountBooking')
     scientificInstrument    = models.ForeignKey(ScientificInstrument, null=True, blank=True, on_delete=models.CASCADE, related_name='scientificInstrumentBooking')
-    dateStart               = models.DateTimeField(null=True, blank=True, default=None)
-    dateEnd                 = models.DateTimeField(null=True, blank=True, default=None)
+    dateBooking             = models.DateField(null=True, blank=True, default=None)
+    timeBooking             = models.CharField(max_length=20, choices=Time.choices, null=True, blank=True)
+    dateApproved            = models.DateTimeField(blank=True, null=True, default=None)
     status                  = models.CharField(null=True, blank=True, choices=Order.STATUS.choices, default=Order.STATUS.WAITING, max_length=20)
 
     def __str__(self):
-        return self.scientificInstrument.name + str(self.scientificInstrument.number)
+        return str(self.scientificInstrument.name) + str(self.scientificInstrument.number) + str(self.dateBooking) + str(self.timeBooking)

@@ -83,15 +83,14 @@
                   {% else %}
                     {% if equipment.quantity == 0 %}
                     <label class="form-label">จำนวนที่ยืม : </label>
-                    <input type="number" class="mb-3" id="quantity" name="quantity" min="1" value="0" max="{{ equipment.quantity }}"></br>
+                    <input type="number" class="text-center mb-3 border-radius-md" id="quantity" name="quantity" min="1" value="0" max="{{ equipment.quantity }}"></br>
                     <button class="btn bg-gradient-secondary" type="submit">เพิ่มลงตะกร้า</button>
                     {% else %}
                     <form id="add-equipment" method="post" action="{% url 'addItemForBorrowingApi' %}">
                       {% csrf_token %}
                       <label class="form-label">จำนวนที่ยืม : </label>
-                      <input type="number" class="mb-3" id="quantity" name="quantity" min="1" value="0" max="{{ equipment.quantity }}">
-                      <input type="hidden" value="{{ equipment.id }}" name="equipment" />
-                      
+                      <input type="number" class="text-center mb-3 border-radius-md" id="quantity" name="quantity" min="1" value="0" max="{{ equipment.quantity }}">
+                      <input type="hidden" value="{{ equipment.id }}" name="equipment" /></br>
                       <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
                     </form>
                     {% endif %}
@@ -131,5 +130,7 @@
       const urlExportData = "{% url 'ExportEquipments' %}"
   </script>
   <script src="{{ STATIC_URL }}js/equipmentDetail.js"></script>
+  {% if user.account.status == "admin" %}
   <script src="{{ STATIC_URL }}js/exportEquipment.js"></script>
+  {% endif %}
 {% endblock %}

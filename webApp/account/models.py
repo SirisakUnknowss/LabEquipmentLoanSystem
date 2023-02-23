@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from borrowing.models import EquipmentCart, Order
+from scientificInstrument.models import Booking
 # Module
 from django.db.models import Q
 
@@ -76,7 +77,11 @@ class Account(models.Model):
 
     @property
     def orderoverduedcount(self):
-        count = Order.objects.filter(user__studentID=self.studentID, status=Order.STATUS.OVERDUED).count()
+        waiting     = Q(status=Order.STATUS.WAITING)
+        approved    = Q(status=Order.STATUS.APPROVED)
+        countOrder = Order.objects.filter(user__studentID=self.studentID, status=Order.STATUS.OVERDUED).count()
+        countBooking = Booking.objects.filter(user__studentID=self.studentID).filter(waiting | approved).count()
+        count = countOrder + countBooking
         if count > 9:
             count = "9+"
         return count

@@ -50,4 +50,6 @@ urlpatterns = [
     path('scientificInstruments/calendar', baseViews.scientificinstrumentscalendarpage, name='scientific-instruments-calendar'),
     path('scientificInstruments/list', baseViews.scientificinstrumentslistpage, name='scientific-instruments-list'),
     path('scientificInstruments/add', baseViews.addscientificinstrumentspage, name='addscientificinstrumentspage'),
+    path('scientificInstruments/information', baseViews.informationscientificInstrumentspage, name='information-scientificInstrument'),
+    path('scientificInstruments/detail', baseViews.detailscientificInstrumentpage, name='scientificInstrument-detail'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -2,11 +2,11 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 #Project
-from scientificInstrument.models import ScientificInstrument
+from scientificInstrument.models import ScientificInstrument, Booking
 
 
 @admin.register(ScientificInstrument)
-class ScientificInstrumenttAdmin(ImportExportModelAdmin):
+class ScientificInstrumentAdmin(ImportExportModelAdmin):
 
     list_display    = [ 'id', 'name', 'number', 'place' ]
 
@@ -19,3 +19,8 @@ class ScientificInstrumenttAdmin(ImportExportModelAdmin):
 
     thumbnail_preview.short_description = 'Thumbnail'
     thumbnail_preview.allow_tags = True
+
+@admin.register(Booking)
+class BookingAdmin(ImportExportModelAdmin):
+
+    list_display    = [ 'id', 'dateBooking', 'status' ]

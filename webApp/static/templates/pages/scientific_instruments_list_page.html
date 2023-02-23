@@ -57,11 +57,8 @@
                   {% else %}
                   <div class="row">
                     <div class="col-6">
-                      <form id="add-scientificInstrument" method="post" action="{% url 'scientific-instruments-list' %}">
-                        {% csrf_token %}
                         <input type="hidden" value="{{ scientificInstrument.id }}" name="ScientificInstrumentID" />
-                        <button class="btn bg-gradient-primary w-100" type="submit">จอง</button>
-                      </form>
+                        <button class="btn bg-gradient-primary w-100" onclick="showBooking({{ scientificInstrument.id }})" data-bs-toggle="modal" data-bs-target="#modalScientificBooking">จอง</button>
                     </div>
                     <div class="col-6">
                       <button id="scientificInstrumentDetail" class="btn bg-gradient-warning w-100" onclick="showDetail({{ scientificInstrument.id }})" data-bs-toggle="modal" data-bs-target="#modalScientificDetail">รายละเอียด</button>
@@ -82,6 +79,7 @@
     </div>
   </div>
   {% include 'pages/popUpScientificDetail.html' %}
+  {% include 'pages/popUpScientificBooking.html' %}
   {% include 'pages/popUpconfirmDeleteScientific.html' %}
   
   {% if user.account.status == "admin" %}
@@ -101,8 +99,9 @@
     const scientificInstrumentsJson = JSON.parse('{{ scientificInstrumentsJson | safe }}')
     let urlPlaceHolder = "{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png"
     let name_page = "id_equipment_list_page"
-    console.log(scientificInstrumentsJson)
+    let urlGetTimeCanBooking = "{% url 'GetTimeCanBooking' %}"
   </script>
   
   <script src="{{ STATIC_URL }}js/scientificDetail.js"></script>
+  <script src="{{ STATIC_URL }}js/scientificBooking.js"></script>
 {% endblock %}

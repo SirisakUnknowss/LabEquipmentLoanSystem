@@ -9,11 +9,11 @@ const dismissModalScientificDelete = document.querySelector("#dismissModalScient
 function showDetail(id)
 {
     var data = scientificInstrumentsJson.find(function(item) { return item.pk == id })
-    nameInput.value = data.fields.name
-    numberInput.value = data.fields.number
-    placeInput.value = data.fields.place
-    detailInput.value = data.fields.detail
-    annotationInput.value = data.fields.annotation
+    nameInput.innerHTML = data.fields.name
+    numberInput.innerHTML = data.fields.number
+    placeInput.innerHTML = data.fields.place
+    detailInput.innerHTML = data.fields.detail
+    annotationInput.innerHTML = data.fields.annotation
     imageDisplay.src = data.fields.image
     if (data.fields.image == "")
     {
