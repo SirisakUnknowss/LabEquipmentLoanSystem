@@ -10,7 +10,9 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 #Project
-from base.views import LabAPIGetView
+from account.models import Account
+from base.views import LabAPIGetView, LabAPIView
+from borrowing.models import Order
 from scientificInstrument.models import ScientificInstrument, Booking, getClassPath
 from scientificInstrument.serializers import SlzScientificInstrumentInput, SlzScientificInstrument, SlzBookingInput, SlzBooking
 
@@ -178,3 +180,50 @@ class BookingScientificInstrumentApi(LabAPIGetView):
             )
         booking.save()
         return booking
+
+class DisapprovedBookingApi(LabAPIView):
+    queryset            = Booking.objects.all()
+    permission_classes  = [ AllowAny ]
+
+    def post(self, request, *args, **kwargs):
+        account     = request.user.account
+        bookingID   = self.request.data.get("bookingID")
+        if account.status != Account.STATUS.ADMIN:
+            return redirect(reverse('notifications-forgetten'))
+        booking = Booking.objects.filter(id=bookingID)
+        if not booking.exists():
+            return redirect(reverse('notifications-forgetten'))
+        booking.update(status=Order.STATUS.DISAPPROVED)
+        return redirect(reverse('notifications-forgetten'))
+
+class ApprovedBookingApi(LabAPIView):
+    queryset            = Booking.objects.all()
+    permission_classes  = [ AllowAny ]
+
+    def post(self, request, *args, **kwargs):
+        account     = request.user.account
+        bookingID   = self.request.data.get("bookingID")
+        if account.status != Account.STATUS.ADMIN:
+            return redirect(reverse('notifications-forgetten'))
+        booking = Booking.objects.filter(id=bookingID)
+        if not booking.exists():
+            return redirect(reverse('notifications-forgetten'))
+        booking.update(
+            status=Order.STATUS.APPROVED,
+            approver=account,
+            dateApproved=datetime.now()
+        )
+        return redirect(reverse('notifications-forgetten'))
+
+class CancelBookingApi(LabAPIView):
+    queryset            = Booking.objects.all()
+    permission_classes  = [ AllowAny ]
+
+    def post(self, request, *args, **kwargs):
+        account     = request.user.account
+        bookingID   = self.request.data.get("bookingID")
+        booking     = Booking.objects.filter(id=bookingID, user=account)
+        if not booking.exists():
+            return redirect(reverse('information-scientificInstrument'))
+        booking.update( status=Order.STATUS.CANCELED)
+        return redirect(reverse('notifications-forgetten'))

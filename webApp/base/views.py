@@ -90,9 +90,9 @@ def notificationspage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     account = request.user.account
     checkOverDued(request)
-    orders = getOrders(account)
-    bookings = getBookings(account)
-    context         = { 'orders': orders, 'bookings': bookings.order_by('-dateBooking', '-timeBooking') }
+    orders      = getOrders(account)
+    bookings    = getBookings(account)
+    context     = { 'orders': orders, 'bookings': bookings.order_by('-dateBooking', '-timeBooking') }
     return render(request, 'pages/notifications_page.html', context)
 
 def getOrders(account: Account):

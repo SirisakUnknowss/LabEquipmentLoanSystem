@@ -65,11 +65,8 @@
                                     {% ifequal booking.status "waiting" %}
                                     <button class="btn badge badge-sm bg-gradient-warning w-50 w-md-50 w-sm-100" type="submit">รออนุมัติ</button>
                                     {% endifequal %}
-                                    {% ifequal booking.status "overdued" %}
-                                    <button class="btn badge badge-sm bg-gradient-danger w-50 w-md-50 w-sm-100" type="submit">เกินกำหนดคืน</button>
-                                    {% endifequal %}
-                                    {% ifequal booking.status "returned" %}
-                                    <button class="btn badge badge-sm bg-gradient-warning w-50 w-md-50 w-sm-100" type="submit">คืนอุปกรณ์</button>
+                                    {% ifequal booking.status "approved" %}
+                                    <button class="btn badge badge-sm bg-gradient-success w-50 w-md-50 w-sm-100" type="submit">อนุมัติแล้ว</button>
                                     {% endifequal %}
                                 </form>
                             </td>

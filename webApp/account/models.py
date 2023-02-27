@@ -92,7 +92,9 @@ class Account(models.Model):
             returned    = Q(status=Order.STATUS.RETURNED)
             waiting     = Q(status=Order.STATUS.WAITING)
             overdued    = Q(status=Order.STATUS.OVERDUED)
-            count       = Order.objects.filter(returned | waiting | overdued).count()
+            countOrder  = Order.objects.filter(returned | waiting | overdued).count()
+            countBooking = Booking.objects.filter(waiting).count()
+            count = countOrder + countBooking
             if count > 9:
                 count = "9+"
             return count

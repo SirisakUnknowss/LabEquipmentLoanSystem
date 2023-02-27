@@ -18,15 +18,6 @@
                 {% ifequal booking.status "disapproved" %}
                 <span class="badge badge-sm bg-gradient-danger">คำขอล้มเหลว</span>
                 {% endifequal %}
-                {% ifequal booking.status "completed" %}
-                <span class="badge badge-sm bg-gradient-success">คืนเรียบร้อยแล้ว</span>
-                {% endifequal %}
-                {% ifequal booking.status "overdued" %}
-                <span class="badge badge-sm bg-gradient-danger">เกินกำหนดคืน</span>
-                {% endifequal %}
-                {% ifequal booking.status "returned" %}
-                <span class="badge badge-sm bg-gradient-info">คืนอุปกรณ์</span>
-                {% endifequal %}
             </div>
         </div>
         

@@ -56,7 +56,10 @@ class Booking(models.Model):
     dateBooking             = models.DateField(null=True, blank=True, default=None)
     timeBooking             = models.CharField(max_length=20, choices=Time.choices, null=True, blank=True)
     dateApproved            = models.DateTimeField(blank=True, null=True, default=None)
+    approver                = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.SET_NULL, related_name='accountApproverBooking')
     status                  = models.CharField(null=True, blank=True, choices=Order.STATUS.choices, default=Order.STATUS.WAITING, max_length=20)
 
     def __str__(self):
-        return str(self.scientificInstrument.name) + str(self.scientificInstrument.number) + str(self.dateBooking) + str(self.timeBooking)
+        if self.scientificInstrument:
+            return str(self.scientificInstrument.name) + str(self.scientificInstrument.number) + str(self.dateBooking) + str(self.timeBooking)
+        return ""
