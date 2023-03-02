@@ -52,21 +52,6 @@
         </div>
       </div>
     </div>
-    
-    <div class="row">
-      <div class="col-lg-4 col-md-8 col-12 mx-auto mt-1 mb-1 py-1">
-          <form role="form" class="text-start" id="login-form" method="post" action="{% url 'equipment-list' %}">
-          {% csrf_token %}
-          <div class="input-group input-group-outline mb-2">
-              <label class="form-label">ชื่ออุปกรณ์</label>
-              <input type="text" class="form-control bg-gradient-faded-white" id="id_nameequipment" name="nameequipment" onfocus="focused(this)" onfocusout="defocused(this)">
-          </div>
-          <div class="text-center">
-              <button type="submit" class="btn bg-gradient-primary w-100 mb-2">ค้นหา</button>
-          </div>
-          </form>
-      </div>
-  </div>
     <div class="row mt-4">
       <div class="card mt-3 mb-7 p-5">
         <div id='calendar-container'>
@@ -76,50 +61,58 @@
     </div>
   </div>
 </main>
+{% include 'pages/popUpBookingDetail.html' %}
 {% endblock %}
 
 {% block js %}
 {{ block.super }}
-    <script>
-        let name_page = "id_equipment_list_page"
-        let todaystr = {{ today|date:"Y-m-d" }}
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script>
+    const urlGetBookingId = "{% url 'GetBookingByID' %}"
+    let urlPlaceHolder = "{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png"
+    
+    const todaystr = '{% now "Y-m-d" %}'
+    let dataList = JSON.parse('{{ bookings.data | escapejs }}');
+    
+    let name_page = "id_equipment_list_page"
+    document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var testData = [
+      {
+        title: 'All Day Event',
+        start: '2022-02-01',
+      },
+      {
+        title: 'Click for Google',
+        url: 'http://google.com/',
+        start: '2023-02-28'
+      }
+    ]
 
-        document.addEventListener('DOMContentLoaded', function() {
-      var calendarEl = document.getElementById('calendar');
-  
-      var calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
-        height: 'parent',
-        header: {
-          left: 'prev,next today',
-          center: 'title',
-          //right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-        },
-        defaultView: 'dayGridMonth',
-        defaultDate: todaystr,
-        navLinks: true, // can click day/week names to navigate views
-        editable: true,
-        eventLimit: true, // allow "more" link when too many events
-        events: [
-          {
-            title: 'All Day Event',
-            start: '2022-02-01',
-          },
-          {
-            title: 'Click for Google',
-            url: 'http://google.com/',
-            start: '2020-02-28'
-          }
-        ]
-      });
-  
-      calendar.render();
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
+      height: 'parent',
+      header: {
+        left: 'prev,next today',
+        center: 'title',
+        //right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+      },
+      defaultView: 'dayGridMonth',
+      defaultDate: todaystr,
+      navLinks: true, // can click day/week names to navigate views
+      editable: true,
+      eventLimit: true, // allow "more" link when too many events
+      events: dataList
     });
-    </script>
 
-    <script src="{{ STATIC_URL }}fullcalendar/packages/core/main.js"></script>
-    <script src="{{ STATIC_URL }}fullcalendar/packages/interaction/main.js"></script>
-    <script src="{{ STATIC_URL }}fullcalendar/packages/daygrid/main.js"></script>
-    <script src="{{ STATIC_URL }}fullcalendar/packages/timegrid/main.js"></script>
-    <script src="{{ STATIC_URL }}fullcalendar/packages/list/main.js"></script>
+    calendar.render();
+  });
+  </script>
+
+  <script src="{{ STATIC_URL }}fullcalendar/packages/core/main.js"></script>
+  <script src="{{ STATIC_URL }}fullcalendar/packages/interaction/main.js"></script>
+  <script src="{{ STATIC_URL }}fullcalendar/packages/daygrid/main.js"></script>
+  <script src="{{ STATIC_URL }}fullcalendar/packages/timegrid/main.js"></script>
+  <script src="{{ STATIC_URL }}fullcalendar/packages/list/main.js"></script>
+  <script src="{{ STATIC_URL }}js/bookingDetail.js"></script>
 {% endblock %}

@@ -375,11 +375,26 @@ def scientificInstruments():
     return scientificInstrument
 
 def bookings():
-    bookingsAll         = Booking.objects.all()
+    bookingsAll         = Booking.objects.all().order_by('-dateBooking', '-timeBooking')
     booking             = dict()
     booking['all']     = bookingsAll.count()
-    booking['data']    = bookingsAll
+    booking['data']    = getBookingList(bookingsAll)
+    print(booking['data'])
     return booking
+
+def getBookingList(bookingsAll):
+    bookingList = []
+    for booking in bookingsAll:
+        booking: Booking = booking
+        day ="{:02d}".format(booking.dateBooking.day)
+        month = "{:02d}".format(booking.dateBooking.month)
+        year = booking.dateBooking.year
+        jsonData = {}
+        jsonData["title"] = f"{booking.scientificInstrument.name}"
+        jsonData["start"] = f"{year}-{month}-{day}"
+        jsonData["url"] = booking.pk
+        bookingList.append(jsonData)
+    return (str(bookingList)).replace("\'", "\"")
 
 def scientificinstrumentslistpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))

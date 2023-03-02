@@ -4,7 +4,7 @@ from datetime import datetime, date, timedelta
 #Django
 from django.core.files.storage import FileSystemStorage
 from django.db.models import F
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
@@ -14,7 +14,7 @@ from account.models import Account
 from base.views import LabAPIGetView, LabAPIView
 from borrowing.models import Order
 from scientificInstrument.models import ScientificInstrument, Booking, getClassPath
-from scientificInstrument.serializers import SlzScientificInstrumentInput, SlzScientificInstrument, SlzBookingInput, SlzBooking
+from scientificInstrument.serializers import SlzScientificInstrumentInput, SlzScientificInstrument, SlzBookingInput, SlzBooking, SlzBookingOutput
 
 # Create your views here.
 
@@ -227,3 +227,15 @@ class CancelBookingApi(LabAPIView):
             return redirect(reverse('information-scientificInstrument'))
         booking.update( status=Order.STATUS.CANCELED)
         return redirect(reverse('notifications-forgetten'))
+
+class GetBookingByID(LabAPIGetView):
+    queryset            = Booking.objects.all()
+    serializer_class    = SlzBookingOutput
+    permission_classes  = [ AllowAny ]
+
+    def get(self, request, *args, **kwargs):
+        id                      = request.GET['id']
+        booking                 = get_object_or_404(Booking, pk=id)
+        serializer              = self.get_serializer(booking)
+        self.response["result"] = serializer.data
+        return Response(self.response)

@@ -12,4 +12,5 @@ urlpatterns = [
     path('disapproved', views.DisapprovedBookingApi.as_view(), name='disapprovedBookingApi'),
     path('approved', views.ApprovedBookingApi.as_view(), name='approvedBookingApi'),
     path('cancel', views.CancelBookingApi.as_view(), name='cancelBookingApi'),
+    path('get', views.GetBookingByID.as_view(), name="GetBookingByID"),
 ]

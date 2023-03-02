@@ -64,6 +64,7 @@ Docs & License: https://fullcalendar.io/
             var eventInstance = eventRange.instance;
             var eventUi = eventRange.ui;
             var url = eventDef.url;
+            var idBooking = eventDef.idBooking;
             var classes = ['fc-list-item'].concat(eventUi.classNames);
             var bgColor = eventUi.backgroundColor;
             var timeHtml;
@@ -104,7 +105,8 @@ Docs & License: https://fullcalendar.io/
                 '></span>' +
                 '</td>' +
                 '<td class="fc-list-item-title ' + theme.getClass('widgetContent') + '">' +
-                '<a' + (url ? ' href="' + core.htmlEscape(url) + '"' : '') + '>' +
+                '<a' + (url ? ' href="' + core.htmlEscape(url) + '"' : '') + '>' + +
+                (idBooking ? 'onclick="showDetail(' + core.htmlEscape(idBooking) + ')"' : '') +
                 core.htmlEscape(eventDef.title || '') +
                 '</a>' +
                 '</td>' +

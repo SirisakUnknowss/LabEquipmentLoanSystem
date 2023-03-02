@@ -241,7 +241,7 @@ Docs & License: https://fullcalendar.io/
                     '</span>';
             return '<a class="' + classes.join(' ') + '"' +
                 (eventDef.url ?
-                    ' href="' + core.htmlEscape(eventDef.url) + '"' :
+                    'onclick="showDetail(' + core.htmlEscape(eventDef.url) + ')"' :
                     '') +
                 (skinCss ?
                     ' style="' + skinCss + '"' :
