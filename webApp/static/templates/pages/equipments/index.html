@@ -1,0 +1,13 @@
+{% extends 'base/base.html' %}
+{% block sidebar %}{% include 'pages/equipments/sidebar.html' %}{% endblock %}
+{% block topbar %}{% include 'pages/equipments/topbar.html' %}{% endblock %}
+{% block content %}
+{% include 'pages/equipments/landing.html' %}
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+    <script>
+        let name_page = "id_home_page"
+    </script>
+{% endblock %}

@@ -86,6 +86,12 @@ def registerpage(request):
         return render(request, 'base/signup.html', context)
     return render(request, 'base/signup.html')
 
+def equipmentpage(request):
+    if not(request.user.is_authenticated):
+        return render(request, 'base/login.html')
+    checkOverDued(request)
+    return render(request, 'pages/equipments/index.html')
+
 def notificationspage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     account = request.user.account
@@ -365,7 +371,7 @@ def scientificinstrumentscalendarpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     context = { 'scientificInstruments': scientificInstruments(), 'bookings': bookings() }
-    return render(request, 'pages/scientific_instruments_calendar_page.html', context)
+    return render(request, 'pages/scientificInstruments/calendarpage.html', context)
 
 def scientificInstruments():
     scientificInstrumentsAll        = ScientificInstrument.objects.all()
@@ -407,7 +413,7 @@ def scientificinstrumentslistpage(request):
         scientificInstruments       = ScientificInstrument.objects.filter(name | number).order_by('name')
     scientificInstrumentsJson = serializers.serialize("json", scientificInstruments)
     context = { 'scientificInstruments': scientificInstruments, 'scientificInstrumentsJson': scientificInstrumentsJson }
-    return render(request, 'pages/scientific_instruments_list_page.html', context)
+    return render(request, 'pages/scientificInstruments/listpage.html', context)
 
 def addscientificinstrumentspage(request):
     if not(request.user.is_authenticated) or request.user.account.status != Account.STATUS.ADMIN:
@@ -417,9 +423,9 @@ def addscientificinstrumentspage(request):
         scientificInstrument = ScientificInstrument.objects.filter(id=scientificInstrumentID)
         if scientificInstrument.exists():
             context = { 'scientificInstrument': scientificInstrument.first() }
-            return render(request, 'pages/add_scientific_instruments.html', context)
+            return render(request, 'pages/scientificInstruments/add_scientific_instruments.html', context)
         return redirect(reverse('scientific-instruments-list'))
-    return render(request, 'pages/add_scientific_instruments.html')
+    return render(request, 'pages/scientificInstruments/add_scientific_instruments.html')
 
 def informationscientificInstrumentspage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))

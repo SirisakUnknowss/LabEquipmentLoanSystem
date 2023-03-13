@@ -1,4 +1,4 @@
-{% extends 'base/base.html' %}
+{% extends 'pages/scientificInstruments/base.html' %}
 {% block content %}
 <main class="main-content position-relative max-height-vh-100 h-100">
   <div class="container-fluid py-4">
@@ -78,9 +78,9 @@
       {% endif %}
     </div>
   </div>
-  {% include 'pages/popUpScientificDetail.html' %}
-  {% include 'pages/popUpScientificBooking.html' %}
-  {% include 'pages/popUpconfirmDeleteScientific.html' %}
+  {% include 'pages/scientificInstruments/popUpScientificDetail.html' %}
+  {% include 'pages/scientificInstruments/popUpScientificBooking.html' %}
+  {% include 'pages/scientificInstruments/popUpconfirmDeleteScientific.html' %}
   
   {% if user.account.status == "admin" %}
   <div class="fixed-plugin ps">

@@ -37,6 +37,7 @@ urlpatterns = [
     path('account/profile', baseViews.profilepage, name='user-profile'),
     path('api/account/', include('account.urls')),
     #equipment
+    path('equipment', baseViews.equipmentpage, name='equipmentpage'),
     path('api/equipment/', include('equipment.urls')),
     path('equipment/add', baseViews.addequipmentpage, name='addequipmentpage'),
     path('equipment/list', baseViews.equipmentlistpage, name='equipment-list'),

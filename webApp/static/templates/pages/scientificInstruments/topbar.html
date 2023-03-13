@@ -1,0 +1,49 @@
+<!-- Navbar -->
+<main class="topbar-content position-relative">
+    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-2 shadow-sm">
+        <div class="container-fluid py-1 px-3">
+            <nav aria-label="breadcrumb">
+                <h6 class="font-weight-bolder mb-0 text-white">จองใช้งานเครื่องมือวิทยาศาสตร์ ศูนย์วิทยาศาสตร์</h6>
+            </nav>
+            <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+                    <ul class="navbar-nav justify-content-end">
+                        {% if user.account.status == "admin" %}
+                        <a href="{% url 'notifications-forgetten' %}"><i class="material-icons opacity-10 text-white me-sm-3">notifications</i></a>
+                        {% ifequal user.account.orderwaitingcount 0 %}
+                        {% else %}
+                            <span class="position-absolute top-10 badge rounded-pill bg-danger border border-white mx-8 py-1 px-2">
+                                <span class="small">{{ user.account.orderwaitingcount }}</span>
+                            </span>
+                        {% endifequal %}
+                        {% else %}
+                            <a href="{% url 'equipmentcart-list' %}"><i class="material-icons opacity-10 text-white me-sm-3">shopping_bag</i></a>
+                            {% ifequal user.account.equipmentcartcount 0 %}
+                            {% else %}
+                                <span class="position-absolute top-10 badge rounded-pill bg-danger border border-white small mx-10 py-1 px-2">
+                                    <span class="small">{{ user.account.equipmentcartcount }}</span>
+                                </span>
+                            {% endifequal %}
+                            <a href="{% url 'notifications-forgetten' %}"><i class="material-icons opacity-10 text-white me-sm-3">notifications</i></a>
+                            {% ifequal user.account.orderoverduedcount 0 %}
+                            {% else %}
+                                <span class="position-absolute top-10 badge rounded-pill bg-danger border border-white mx-8 py-1 px-2">
+                                    <span class="small">{{ user.account.orderoverduedcount }}</span>
+                                </span>
+                            {% endifequal %}
+                        {% endif %}
+                        <a href="{% url 'user-profile' %}"><i class="material-icons opacity-10 text-white me-sm-3">account_circle</i></a>
+                        <li class="nav-item d-flex align-items-center">
+                        {% if user.is_authenticated %}
+                            <span class="d-sm-inline d-none text-white" title="{{ user.account.firstname }} {{ user.account.lastname }}">{{ user.account.studentID }}</span>
+                        {% else %}
+                            <a href="{% url 'homepage' %}"><span class="d-sm-inline d-none text-white">เข้าสู่ระบบ</span></a>
+                        {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+</main>
+<!-- End Navbar -->
