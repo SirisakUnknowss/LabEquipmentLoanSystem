@@ -97,9 +97,8 @@ def notificationspage(request):
     account = request.user.account
     checkOverDued(request)
     orders      = getOrders(account)
-    bookings    = getBookings(account)
-    context     = { 'orders': orders, 'bookings': bookings.order_by('-dateBooking', '-timeBooking') }
-    return render(request, 'pages/notifications_page.html', context)
+    context     = { 'orders': orders }
+    return render(request, 'pages/equipments/notifications_page.html', context)
 
 def getOrders(account: Account):
     orders = Order.objects.filter(user=account, status=Order.STATUS.OVERDUED)
@@ -129,7 +128,7 @@ def informationpage(request):
     if request.user.account.status == Account.STATUS.USER:
         orders  = orders.filter(user=request.user.account)
     context     = { 'orders': orders }
-    return render(request, 'pages/information_page.html', context)
+    return render(request, 'pages/equipments/information_page.html', context)
 
 def borrowinghistorypage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
@@ -141,13 +140,13 @@ def borrowinghistorypage(request):
     if request.user.account.status == Account.STATUS.USER:
         orders  = orders.filter(user=request.user.account)
     context     = { 'orders': orders }
-    return render(request, 'pages/borrowing_history_page.html', context)
+    return render(request, 'pages/equipments/borrowing_history_page.html', context)
 
 def analysispage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     context = { 'orders': orderAll(), 'accounts': accountAll(), 'equipments': topEquipment() }
-    return render(request, 'pages/analysis_page.html', context)
+    return render(request, 'pages/equipments/analysis_page.html', context)
 
 def topEquipment():
     equipments = Equipment.objects.all().order_by('-statistics').filter(statistics__gt=1)
@@ -214,9 +213,9 @@ def addequipmentpage(request):
         equipment = Equipment.objects.filter(id=equipmentID)
         if equipment.exists():
             context = { 'equipment': equipment.first() }
-            return render(request, 'pages/add_equipment.html', context)
+            return render(request, 'pages/equipments/add_equipment.html', context)
         return redirect(reverse('equipment-list'))
-    return render(request, 'pages/add_equipment.html')
+    return render(request, 'pages/equipments/add_equipment.html')
 
 def equipmentlistpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
@@ -228,7 +227,7 @@ def equipmentlistpage(request):
         equipments      = Equipment.objects.filter(name).order_by('name')
     equipmentsJson = serializers.serialize("json", equipments)
     context = { 'equipments': equipments, 'equipmentsJson': equipmentsJson }
-    return render(request, 'pages/equipment_list_page.html', context)
+    return render(request, 'pages/equipments/equipment_list_page.html', context)
 
 def equipmentdetailpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
@@ -240,7 +239,7 @@ def equipmentdetailpage(request):
     try:
         order   = Order.objects.get(id=equipmentID, status=status)
         context = { 'order': order, 'status': status }
-        return render(request, 'pages/equipment_detail_page.html', context)
+        return render(request, 'pages/equipments/equipment_detail_page.html', context)
     except ObjectDoesNotExist:
         return redirect(reverse('equipment-list'))
 
@@ -249,7 +248,7 @@ def equipmentcartlistpage(request):
     checkOverDued(request)
     equipmentsCart = EquipmentCart.objects.filter(user=request.user.account)
     context = { 'equipmentsCart': equipmentsCart }
-    return render(request, 'pages/cart_equipment_page.html', context)
+    return render(request, 'pages/equipments/cart_equipment_page.html', context)
 
 def usermanagementpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
@@ -451,3 +450,11 @@ def detailscientificInstrumentpage(request):
         return render(request, 'pages/scientificInstruments/detail_page.html', context)
     except ObjectDoesNotExist:
         return redirect(reverse('information-scientificInstrument'))
+
+def notificationsbookingpage(request):
+    if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    account = request.user.account
+    checkOverDued(request)
+    bookings    = getBookings(account)
+    context     = {'bookings': bookings.order_by('-dateBooking', '-timeBooking') }
+    return render(request, 'pages/scientificInstruments/notifications_page.html', context)

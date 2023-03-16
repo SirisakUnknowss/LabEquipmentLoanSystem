@@ -77,11 +77,16 @@ class Account(models.Model):
 
     @property
     def orderoverduedcount(self):
+        count = Order.objects.filter(user__studentID=self.studentID, status=Order.STATUS.OVERDUED).count()
+        if count > 9:
+            count = "9+"
+        return count
+
+    @property
+    def bookingoverduedcount(self):
         waiting     = Q(status=Order.STATUS.WAITING)
         approved    = Q(status=Order.STATUS.APPROVED)
-        countOrder = Order.objects.filter(user__studentID=self.studentID, status=Order.STATUS.OVERDUED).count()
-        countBooking = Booking.objects.filter(user__studentID=self.studentID).filter(waiting | approved).count()
-        count = countOrder + countBooking
+        count = Booking.objects.filter(user__studentID=self.studentID).filter(waiting | approved).count()
         if count > 9:
             count = "9+"
         return count
@@ -92,9 +97,17 @@ class Account(models.Model):
             returned    = Q(status=Order.STATUS.RETURNED)
             waiting     = Q(status=Order.STATUS.WAITING)
             overdued    = Q(status=Order.STATUS.OVERDUED)
-            countOrder  = Order.objects.filter(returned | waiting | overdued).count()
-            countBooking = Booking.objects.filter(waiting).count()
-            count = countOrder + countBooking
+            count       = Order.objects.filter(returned | waiting | overdued).count()
+            if count > 9:
+                count = "9+"
+            return count
+        return 0
+
+    @property
+    def bookingwaitingcount(self):
+        if self.status == Account.STATUS.ADMIN:
+            waiting = Q(status=Order.STATUS.WAITING)
+            count   = Booking.objects.filter(waiting).count()
             if count > 9:
                 count = "9+"
             return count

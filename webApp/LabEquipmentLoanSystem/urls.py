@@ -25,9 +25,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', baseViews.homepage, name='homepage'),
     path('register', baseViews.registerpage, name='registerpage'),
-    path('notifications', baseViews.notificationspage, name='notifications-forgetten'),
-    path('information', baseViews.informationpage, name='information-equipment'),
-    path('history-borrowing', baseViews.borrowinghistorypage, name='borrowing-history'),
     path('export/api/user', baseViews.ExportUserData.as_view(), name='ExportUserData'),
     path('export/api/borrowing', baseViews.ExportBorrowingData.as_view(), name='ExportBorrowingData'),
     path('analysis', baseViews.analysispage, name='analysispage'),
@@ -37,12 +34,15 @@ urlpatterns = [
     path('account/profile', baseViews.profilepage, name='user-profile'),
     path('api/account/', include('account.urls')),
     #equipment
-    path('equipment', baseViews.equipmentpage, name='equipmentpage'),
     path('api/equipment/', include('equipment.urls')),
+    path('equipment', baseViews.equipmentpage, name='equipmentpage'),
     path('equipment/add', baseViews.addequipmentpage, name='addequipmentpage'),
     path('equipment/list', baseViews.equipmentlistpage, name='equipment-list'),
-    path('export/api/equipments', baseViews.ExportEquipments.as_view(), name='ExportEquipments'),
     path('equipment/detail', baseViews.equipmentdetailpage, name='equipment-detail'),
+    path('equipment/notifications', baseViews.notificationspage, name='notifications-forgetten'),
+    path('equipment/information', baseViews.informationpage, name='information-equipment'),
+    path('equipment/history-borrowing', baseViews.borrowinghistorypage, name='borrowing-history'),
+    path('export/api/equipments', baseViews.ExportEquipments.as_view(), name='ExportEquipments'),
     #borrowing
     path('api/borrowing/', include('borrowing.urls')),
     path('equipment/borrowing', baseViews.equipmentcartlistpage, name='equipmentcart-list'),
@@ -53,4 +53,5 @@ urlpatterns = [
     path('scientificInstruments/add', baseViews.addscientificinstrumentspage, name='addscientificinstrumentspage'),
     path('scientificInstruments/information', baseViews.informationscientificInstrumentspage, name='information-scientificInstrument'),
     path('scientificInstruments/detail', baseViews.detailscientificInstrumentpage, name='scientificInstrument-detail'),
+    path('scientificInstruments/notifications', baseViews.notificationsbookingpage, name='notifications-booking'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
