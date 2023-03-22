@@ -9,29 +9,49 @@
             <div class="modal-body">
                 <div class="py-3 pe-1 me-10 ms-10 ms-sm-1 me-sm-1">
                     <div class="chart-scientificInstruments center-items">
-                        <img  id="imageDisplay" src="{{ scientificInstrument.image }}" class="image-scientificInstruments border-radius-xl w-50" />
+                        <img  id="imageDisplay" src="{{ scientificInstrument.image }}" class="image-scientificInstruments border-radius-xl w-25" />
                     </div>
                 </div>
                 <input type="hidden" value="{{ scientificInstrument.id }}" name="scientificInstrument" />
-                <div class="input-group input-group-static mb-4 is-filled">
-                    <label class="text-bold text-black w-100">ชื่อเครื่องมือ</label>
-                    <label class="text-md text-bold text-black-50 ms-3" id="id_name"></label>
+                <div class="row">
+                    <div class="col-6 right">
+                        <label class="text-bold text-black right">ชื่อเครื่องมือ</label>
+                    </div>
+                    <div class="col-6">
+                        <label class="text-md text-bold text-black-50 ms-3" id="id_name"></label>
+                    </div>
                 </div>
-                <div class="input-group input-group-static mb-4 is-filled">
-                    <label class="text-bold text-black w-100">รหัสประจำเครื่อง</label>
-                    <label class="text-md text-bold text-black-50 ms-3" id="id_number"></label>
+                <div class="row">
+                    <div class="col-6 right">
+                        <label class="text-bold text-black right">รหัสประจำเครื่อง</label>
+                    </div>
+                    <div class="col-6">
+                        <label class="text-md text-bold text-black-50 ms-3" id="id_number"></label>
+                    </div>
                 </div>
-                <div class="input-group input-group-static mb-4 is-filled">
-                    <label class="text-bold text-black w-100">สถานที่</label>
-                    <label class="text-md text-bold text-black-50 ms-3" id="id_place"></label>
+                <div class="row">
+                    <div class="col-6 right">
+                        <label class="text-bold text-black right">สถานที่</label>
+                    </div>
+                    <div class="col-6">
+                        <label class="text-md text-bold text-black-50 ms-3" id="id_place"></label>
+                    </div>
                 </div>
-                <div class="input-group input-group-static mb-4 is-filled">
-                    <label class="text-bold text-black w-100">รายละเอียด</label>
-                    <label class="text-md text-bold text-black-50 ms-3" id="id_detail"></label>
+                <div class="row">
+                    <div class="col-6 right">
+                        <label class="text-bold text-black right">รายละเอียด</label>
+                    </div>
+                    <div class="col-6">
+                        <label class="text-md text-bold text-black-50 ms-3" id="id_detail"></label>
+                    </div>
                 </div>
-                <div class="input-group input-group-static mb-4 is-filled">
-                    <label class="text-bold text-black w-100">หมายเหตุ</label>
-                    <label class="text-md text-bold text-black-50 ms-3" id="id_annotation"></label>
+                <div class="row">
+                    <div class="col-6 right">
+                        <label class="text-bold text-black right">หมายเหตุ</label>
+                    </div>
+                    <div class="col-6">
+                        <label class="text-md text-bold text-black-50 ms-3" id="id_annotation"></label>
+                    </div>
                 </div>
             </div>
         </div>

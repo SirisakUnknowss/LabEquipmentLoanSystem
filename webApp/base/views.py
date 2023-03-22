@@ -19,6 +19,7 @@ from account.admin import AccountResource
 from base.models import DataWeb
 from borrowing.admin import OrderModelAdmin, OrderModelResource
 from borrowing.models import EquipmentCart, Order
+from equipment.admin import EquipmentModelResource
 from equipment.models import Equipment
 from scientificInstrument.models import ScientificInstrument, Booking
 from settings.base import MEDIA_ROOT
@@ -360,7 +361,7 @@ class ExportEquipments(LabAPIView):
             queryset = Equipment.objects.all().order_by('-statistics').filter(statistics__gt=1)
         fileName = f"Equipments{parameter_value}Data.csv"
         filePath = "{}/{}".format(dirPath, fileName)
-        dataset = OrderModelResource().export(queryset=queryset)
+        dataset = EquipmentModelResource().export(queryset=queryset)
         with open(filePath, "w") as f:
             f.write(dataset.csv)
         return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, fileName), fileName

@@ -22,6 +22,7 @@ class OrderModelResource(resources.ModelResource):
 
     class Meta:
         model = Order
+        fields = ('user__studentID','equipment','dateBorrowing','dateApproved','dateReturn','approver__studentID','status')
 
     def export(self, queryset=None, *args, **kwargs):
         queryset = super().export(queryset, *args, **kwargs)

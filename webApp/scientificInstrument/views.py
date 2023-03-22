@@ -189,12 +189,12 @@ class DisapprovedBookingApi(LabAPIView):
         account     = request.user.account
         bookingID   = self.request.data.get("bookingID")
         if account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('notifications-forgetten'))
+            return redirect(reverse('notifications-booking'))
         booking = Booking.objects.filter(id=bookingID)
         if not booking.exists():
-            return redirect(reverse('notifications-forgetten'))
+            return redirect(reverse('notifications-booking'))
         booking.update(status=Order.STATUS.DISAPPROVED)
-        return redirect(reverse('notifications-forgetten'))
+        return redirect(reverse('notifications-booking'))
 
 class ApprovedBookingApi(LabAPIView):
     queryset            = Booking.objects.all()
@@ -204,16 +204,16 @@ class ApprovedBookingApi(LabAPIView):
         account     = request.user.account
         bookingID   = self.request.data.get("bookingID")
         if account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('notifications-forgetten'))
+            return redirect(reverse('notifications-booking'))
         booking = Booking.objects.filter(id=bookingID)
         if not booking.exists():
-            return redirect(reverse('notifications-forgetten'))
+            return redirect(reverse('notifications-booking'))
         booking.update(
             status=Order.STATUS.APPROVED,
             approver=account,
             dateApproved=datetime.now()
         )
-        return redirect(reverse('notifications-forgetten'))
+        return redirect(reverse('notifications-booking'))
 
 class CancelBookingApi(LabAPIView):
     queryset            = Booking.objects.all()
@@ -226,7 +226,7 @@ class CancelBookingApi(LabAPIView):
         if not booking.exists():
             return redirect(reverse('information-scientificInstrument'))
         booking.update( status=Order.STATUS.CANCELED)
-        return redirect(reverse('notifications-forgetten'))
+        return redirect(reverse('notifications-booking'))
 
 class GetBookingByID(LabAPIGetView):
     queryset            = Booking.objects.all()

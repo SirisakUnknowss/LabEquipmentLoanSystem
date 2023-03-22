@@ -12,7 +12,7 @@
                         <a href="{% url 'notifications-booking' %}"><i class="material-icons opacity-10 text-white me-sm-3">event</i></a>
                         {% ifequal user.account.bookingwaitingcount 0 %}
                         {% else %}
-                            <span class="position-absolute top-10 badge rounded-pill bg-danger border border-white mx-10 py-1 px-2">
+                            <span class="position-absolute top-10 badge rounded-pill bg-danger border border-white small mx-10 py-1 px-2">
                                 <span class="small">{{ user.account.bookingwaitingcount }}</span>
                             </span>
                         {% endifequal %}
