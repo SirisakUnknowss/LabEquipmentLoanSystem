@@ -1,4 +1,5 @@
 #Python
+import re
 import random
 import datetime
 #Django
@@ -12,7 +13,9 @@ from borrowing.models import Order
 
 def getClassPath(instance, filename):
     className = instance.__class__.__name__
-    filename  = str(random.randrange(1, 100)) + str(instance.number) + ".png"
+    name = instance.name
+    name = re.sub(r"\s+", "", name)
+    filename  = str(instance.pk) + str(name) + ".png"
     return "{}/{}".format(className, filename)
 
 class ScientificInstrument(models.Model):
