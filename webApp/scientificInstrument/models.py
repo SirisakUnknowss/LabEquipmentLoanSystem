@@ -14,7 +14,7 @@ from borrowing.models import Order
 def getClassPath(instance, filename):
     className = instance.__class__.__name__
     name = instance.name
-    name = re.sub(r"\s+", "", name)
+    name = re.sub(r'[^a-zA-Z]', '', name)
     filename  = str(instance.pk) + str(name) + ".png"
     return "{}/{}".format(className, filename)
 
