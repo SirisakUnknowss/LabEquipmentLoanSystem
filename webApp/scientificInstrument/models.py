@@ -1,7 +1,5 @@
 #Python
 import re
-import random
-import datetime
 #Django
 from django.db import models
 from django.utils.html import mark_safe

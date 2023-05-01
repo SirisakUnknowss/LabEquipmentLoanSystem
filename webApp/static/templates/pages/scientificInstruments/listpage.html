@@ -43,25 +43,25 @@
               <div class="card-body mb-n3 text-center">
                   {% if user.account.status == "admin" %}
                   <div class="row">
-                    <div class="col-6">
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
                       <form id="add-scientificInstrument" method="post" action="{% url 'addscientificinstrumentspage' %}">
                         {% csrf_token %}
                         <input type="hidden" value="{{ scientificInstrument.id }}" name="ScientificInstrumentID" />
-                        <button class="btn bg-gradient-warning w-100" type="submit">แก้ไขข้อมูล</button>
+                        <button class="btn bg-gradient-warning w-100 px-0" type="submit">แก้ไขข้อมูล</button>
                       </form>
                     </div>
-                    <div class="col-6">
-                        <button class="btn bg-gradient-danger w-100" onclick="showConfirmDelete({{ scientificInstrument.id }})">ลบข้อมูล</button>
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
+                        <button class="btn bg-gradient-danger w-100 px-0" onclick="showConfirmDelete({{ scientificInstrument.id }})">ลบข้อมูล</button>
                     </div>
                   </div>
                   {% else %}
                   <div class="row">
-                    <div class="col-6">
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
                         <input type="hidden" value="{{ scientificInstrument.id }}" name="ScientificInstrumentID" />
-                        <button class="btn bg-gradient-primary w-100" onclick="showBooking({{ scientificInstrument.id }})" data-bs-toggle="modal" data-bs-target="#modalScientificBooking">จอง</button>
+                        <button class="btn bg-gradient-primary w-100 px-0" onclick="showBooking({{ scientificInstrument.id }})" data-bs-toggle="modal" data-bs-target="#modalScientificBooking">จอง</button>
                     </div>
-                    <div class="col-6">
-                      <button id="scientificInstrumentDetail" class="btn bg-gradient-warning w-100" onclick="showDetail({{ scientificInstrument.id }})" data-bs-toggle="modal" data-bs-target="#modalScientificDetail">รายละเอียด</button>
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
+                      <button id="scientificInstrumentDetail" class="btn bg-gradient-warning w-100 px-0" onclick="showDetail({{ scientificInstrument.id }})" data-bs-toggle="modal" data-bs-target="#modalScientificDetail">รายละเอียด</button>
                     </div>
                   </div>
                   {% endif %}

@@ -11,13 +11,17 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 #Project
 from account.models import Account
-from base.views import LabAPIGetView, LabAPIView
+from base.views import LabAPIGetView, LabAPIView, LabListView
 from borrowing.models import Order
 from scientificInstrument.models import ScientificInstrument, Booking, getClassPath
 from scientificInstrument.serializers import SlzScientificInstrumentInput, SlzScientificInstrument, SlzBookingInput, SlzBooking, SlzBookingOutput
 
-# Create your views here.
+# Create your views here.        
 
+class ListScientificInstrument(LabListView):
+    queryset            = ScientificInstrument.objects.all()
+    serializer_class    = SlzScientificInstrumentInput
+    permission_classes  = [ AllowAny ]
 
 class AddScientificInstrument(LabAPIGetView):
     queryset            = ScientificInstrument.objects.all()
@@ -36,8 +40,8 @@ class AddScientificInstrument(LabAPIGetView):
         return redirect(reverse('scientific-instruments-list'))
     
     def perform_create(self, serializer):
-        validated = serializer.validated_data
-        scientificInstrument = ScientificInstrument.objects.filter(number=validated.get("number"))
+        validated               = serializer.validated_data
+        scientificInstrument    = ScientificInstrument.objects.filter(number=validated.get("number"))
         if scientificInstrument.exists():
             return scientificInstrument.first()
         else:
@@ -63,7 +67,7 @@ class AddScientificInstrument(LabAPIGetView):
 class RemoveScientificInstrument(LabAPIGetView):
     queryset            = ScientificInstrument.objects.all()
     serializer_class    = SlzScientificInstrumentInput
-    permission_classes = [ AllowAny ]
+    permission_classes  = [ AllowAny ]
 
     def post(self, request, *args, **kwargs):
         account = request.user.account
@@ -75,7 +79,7 @@ class RemoveScientificInstrument(LabAPIGetView):
 class EditScientificInstrument(LabAPIGetView):
     queryset            = ScientificInstrument.objects.all()
     serializer_class    = SlzScientificInstrumentInput
-    permission_classes = [ AllowAny ]
+    permission_classes  = [ AllowAny ]
 
     def post(self, request, *args, **kwargs):
         account = request.user.account
@@ -85,7 +89,7 @@ class EditScientificInstrument(LabAPIGetView):
         if not scientificInstrument.exists():
             return redirect(reverse('scientific-instruments-list'))
         scientificInstrument.update(
-            name        =request.POST["name"],
+            name        = request.POST["name"],
             number      = request.POST["number"],
             place       = request.POST["place"],
             detail      = request.POST["detail"],
@@ -108,9 +112,9 @@ class GetTimeCanBooking(LabAPIGetView):
 
     def get(self, request, *args, **kwargs):
         try:
-            self.id = request.GET['id']
-            dateRequest = request.GET['dateRequest']
-            self.dateInput = datetime.strptime(dateRequest, '%Y-%m-%d')
+            self.id         = request.GET['id']
+            dateRequest     = request.GET['dateRequest']
+            self.dateInput  = datetime.strptime(dateRequest, '%Y-%m-%d')
             self.response["result"] = self.checkDateTime()
             return Response(self.response)
         except ValueError as ex:
@@ -124,8 +128,6 @@ class GetTimeCanBooking(LabAPIGetView):
     def checkDateTime(self):
         today = date.today()
         tomorrow = datetime.combine((today + timedelta(days=1)), datetime.min.time())
-        
-        #  and dateInput <= self.lastDateOfMonth()
         if not self.dateInput >= tomorrow and self.dateInput <= self.lastDateOfMonth():
             raise ValueError("date input invalid.")
         if self.isWeekend():
@@ -140,19 +142,17 @@ class GetTimeCanBooking(LabAPIGetView):
             except:
                 values_only.append(time)
         values_only.remove(Booking.Time._18_00)
-        print(values_only)
         return values_only
 
     def isWeekend(self):
-        print(self.dateInput)
         if self.dateInput.weekday() in [5, 6]:
             return True
         return False
 
     def lastDateOfMonth(self):
-        today = date.today() + timedelta(days=31)
-        last_day_of_month = calendar.monthrange(today.year, today.month)[1]
-        last_date_of_month = datetime(today.year, today.month, last_day_of_month)
+        today               = date.today() + timedelta(days=31)
+        last_day_of_month   = calendar.monthrange(today.year, today.month)[1]
+        last_date_of_month  = datetime(today.year, today.month, last_day_of_month)
         return last_date_of_month
 
 class BookingScientificInstrumentApi(LabAPIGetView):
@@ -164,10 +164,9 @@ class BookingScientificInstrumentApi(LabAPIGetView):
         account                 = request.user.account
         serializerInput         = self.get_serializer(data=request.data)
         serializerInput.is_valid(raise_exception=True)
-        booking               = self.perform_create(serializerInput, account)
+        booking                 = self.perform_create(serializerInput, account)
         serializerOutput        = SlzBooking(booking)
         self.response["result"] = serializerOutput.data
-        print(self.response)
         return redirect(reverse('scientific-instruments-list'))
     
     def perform_create(self, serializer, account):

@@ -73,7 +73,6 @@ class SlzBookingInput(serializers.Serializer):
 class SlzBookingOutput(serializers.ModelSerializer):
     user                    = SlzAccountCreate(read_only=True)
     scientificInstrument    = SlzScientificInstrument(read_only=True)
-    # approver                = SlzAccountCreate(read_only=True)
 
     class Meta:
         model   = Booking

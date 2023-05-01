@@ -2,7 +2,6 @@ from django.shortcuts import redirect
 from django.urls import reverse
 # Django
 from django import forms
-from django.contrib.auth.models import User
 #Project
 from .models import Account
 

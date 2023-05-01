@@ -1,5 +1,5 @@
 # Python
-import json, os, time, csv
+import os
 from datetime import datetime
 # Django
 from django.core import serializers
@@ -17,7 +17,7 @@ from django.db.models import Q
 from account.models import Account
 from account.admin import AccountResource
 from base.models import DataWeb
-from borrowing.admin import OrderModelAdmin, OrderModelResource
+from borrowing.admin import OrderModelResource
 from borrowing.models import EquipmentCart, Order
 from equipment.admin import EquipmentModelResource
 from equipment.models import Equipment
@@ -283,7 +283,6 @@ class ExportUserData(LabAPIView):
 
     def get(self, request, *args, **kwargs):
         filePath = self.writeFile()
-        # self.response['result'] = filePath
         return self.download_file(filePath)
     
     def download_file(self, file_path):
@@ -297,7 +296,6 @@ class ExportUserData(LabAPIView):
         dirPath = "{}/{}".format(MEDIA_ROOT, userFileDir)
         if not(os.path.exists(dirPath)):
             os.makedirs(dirPath)
-        # datestr = str(time.strftime("%Y%m%d_%H%M%S"))
         fileName = "userdata.csv"
         filePath = "{}/{}".format(dirPath, fileName)
         dataset = AccountResource().export()
@@ -311,7 +309,6 @@ class ExportBorrowingData(LabAPIView):
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
         filePath, fileName = self.writeFile(parameter_value)
-        # self.response['result'] = filePath
         return self.download_file(filePath, fileName)
     
     def download_file(self, file_path, fileName):
@@ -325,7 +322,6 @@ class ExportBorrowingData(LabAPIView):
         dirPath = "{}/{}".format(MEDIA_ROOT, userFileDir)
         if not(os.path.exists(dirPath)):
             os.makedirs(dirPath)
-        # datestr = str(time.strftime("%Y%m%d_%H%M%S"))
         queryset = Order.objects.filter(status=parameter_value)
         fileName = f"{parameter_value}Data.csv"
         if parameter_value == '':
@@ -369,23 +365,29 @@ class ExportEquipments(LabAPIView):
 
 def scientificinstrumentscalendarpage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    scientificInstrumentID = None
+    if request.method == "POST":
+        scientificInstrumentID = request.POST["scientificInstrumentID"]
     checkOverDued(request)
-    context = { 'scientificInstruments': scientificInstruments(), 'bookings': bookings() }
+    context = { 'scientificInstruments': scientificInstruments(), 'bookings': bookings(scientificInstrumentID), 'scientificInstrumentID':scientificInstrumentID }
     return render(request, 'pages/scientificInstruments/calendarpage.html', context)
 
 def scientificInstruments():
     scientificInstrumentsAll        = ScientificInstrument.objects.all()
     scientificInstrument            = dict()
-    scientificInstrument['all']    = scientificInstrumentsAll.count()
+    scientificInstrument['all']     = scientificInstrumentsAll.count()
     scientificInstrument['data']    = scientificInstrumentsAll
     return scientificInstrument
 
-def bookings():
-    bookingsAll         = Booking.objects.all().order_by('-dateBooking', '-timeBooking')
-    booking             = dict()
-    booking['all']     = bookingsAll.count()
-    booking['data']    = getBookingList(bookingsAll)
-    print(booking['data'])
+def bookings(idScientificInstrument):
+    try:
+        scientificInstrument    = ScientificInstrument.objects.get(pk=int(idScientificInstrument))
+        bookingsAll             = Booking.objects.filter(scientificInstrument=scientificInstrument).order_by('-dateBooking', '-timeBooking')
+    except:
+        bookingsAll = Booking.objects.all().order_by('-dateBooking', '-timeBooking')
+    booking         = dict()
+    booking['all']  = bookingsAll.count()
+    booking['data'] = getBookingList(bookingsAll)
     return booking
 
 def getBookingList(bookingsAll):

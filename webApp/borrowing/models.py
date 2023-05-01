@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils import timezone
-from datetime import date, datetime, timedelta
 #Project
 from equipment.models import Equipment
 

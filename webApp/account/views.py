@@ -38,18 +38,15 @@ def user_register(request):
     form = RegisterForm(request.POST)
     if not form.is_valid():
         context = { 'form': form.errors }
-        print(f" ------- {context} ------- ")
         return render(request, 'base/signup.html', context)
     account = Account.objects.filter(studentID=form['username'].data)
     if account.exists():
         context = { 'accountExists': 'บัญชีผู้ใช้งานนี้มีอยู่แล้ว' }
-        print(f" ------- {context} ------- ")
         return render(request, 'base/signup.html', context)
     user = User.objects.filter(username=form['username'].data)
     user.delete()
     if form['password'].data != form['repassword'].data:
         context = { 'password': 'รหัสผ่านไม่ตรงกัน' }
-        print(f" ------- {context} ------- ")
         return render(request, 'base/signup.html', context)
     user    = create_user_data(form)
     account = createAccount(request, user, form)

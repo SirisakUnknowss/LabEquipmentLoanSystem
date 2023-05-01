@@ -40,7 +40,7 @@
     <div class="row mt-4">
       {% if equipments %}
         {% for equipment in equipments %}
-          <div class="col-lg-3 col-md-6 mt-3 mb-4">
+          <div class="col-xl-4 col-lg-6 col-md-10 col-sm-12 col-12 mt-3 mb-4">
             <div class="card z-index-2 ">
               <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
                 <div class="bg-gradient-light shadow-secondary border-radius-lg py-3 pe-1">
@@ -69,15 +69,15 @@
                   {% if user.account.status == "admin" %}
 
                   <div class="row">
-                    <div class="col-6">
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
                       <form id="add-equipment" method="post" action="{% url 'addequipmentpage' %}">
                         {% csrf_token %}
                         <input type="hidden" value="{{ equipment.id }}" name="EquipmentID" />
-                        <button class="btn bg-gradient-warning w-100" type="submit">แก้ไขข้อมูล</button>
+                        <button class="btn bg-gradient-warning w-100 px-0" type="submit">แก้ไขข้อมูล</button>
                       </form>
                     </div>
-                    <div class="col-6">
-                        <button class="btn bg-gradient-danger w-100" onclick="showConfirmDelete({{ equipment.id }})">ลบข้อมูล</button>
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
+                        <button class="btn bg-gradient-danger w-100 px-0" onclick="showConfirmDelete({{ equipment.id }})">ลบข้อมูล</button>
                     </div>
                   </div>
                   {% else %}

@@ -53,6 +53,20 @@
       </div>
     </div>
     <div class="row mt-4">
+      <div class="card align-items-end">
+        <div class="input-group input-group-outline my-3">
+          <form id="searchByID" class="w-100 ms-lg-6 me-lg-6 ms-xl-12 me-xl-12" name="searchByID" method="post" action="{% url 'scientific-instruments-calendar' %}">
+              {% csrf_token %}
+            <label for="scientificInstrumentsSelect" class="text-black text-bold">ค้นหาตามเครื่องมือ</label>
+            <input type="hidden" value="{{ scientificInstrumentID }}" id="scientificInstrumentIDInput" name="scientificInstrumentID" />
+            <div class="input-group input-group-outline w-100">
+              <select class="form-select mb-3 pe-5" id="scientificInstrumentsSelect" name="scientificInstrumentsSelect" onchange="onSelectSearch()"></select></br>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-4">
       <div class="card mt-3 mb-7 p-5">
         <div id='calendar-container'>
           <div id='calendar'></div>
@@ -68,7 +82,12 @@
 {{ block.super }}
   <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <script>
+    const urlScientificInstruments = "{% url 'listScientificInstrumentApi' %}"
+    const urlBookings = "{% url 'scientific-instruments-calendar' %}"
     const urlGetBookingId = "{% url 'GetBookingByID' %}"
+    const idScientificInstrument = "{{ idScientificInstrument }}"
+    const csrf_token = "{{csrf_token}}"
+    const scientificInstrumentID = "{{scientificInstrumentID}}"
     let urlPlaceHolder = "{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png"
     
     const todaystr = '{% now "Y-m-d" %}'

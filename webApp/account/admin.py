@@ -1,9 +1,7 @@
 # Python
 from import_export import resources
-from import_export.fields import Field
 # Django
 from django.contrib import admin
-from import_export.admin import ImportExportModelAdmin, ImportMixin, ExportMixin
 
 # Project
 from .models import Account
