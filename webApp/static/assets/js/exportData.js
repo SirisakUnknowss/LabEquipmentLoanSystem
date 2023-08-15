@@ -34,42 +34,42 @@ const exportOverduedOrderButton = document.querySelector("#exportOverduedOrderBu
 const exportMostEquipmentButton = document.querySelector("#exportMostEquipmentButton")
 
 exportUserButton.addEventListener('click', (event) => {
-    nameFile = "userData.csv"
+    nameFile = "userData.xlsx"
     requestContent(urlExportDataUser)
 })
 exportAllOrderButton.addEventListener('click', (event) => {
-    nameFile = "allOrderData.csv"
+    nameFile = "allOrderData.xlsx"
     requestContent(urlExportDataBorrowing + "?getData=")
 })
 exportCompletedOderButton.addEventListener('click', (event) => {
-    nameFile = "completedOderData.csv"
+    nameFile = "completedOderData.xlsx"
     requestContent(urlExportDataBorrowing + "?getData=completed")
 })
 exportReturnedOrderButton.addEventListener('click', (event) => {
-    nameFile = "returnedData.csv"
+    nameFile = "returnedData.xlsx"
     requestContent(urlExportDataBorrowing + "?getData=returned")
 })
 exportWaittingOrderButton.addEventListener('click', (event) => {
-    nameFile = "waittingApproveOrderData.csv"
+    nameFile = "waittingApproveOrderData.xlsx"
     requestContent(urlExportDataBorrowing + "?getData=waiting")
 })
 exportApprovedOrderButton.addEventListener('click', (event) => {
-    nameFile = "ApprovedOrderData.csv"
+    nameFile = "ApprovedOrderData.xlsx"
     requestContent(urlExportDataBorrowing + "?getData=approved")
 })
 exportCanceledOrderButton.addEventListener('click', (event) => {
-    nameFile = "canceledOrderData.csv"
+    nameFile = "canceledOrderData.xlsx"
     requestContent(urlExportDataBorrowing + "?getData=canceled")
 })
 exportDisapprovedOrderButton.addEventListener('click', (event) => {
-    nameFile = "disapprovedOrderData.csv"
+    nameFile = "disapprovedOrderData.xlsx"
     requestContent(urlExportDataBorrowing + "?getData=disapproved")
 })
 exportOverduedOrderButton.addEventListener('click', (event) => {
-    nameFile = "overduedOrderData.csv"
+    nameFile = "overduedOrderData.xlsx"
     requestContent(urlExportDataBorrowing + "?getData=overdued")
 })
 exportMostEquipmentButton.addEventListener('click', (event) => {
-    nameFile = "mostEquipmenData.csv"
+    nameFile = "mostEquipmenData.xlsx"
     requestContent(urlExportData + "?getData=Most")
 })

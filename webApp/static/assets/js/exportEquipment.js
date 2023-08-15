@@ -23,6 +23,6 @@ async function requestContent(url="") {
 const exportEquipmentAllButton = document.querySelector("#exportEquipmentAllButton")
 
 exportEquipmentAllButton.addEventListener('click', (event) => {
-    nameFile = "equipmentAllData.csv"
+    nameFile = "equipmentAllData.xlsx"
     requestContent(urlExportData + "?getData=")
 })
