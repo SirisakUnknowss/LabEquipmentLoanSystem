@@ -1,23 +1,19 @@
 # Python
-import os
 from datetime import datetime
-import pandas as pd
 # Django
+from django.db.models import Q
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import FileResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-# Module
-from django.db.models import Q
-
+from django.shortcuts import render, redirect
+from django.urls import reverse
 #Project
 from account.models import Account
 from account.admin import AccountResource
 from base.models import DataWeb
+from base.functions import download_file, getDataFile
 from borrowing.admin import OrderModelResource
 from borrowing.models import EquipmentCart, Order
 from equipment.admin import EquipmentModelResource
@@ -283,29 +279,16 @@ class ExportUserData(LabAPIView):
     permission_classes = [ AllowAny ]
 
     def get(self, request, *args, **kwargs):
-        filePath = self.writeFile()
-        return self.download_file(filePath)
-    
-    def download_file(self, file_path):
-        response = FileResponse(open(file_path, 'rb'), as_attachment=True)
-        response['Content-Disposition'] = 'attachment; filename="userdata.csv"'
-        response['Content-Type'] = 'application/octet-stream'
-        return response
+        filePath, fileName = self.writeFile()
+        return download_file(filePath, fileName)
 
     def writeFile(self):
         userFileDir = "UserData"
-        dirPath = "{}/{}".format(MEDIA_ROOT, userFileDir)
-        if not(os.path.exists(dirPath)):
-            os.makedirs(dirPath)
-        fileName = "userdata.csv"
-        filePath = "{}/{}".format(dirPath, fileName)
-        dataset = AccountResource().export()
-        with open(filePath, "w") as f:
-            f.write(dataset.csv)
-        output_xlsx_file = 'userdata.xlsx'
-        df = pd.read_csv(fileName)
-        df.to_excel(output_xlsx_file, index=False)
-        return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, output_xlsx_file)
+        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
+        fileName = "userData"
+        
+        xlsxFile = getDataFile(dirPath, fileName, AccountResource)
+        return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportBorrowingData(LabAPIView):
     permission_classes = [ AllowAny ]
@@ -313,34 +296,19 @@ class ExportBorrowingData(LabAPIView):
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
         filePath, fileName = self.writeFile(parameter_value)
-        return self.download_file(filePath, fileName)
-    
-    def download_file(self, file_path, fileName):
-        response = FileResponse(open(file_path, 'rb'), as_attachment=True)
-        response['Content-Disposition'] = f'attachment; filename="{fileName}"'
-        response['Content-Type'] = 'application/octet-stream'
-        return response
+        return download_file(filePath, fileName)
 
     def writeFile(self, parameter_value):
         userFileDir = "OrderData"
-        dirPath = "{}/{}".format(MEDIA_ROOT, userFileDir)
-        if not(os.path.exists(dirPath)):
-            os.makedirs(dirPath)
+        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
         queryset = Order.objects.filter(status=parameter_value)
-        fileName = f"{parameter_value}Data.csv"
-        output_xlsx_file = f"{parameter_value}Data.xlsx"
-        if parameter_value == '':
+        fileName = f"{parameter_value}Data"
+        if parameter_value == "":
             queryset = Order.objects.all()
-            fileName = "allData.csv"
-            output_xlsx_file = 'allData.xlsx'
-        filePath = "{}/{}".format(dirPath, fileName)
-        dataset = OrderModelResource().export(queryset=queryset)
-        with open(filePath, "w") as f:
-            f.write(dataset.csv)
+            fileName = "allData"
         
-        df = pd.read_csv(fileName)
-        df.to_excel(output_xlsx_file, index=False)
-        return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, output_xlsx_file), output_xlsx_file
+        xlsxFile = getDataFile(dirPath, fileName, OrderModelResource, queryset)
+        return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportEquipments(LabAPIView):
     permission_classes = [ AllowAny ]
@@ -348,32 +316,18 @@ class ExportEquipments(LabAPIView):
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
         filePath, fileName = self.writeFile(parameter_value)
-        return self.download_file(filePath, fileName)
-    
-    def download_file(self, file_path, fileName):
-        response = FileResponse(open(file_path, 'rb'), as_attachment=True)
-        response['Content-Disposition'] = f'attachment; filename="{fileName}"'
-        response['Content-Type'] = 'application/octet-stream'
-        return response
+        return download_file(filePath, fileName)
 
     def writeFile(self, parameter_value):
-        userFileDir = "OrderData"
-        dirPath = "{}/{}".format(MEDIA_ROOT, userFileDir)
-        if not(os.path.exists(dirPath)):
-            os.makedirs(dirPath)
+        userFileDir = "Equipments"
+        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
         queryset = Equipment.objects.all()
         if parameter_value != "":
             queryset = Equipment.objects.all().order_by('-statistics').filter(statistics__gt=1)
-        fileName = f"Equipments{parameter_value}Data.csv"
-        output_xlsx_file = f"Equipments{parameter_value}Data.xlsx"
-        filePath = "{}/{}".format(dirPath, fileName)
-        dataset = EquipmentModelResource().export(queryset=queryset)
-        with open(filePath, "w") as f:
-            f.write(dataset.csv)
-            
-        df = pd.read_csv(fileName)
-        df.to_excel(output_xlsx_file, index=False)
-        return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, output_xlsx_file), output_xlsx_file
+        fileName = f"Equipments{parameter_value}Data"
+        
+        xlsxFile = getDataFile(dirPath, fileName, EquipmentModelResource, queryset)
+        return f"{dirPath}/{xlsxFile}", xlsxFile
 
 
 def scientificinstrumentscalendarpage(request):
