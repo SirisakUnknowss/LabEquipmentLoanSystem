@@ -1,6 +1,7 @@
 # Python
 import os
 from datetime import datetime
+import pandas as pd
 # Django
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
@@ -296,12 +297,15 @@ class ExportUserData(LabAPIView):
         dirPath = "{}/{}".format(MEDIA_ROOT, userFileDir)
         if not(os.path.exists(dirPath)):
             os.makedirs(dirPath)
-        fileName = "userdata.xlsx"
+        fileName = "userdata.csv"
         filePath = "{}/{}".format(dirPath, fileName)
         dataset = AccountResource().export()
         with open(filePath, "w") as f:
-            f.write(dataset.xlsx)
-        return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, fileName)
+            f.write(dataset.csv)
+        output_xlsx_file = 'userdata.xlsx'
+        df = pd.read_csv(fileName)
+        df.to_excel(output_xlsx_file, index=False)
+        return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, output_xlsx_file)
 
 class ExportBorrowingData(LabAPIView):
     permission_classes = [ AllowAny ]
@@ -323,15 +327,20 @@ class ExportBorrowingData(LabAPIView):
         if not(os.path.exists(dirPath)):
             os.makedirs(dirPath)
         queryset = Order.objects.filter(status=parameter_value)
-        fileName = f"{parameter_value}Data.xlsx"
+        fileName = f"{parameter_value}Data.csv"
+        output_xlsx_file = f"{parameter_value}Data.xlsx"
         if parameter_value == '':
             queryset = Order.objects.all()
-            fileName = "allData.xlsx"
+            fileName = "allData.csv"
+            output_xlsx_file = 'allData.xlsx'
         filePath = "{}/{}".format(dirPath, fileName)
         dataset = OrderModelResource().export(queryset=queryset)
         with open(filePath, "w") as f:
-            f.write(dataset.xlsx)
-        return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, fileName), fileName
+            f.write(dataset.csv)
+        
+        df = pd.read_csv(fileName)
+        df.to_excel(output_xlsx_file, index=False)
+        return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, output_xlsx_file), output_xlsx_file
 
 class ExportEquipments(LabAPIView):
     permission_classes = [ AllowAny ]
@@ -355,12 +364,16 @@ class ExportEquipments(LabAPIView):
         queryset = Equipment.objects.all()
         if parameter_value != "":
             queryset = Equipment.objects.all().order_by('-statistics').filter(statistics__gt=1)
-        fileName = f"Equipments{parameter_value}Data.xlsx"
+        fileName = f"Equipments{parameter_value}Data.csv"
+        output_xlsx_file = f"Equipments{parameter_value}Data.xlsx"
         filePath = "{}/{}".format(dirPath, fileName)
         dataset = EquipmentModelResource().export(queryset=queryset)
         with open(filePath, "w") as f:
-            f.write(dataset.xlsx)
-        return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, fileName), fileName
+            f.write(dataset.csv)
+            
+        df = pd.read_csv(fileName)
+        df.to_excel(output_xlsx_file, index=False)
+        return "{}/{}/{}".format(MEDIA_ROOT, userFileDir, output_xlsx_file), output_xlsx_file
 
 
 def scientificinstrumentscalendarpage(request):
