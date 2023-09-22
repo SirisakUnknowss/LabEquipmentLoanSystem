@@ -5,6 +5,7 @@ const nameDisplay = document.querySelector("#id_name_scientificInstruments")
 const numberDisplay = document.querySelector("#id_number_scientificInstruments")
 const dateBooking = document.querySelector("#id_dateBooking")
 const timeStart = document.querySelector("#id_timeStart")
+const timeEnd = document.querySelector("#id_timeEnd")
 const confirmBooking = document.querySelector("#confirmBooking")
     
 const today = new Date()
@@ -23,9 +24,12 @@ dateBooking.setAttribute('max', `${yearMax}-${monthMax}-${dayMax}`);
 
 dateBooking.addEventListener('input', () => {
     const selectedDate = dateBooking.value;
-    console.log(selectedDate);
-    requestContent(urlGetTimeCanBooking + "?id=" + idScientificInstrument.value + "&dateRequest=" + selectedDate)
+    requestContent(urlGetTimeStartCanBooking + "?id=" + idScientificInstrument.value + "&dateRequest=" + selectedDate, timeStart)
   });
+  timeStart.addEventListener('input', () => {
+      const selectedDate = dateBooking.value;
+      requestContent(urlGetTimeEndCanBooking + "?id=" + idScientificInstrument.value + "&dateRequest=" + selectedDate + "&timeStart=" + timeStart.value, timeEnd)
+    });
 
 function getLastDateOfMonth(year, month) {
     const date = new Date(year, month, 0);
@@ -55,20 +59,20 @@ async function loadContent(url="") {
     return jsonObject
 }
 
-async function requestContent(url="") {
-    clearSelect()
+async function requestContent(url="", selector) {
+    clearSelect(selector)
     .then(() => loadContent(url)
-    .then(jsonObject => display(jsonObject)))
+    .then(jsonObject => display(jsonObject, selector)))
 }
 
-async function clearSelect()
+async function clearSelect(selector)
 {
-    while (timeStart.options.length > 1) {
-        timeStart.remove(1);
+    while (selector.options.length > 1) {
+        selector.remove(1);
     }
 }
 
-async function display(jsonObject) {
+async function display(jsonObject, selector) {
     console.log(jsonObject)
     console.log(typeof jsonObject.result)
     let result = jsonObject.result
@@ -81,7 +85,7 @@ async function display(jsonObject) {
             optionEle = document.createElement("option")
             optionEle.value = result[index]
             optionEle.innerHTML = result[index]
-            timeStart.appendChild(optionEle)
+            selector.appendChild(optionEle)
         }
         return
     }
@@ -89,8 +93,10 @@ async function display(jsonObject) {
     confirmBooking.disabled = true
 }
 
-function checkTimeSelect() {
-    var selectedValue = timeStart.value
-    if (selectedValue == "") confirmBooking.disabled = true
+function checkTimeSelect()
+{
+    var timeStartValue = timeStart.value
+    var timeEndValue = timeEnd.value
+    if (timeStartValue == "" || timeEndValue == "") confirmBooking.disabled = true
     else confirmBooking.disabled = false
-  }
+}

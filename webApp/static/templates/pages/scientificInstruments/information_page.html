@@ -20,7 +20,8 @@
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">รหัสนักศึกษา</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">เครื่องมือ</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่จอง</th>
-                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">เวลาที่จอง</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่ใช้งาน</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">เวลาใช้งาน</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่อนุมัติ</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">สถานะ</th>
                                 </tr>
@@ -35,15 +36,22 @@
                                         <span class="text-secondary text-s">{{ booking.scientificInstrument.name }}</span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        {% if booking.dateBooking %}
-                                            <span class="text-secondary text-s">{{ booking.dateBooking }}</span>
+                                        {% if booking.createAt %}
+                                            <span class="text-secondary text-s">{{ booking.createAt|date:"d/m/Y" }}</span>
                                         {% else %}
                                             <span class="text-secondary text-s">-</span>
                                         {% endif %}
                                     </td>
                                     <td class="align-middle text-center">
-                                        {% if booking.timeBooking %}
-                                            <span class="text-secondary text-s">{% load tz %}{{ booking.timeBooking }}</span>
+                                        {% if booking.dateBooking %}
+                                            <span class="text-secondary text-s">{{ booking.dateBooking|date:"d/m/Y" }}</span>
+                                        {% else %}
+                                            <span class="text-secondary text-s">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        {% if booking.startBooking and booking.endBooking %}
+                                            <span class="text-secondary text-s">{% load tz %}{{ booking.startBooking }} - {{ booking.endBooking }}</span>
                                         {% else %}
                                             <span class="text-secondary text-s">-</span>
                                         {% endif %}

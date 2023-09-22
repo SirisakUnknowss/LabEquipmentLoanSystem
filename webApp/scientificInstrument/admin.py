@@ -23,4 +23,8 @@ class ScientificInstrumentAdmin(ImportExportModelAdmin):
 @admin.register(Booking)
 class BookingAdmin(ImportExportModelAdmin):
 
-    list_display    = [ 'id', 'dateBooking', 'status' ]
+    list_display    = [ 'id', 'dateBooking', 'status', 'createAt' ]
+    
+    class Meta:
+        model = Booking
+        field = '__all__'

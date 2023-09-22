@@ -1,15 +1,16 @@
 
-const nameScientificInstrument = document.querySelector("#nameScientificInstrument")
-const numberScientificInstrument = document.querySelector("#numberScientificInstrument")
-const usernameBooking = document.querySelector("#usernameBooking")
-const userIdBooking = document.querySelector("#userIdBooking")
-const placeScientificInstrument = document.querySelector("#placeScientificInstrument")
-const datetimeBooking = document.querySelector("#datetimeBooking")
-const statusBooking = document.querySelector("#statusBooking")
-const imageDisplay = document.querySelector("#imageDisplay")
-const scientificInstrumentIDInput = document.querySelector("#scientificInstrumentIDInput")
-const scientificInstrumentsSelect = document.querySelector("#scientificInstrumentsSelect")
-const searchByID = document.querySelector("#searchByID")
+const nameScientificInstrument      = document.querySelector("#nameScientificInstrument")
+const numberScientificInstrument    = document.querySelector("#numberScientificInstrument")
+const usernameBooking               = document.querySelector("#usernameBooking")
+const userIdBooking                 = document.querySelector("#userIdBooking")
+const placeScientificInstrument     = document.querySelector("#placeScientificInstrument")
+const datetimeBooking               = document.querySelector("#datetimeBooking")
+const createAtBooking               = document.querySelector("#createAtBooking")
+const statusBooking                 = document.querySelector("#statusBooking")
+const imageDisplay                  = document.querySelector("#imageDisplay")
+const scientificInstrumentIDInput   = document.querySelector("#scientificInstrumentIDInput")
+const scientificInstrumentsSelect   = document.querySelector("#scientificInstrumentsSelect")
+const searchByID                    = document.querySelector("#searchByID")
 
 function showDetail(id)
 {    
@@ -63,6 +64,7 @@ function display(jsonObject)
     userIdBooking.innerHTML = data.user.studentID
     placeScientificInstrument.innerHTML = data.scientificInstrument.annotation
     datetimeBooking.innerHTML = data.dateBooking + " " + data.timeBooking
+    createAtBooking.innerHTML = formatDateTime(data.createAt)
     setStatusBooking(data.status)
 
     imageDisplay.src = (data.scientificInstrument.image).replace("media/", "")
@@ -71,6 +73,47 @@ function display(jsonObject)
         imageDisplay.src = urlPlaceHolder
     }
 }
+
+function formatDateTime(dateString)
+{
+    try
+    {
+        const dateTime = new Date(dateString)
+        var timeSet = dateTime.getHours() + ":" + dateTime.getMinutes() + "น."
+        month = formatThaiMonth(dateTime.getMonth())
+        year = formatThaiYear(dateTime.getFullYear())
+        return dateTime.getDate() + " " + month + " " + year + " " + timeSet
+    }
+    catch
+    {
+        return ""
+    }
+}
+
+function formatThaiMonth(month)
+{
+    const thaiMonthsShort = [
+        "ม.ค.",   // January
+        "ก.พ.",   // February
+        "มี.ค.",  // March
+        "เม.ย.",  // April
+        "พ.ค.",   // May
+        "มิ.ย.",  // June
+        "ก.ค.",   // July
+        "ส.ค.",   // August
+        "ก.ย.",   // September
+        "ต.ค.",   // October
+        "พ.ย.",   // November
+        "ธ.ค."    // December
+      ]
+      return thaiMonthsShort[month]
+}
+
+function formatThaiYear(year)
+{
+    return parseInt(year) + 543;
+}
+
 async function loadContentSelected(params = "") {
     const response = await fetch(urlScientificInstruments + params, {
         method: 'GET',

@@ -1,5 +1,7 @@
 #Python
 import re
+from django.utils import timezone
+
 #Django
 from django.db import models
 from django.utils.html import mark_safe
@@ -56,9 +58,13 @@ class Booking(models.Model):
     scientificInstrument    = models.ForeignKey(ScientificInstrument, null=True, blank=True, on_delete=models.CASCADE, related_name='scientificInstrumentBooking')
     dateBooking             = models.DateField(null=True, blank=True, default=None)
     timeBooking             = models.CharField(max_length=20, choices=Time.choices, null=True, blank=True)
+    startBooking            = models.TimeField(blank=True, null=True, default=None)
+    endBooking              = models.TimeField(blank=True, null=True, default=None)
+    amountOfTime            = models.IntegerField(default=1)
     dateApproved            = models.DateTimeField(blank=True, null=True, default=None)
     approver                = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.SET_NULL, related_name='accountApproverBooking')
     status                  = models.CharField(null=True, blank=True, choices=Order.STATUS.choices, default=Order.STATUS.WAITING, max_length=20)
+    createAt                = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def __str__(self):
         if self.scientificInstrument:

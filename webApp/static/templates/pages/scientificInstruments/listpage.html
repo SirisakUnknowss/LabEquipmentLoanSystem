@@ -99,7 +99,8 @@
     const scientificInstrumentsJson = JSON.parse('{{ scientificInstrumentsJson | safe }}')
     let urlPlaceHolder = "{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png"
     let name_page = "id_equipment_list_page"
-    let urlGetTimeCanBooking = "{% url 'GetTimeCanBooking' %}"
+    let urlGetTimeStartCanBooking = "{% url 'GetTimeStartCanBooking' %}"
+    let urlGetTimeEndCanBooking = "{% url 'GetTimeEndCanBooking' %}"
   </script>
   
   <script src="{{ STATIC_URL }}js/scientificDetail.js"></script>

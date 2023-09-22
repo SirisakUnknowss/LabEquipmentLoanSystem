@@ -1,6 +1,6 @@
 #Python
 import calendar
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, time
 #Django
 from django.core.files.storage import FileSystemStorage
 from django.db.models import F
@@ -107,7 +107,7 @@ class EditScientificInstrument(LabAPIGetView):
         scientificInstrument.save()
         return redirect(reverse('scientific-instruments-list'))
 
-class GetTimeCanBooking(LabAPIGetView):
+class GetTimeStartCanBooking(LabAPIGetView):
     permission_classes = [ AllowAny ]
 
     def get(self, request, *args, **kwargs):
@@ -121,6 +121,7 @@ class GetTimeCanBooking(LabAPIGetView):
             self.response["error"] = f"{ex}"
             return Response(self.response)
         except Exception as ex:
+            print(ex)
             errorDateNone = "Please select date for booking."
             self.response["error"] = errorDateNone
             return Response(self.response)
@@ -132,17 +133,20 @@ class GetTimeCanBooking(LabAPIGetView):
             raise ValueError("date input invalid.")
         if self.isWeekend():
             raise ValueError("Date is Weekend.")
-        timeList = list(Booking.Time)
-        values_only = []
-        for time in timeList:
-            try:
-                scientificInstrument = ScientificInstrument.objects.get(pk=self.id)
-                Booking.objects.get(scientificInstrument=scientificInstrument, dateBooking=self.dateInput, timeBooking=time)
-                continue
-            except:
-                values_only.append(time)
-        values_only.remove(Booking.Time._18_00)
-        return values_only
+        times = list()
+        
+        scientificInstrument = ScientificInstrument.objects.get(pk=self.id)
+        bookings = Booking.objects.filter(scientificInstrument=scientificInstrument, dateBooking=self.dateInput)
+        listTimeDefault = [9, 10, 11, 12, 13, 14, 15]
+        listTimeUse = []
+        for booking in bookings:
+            for x in range(booking.startBooking.hour, booking.endBooking.hour):
+                listTimeUse.append(x)
+        listTime = [x for x in listTimeDefault if x not in listTimeUse]
+
+        for x in listTime:
+            times.append(time(x, 0))
+        return times
 
     def isWeekend(self):
         if self.dateInput.weekday() in [5, 6]:
@@ -154,6 +158,42 @@ class GetTimeCanBooking(LabAPIGetView):
         last_day_of_month   = calendar.monthrange(today.year, today.month)[1]
         last_date_of_month  = datetime(today.year, today.month, last_day_of_month)
         return last_date_of_month
+
+class GetTimeEndCanBooking(LabAPIGetView):
+    permission_classes = [ AllowAny ]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.id         = request.GET['id']
+            dateRequest     = request.GET['dateRequest']
+            timeStart       = request.GET['timeStart']
+            self.dateInput  = datetime.strptime(dateRequest, '%Y-%m-%d')
+            times = list()
+            
+            scientificInstrument = ScientificInstrument.objects.get(pk=self.id)
+            bookings = Booking.objects.filter(scientificInstrument=scientificInstrument, dateBooking=self.dateInput)
+            listTimeDefault = [10, 11, 12, 13, 14, 15, 16]
+            listTimeUse = []
+            for booking in bookings:
+                for x in range(booking.startBooking.hour + 1, booking.endBooking.hour + 1):
+                    listTimeUse.append(x)
+            listTime = [x for x in listTimeDefault if x not in listTimeUse]
+            
+            if timeStart != "":
+                hour = int(timeStart.split(":")[0])
+                for x in listTime:
+                    if x < hour + 1: continue
+                    times.append(time(x, 0))
+            self.response["result"] = times
+            return Response(self.response)
+        except ValueError as ex:
+            self.response["error"] = f"{ex}"
+            return Response(self.response)
+        except Exception as ex:
+            print(ex)
+            errorDateNone = "Please select date for booking."
+            self.response["error"] = errorDateNone
+            return Response(self.response)
 
 class BookingScientificInstrumentApi(LabAPIGetView):
     queryset            = Booking.objects.all()
@@ -175,7 +215,9 @@ class BookingScientificInstrumentApi(LabAPIGetView):
             user = account,
             scientificInstrument = validated.get("scientificInstrument"),
             dateBooking = validated.get("dateBooking"),
-            timeBooking = validated.get("timeBooking"),
+            startBooking = validated.get("startBooking"),
+            endBooking = validated.get("endBooking"),
+            amountOfTime = validated.get("amountOfTime")
             )
         booking.save()
         return booking

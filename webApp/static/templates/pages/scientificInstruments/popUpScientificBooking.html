@@ -49,7 +49,7 @@
                     </div>
                     <div class="row">
                         <div class="col-6 right">
-                            <label class="text-bold text-black right">วันที่จอง</label>
+                            <label class="text-bold text-black right">วันที่ใช้งาน</label>
                         </div>
                         <div class="col-6">
                             <input type="date" id="id_dateBooking" name="dateBooking" placeholder="dd-mm-yyyy" value="" min="2023-02-20" max="2030-12-31" required>
@@ -57,19 +57,29 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-6 right">
+                            <label class="text-bold text-black right">วันที่ใช้งาน</label>
+                        </div>
+                        <div class="col-3 col-md-4 col-6">
+                            <select id="id_timeStart" name="startBooking" onchange="checkTimeSelect()" required>
+                                <option value="">-------- เวลาจอง --------</option>
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="col-6 right">
-                            <label class="text-bold text-black right">เวลา</label>
+                            <label class="text-bold text-black right">ถึง</label>
                         </div>
                         <div class="col-3 col-md-4 col-6">
-                            <select id="id_timeStart" name="timeBooking"  onchange="checkTimeSelect()" required>
-                                <option value="">-------- เวลาที่จอง --------</option>
+                            <select id="id_timeEnd" name="endBooking" onchange="checkTimeSelect()" required>
+                                <option value="">-------- ถึงเวลา --------</option>
                             </select>
                         </div>
                     </div>
                     <div class="row mt-3">
-                        <div class="col-10">
+                        <div class="col-12">
                             <button type="submit" id="confirmBooking" class="btn bg-gradient-primary w-100" disabled>ยืนยันการจอง</button>
                         </div>
                     </div>

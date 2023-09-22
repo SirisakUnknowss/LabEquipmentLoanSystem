@@ -39,10 +39,18 @@
                             ผู้อนุมัติ : {% if booking.approver.firstname %} {{ booking.approver.firstname }} {% endif %} {% if booking.approver.lastname %} {{ booking.approver.lastname }} {% endif %}
                         </p>
                         <p class="text-s text-start mb-0">
-                            วันที่จอง : {{ booking.dateBooking }}
+                            วันที่จอง : {{ booking.createAt|date:"d/m/Y" }}
                         </p>
                         <p class="text-s text-start mb-0">
-                            เวลาที่จอง : {% load tz %}{{ booking.timeBooking }}
+                            วันที่ใช้งาน : {{ booking.dateBooking|date:"d/m/Y" }}
+                        </p>
+                        <p class="text-s text-start mb-0">
+                            
+                            {% if booking.startBooking and booking.endBooking %}
+                            เวลาใช้งาน : {% load tz %}{{ booking.startBooking }} - {{ booking.endBooking }}
+                            {% else %}
+                            เวลาใช้งาน : -
+                            {% endif %}
                         </p>
                         <p class="text-s text-start mb-0">
                             วันที่อนุมัติ : {% load tz %}{{ booking.dateApproved|timezone:'Asia/Bangkok'|date:"d/m/Y เวลา H:m น." }}
