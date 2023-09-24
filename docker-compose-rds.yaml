@@ -13,5 +13,5 @@ services:
     env_file:
       - ./webApp/docker/prodRDS/.prodRDS
     # command: "python manage.py runserver 0.0.0.0:8000"
-    command: gunicorn poker.wsgi:application --preload --workers=3 --bind 0.0.0.0:8000 --forwarded-allow-ips="*"
+    command: gunicorn LabEquipmentLoanSystem.wsgi:application --preload --workers=3 --bind 0.0.0.0:8000 --forwarded-allow-ips="*"
     restart: always
