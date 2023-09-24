@@ -61,25 +61,25 @@
                                             <input type="hidden" value="{{ order.id }}" name="EquipmentID" />
                                             <input type="hidden" value="{{ order.status }}" name="StatusBorrowing" />
                                             {% ifequal order.status "waiting" %}
-                                                <button class="btn badge badge-sm bg-gradient-warning w-50 w-md-50 w-sm-100" type="submit">รออนุมัติ</button>
+                                                <button class="btn badge badge-sm bg-gradient-warning w-75" type="submit">รออนุมัติ</button>
                                             {% endifequal %}
                                             {% ifequal order.status "approved" %}
-                                                <button class="btn badge badge-sm bg-gradient-info w-50 w-md-50 w-sm-100" type="submit">อนุมัติแล้ว</button>
+                                                <button class="btn badge badge-sm bg-gradient-info w-75" type="submit">อนุมัติแล้ว</button>
                                             {% endifequal %}
                                             {% ifequal order.status "canceled" %}
-                                                <button class="btn badge badge-sm bg-gradient-danger w-50 w-md-50 w-sm-100" type="submit">ยกเลิก</button>
+                                                <button class="btn badge badge-sm bg-gradient-danger w-75" type="submit">ยกเลิก</button>
                                             {% endifequal %}
                                             {% ifequal order.status "disapproved" %}
-                                                <button class="btn badge badge-sm bg-gradient-danger w-50 w-md-50 w-sm-100" type="submit">คำขอล้มเหลว</button>
+                                                <button class="btn badge badge-sm bg-gradient-danger w-75" type="submit">คำขอล้มเหลว</button>
                                             {% endifequal %}
                                             {% ifequal order.status "completed" %}
-                                                <button class="btn badge badge-sm bg-gradient-success w-50 w-md-50 w-sm-100" type="submit">คืนเรียบร้อยแล้ว</button>
+                                                <button class="btn badge badge-sm bg-gradient-success w-75" type="submit">คืนเรียบร้อยแล้ว</button>
                                             {% endifequal %}
                                             {% ifequal order.status "overdued" %}
-                                                <button class="btn badge badge-sm bg-gradient-danger w-50 w-md-50 w-sm-100" type="submit">เกินกำหนดคืน</button>
+                                                <button class="btn badge badge-sm bg-gradient-danger w-75" type="submit">เกินกำหนดคืน</button>
                                             {% endifequal %}
                                             {% ifequal order.status "returned" %}
-                                                <button class="btn badge badge-sm bg-gradient-warning w-50 w-md-50 w-sm-100" type="submit">คืนอุปกรณ์</button>
+                                                <button class="btn badge badge-sm bg-gradient-warning w-75" type="submit">คืนอุปกรณ์</button>
                                             {% endifequal %}
                                         </form>
                                     </td>

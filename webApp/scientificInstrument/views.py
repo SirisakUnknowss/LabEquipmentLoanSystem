@@ -137,7 +137,7 @@ class GetTimeStartCanBooking(LabAPIGetView):
         
         scientificInstrument = ScientificInstrument.objects.get(pk=self.id)
         bookings = Booking.objects.filter(scientificInstrument=scientificInstrument, dateBooking=self.dateInput)
-        listTimeDefault = [9, 10, 11, 12, 13, 14, 15]
+        listTimeDefault = [8, 9, 10, 11, 12, 13, 14, 15]
         listTimeUse = []
         for booking in bookings:
             for x in range(booking.startBooking.hour, booking.endBooking.hour):
@@ -172,18 +172,28 @@ class GetTimeEndCanBooking(LabAPIGetView):
             
             scientificInstrument = ScientificInstrument.objects.get(pk=self.id)
             bookings = Booking.objects.filter(scientificInstrument=scientificInstrument, dateBooking=self.dateInput)
-            listTimeDefault = [10, 11, 12, 13, 14, 15, 16]
+            listTimeDefault = [9, 10, 11, 12, 13, 14, 15, 16]
             listTimeUse = []
             for booking in bookings:
                 for x in range(booking.startBooking.hour + 1, booking.endBooking.hour + 1):
                     listTimeUse.append(x)
             listTime = [x for x in listTimeDefault if x not in listTimeUse]
             
+            print(listTime)
             if timeStart != "":
                 hour = int(timeStart.split(":")[0])
+                lastTime = 0
                 for x in listTime:
-                    if x < hour + 1: continue
+                    print(lastTime)
+                    print(x)
+                    if lastTime != 0 and x != lastTime + 1:
+                        print("break")
+                        break
+                    if x < hour + 1: 
+                        print("continue")
+                        continue
                     times.append(time(x, 0))
+                    lastTime = x
             self.response["result"] = times
             return Response(self.response)
         except ValueError as ex:
@@ -191,7 +201,7 @@ class GetTimeEndCanBooking(LabAPIGetView):
             return Response(self.response)
         except Exception as ex:
             print(ex)
-            errorDateNone = "Please select date for booking."
+            errorDateNone = "Please select time for booking."
             self.response["error"] = errorDateNone
             return Response(self.response)
 
