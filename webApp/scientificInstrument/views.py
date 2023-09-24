@@ -121,7 +121,6 @@ class GetTimeStartCanBooking(LabAPIGetView):
             self.response["error"] = f"{ex}"
             return Response(self.response)
         except Exception as ex:
-            print(ex)
             errorDateNone = "Please select date for booking."
             self.response["error"] = errorDateNone
             return Response(self.response)
@@ -179,18 +178,13 @@ class GetTimeEndCanBooking(LabAPIGetView):
                     listTimeUse.append(x)
             listTime = [x for x in listTimeDefault if x not in listTimeUse]
             
-            print(listTime)
             if timeStart != "":
                 hour = int(timeStart.split(":")[0])
                 lastTime = 0
                 for x in listTime:
-                    print(lastTime)
-                    print(x)
                     if lastTime != 0 and x != lastTime + 1:
-                        print("break")
                         break
                     if x < hour + 1: 
-                        print("continue")
                         continue
                     times.append(time(x, 0))
                     lastTime = x
@@ -200,7 +194,6 @@ class GetTimeEndCanBooking(LabAPIGetView):
             self.response["error"] = f"{ex}"
             return Response(self.response)
         except Exception as ex:
-            print(ex)
             errorDateNone = "Please select time for booking."
             self.response["error"] = errorDateNone
             return Response(self.response)
