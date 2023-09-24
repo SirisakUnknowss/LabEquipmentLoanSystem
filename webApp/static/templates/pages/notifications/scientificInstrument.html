@@ -53,7 +53,7 @@
                             </td>
                             <td class="align-middle text-center">
                                 {% if booking.startBooking and booking.endBooking %}
-                                    <span class="text-secondary text-s">{% load tz %}{{ booking.startBooking }} - {{ booking.endBooking }}</span>
+                                    <span class="text-secondary text-s">{% load tz %}{{ booking.startBooking|time:"H:i น." }} - {{ booking.endBooking|time:"H:i น." }}</span>
                                 {% else %}
                                     <span class="text-secondary text-s">-</span>
                                 {% endif %}

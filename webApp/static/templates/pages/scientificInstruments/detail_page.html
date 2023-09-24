@@ -47,7 +47,7 @@
                         <p class="text-s text-start mb-0">
                             
                             {% if booking.startBooking and booking.endBooking %}
-                            เวลาใช้งาน : {% load tz %}{{ booking.startBooking }} - {{ booking.endBooking }}
+                            เวลาใช้งาน : {% load tz %}{{ booking.startBooking|time:"H:i น."}} - {{ booking.endBooking|time:"H:i น." }}
                             {% else %}
                             เวลาใช้งาน : -
                             {% endif %}
