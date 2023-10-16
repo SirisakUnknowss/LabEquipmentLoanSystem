@@ -5,6 +5,11 @@
     <div class="row">
       <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-3">
         <h5>รายการเครื่องมือวิทยาศาตร์</h5>
+        {% if user.account.status == "admin" %}
+        <button class="btn bg-gradient-faded-dark mb-4 mt-n2 ms-2 toast-btn text-white" id="exportScientificInstrumentAllButton" type="button" data-target="warningToast">
+          <i class="material-icons opacity-10">download</i>
+        </button>
+        {% endif %}
       </div>
     </div>
     
@@ -96,6 +101,7 @@
 {{ block.super }}
   <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <script>
+    const urlExportData = "{% url 'ExportScientificInstruments' %}"
     const scientificInstrumentsJson = JSON.parse('{{ scientificInstrumentsJson | safe }}')
     let urlPlaceHolder = "{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png"
     let name_page = "id_equipment_list_page"
@@ -106,4 +112,7 @@
   <script src="{{ STATIC_URL }}js/scientificDetail.js"></script>
   <script src="{{ STATIC_URL }}js/scientificDelete.js"></script>
   <script src="{{ STATIC_URL }}js/scientificBooking.js"></script>
+  {% if user.account.status == "admin" %}
+  <script src="{{ STATIC_URL }}js/exportScientificInstrument.js"></script>
+  {% endif %}
 {% endblock %}

@@ -6,7 +6,9 @@
       <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-3">
         <h5>รายการอุปกรณ์วิทยาศาสตร์</h5>
         {% if user.account.status == "admin" %}
-        <button class="btn bg-green-dark mb-4 mt-n2 ms-2 toast-btn text-white" id="exportEquipmentAllButton" type="button" data-target="warningToast">Download...</button>
+        <button class="btn bg-gradient-faded-dark mb-4 mt-n2 ms-2 toast-btn text-white" id="exportEquipmentAllButton" type="button" data-target="warningToast">
+          <i class="material-icons opacity-10">download</i>
+        </button>
         {% endif %}
       </div>
       {% if user.account.status == "user" %}
