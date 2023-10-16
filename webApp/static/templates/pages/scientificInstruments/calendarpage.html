@@ -13,7 +13,7 @@
         <h5>รายการเครื่องมือวิทยาศาตร์</h5>
       </div>
       <div class="col-lg-2 col-md-4 col-12 text-end">
-          <a href="{% url 'scientific-instruments-list' %}">
+          <a href="{% url 'scientificInstrumentsListPage' %}">
             <button class="btn bg-green-dark w-100 mb-0 toast-btn text-white" type="button" data-target="warningToast">จองใช้งาน</button>
           </a>
       </div>
@@ -55,7 +55,7 @@
     <div class="row mt-4">
       <div class="card align-items-end">
         <div class="input-group input-group-outline my-3">
-          <form id="searchByID" class="w-100 ms-lg-6 me-lg-6 ms-xl-12 me-xl-12" name="searchByID" method="post" action="{% url 'scientific-instruments-calendar' %}">
+          <form id="searchByID" class="w-100 ms-lg-6 me-lg-6 ms-xl-12 me-xl-12" name="searchByID" method="post" action="{% url 'scientificInstrumentsCalendarPage' %}">
               {% csrf_token %}
             <label for="scientificInstrumentsSelect" class="text-black text-bold">ค้นหาตามเครื่องมือ</label>
             <input type="hidden" value="{{ scientificInstrumentID }}" id="scientificInstrumentIDInput" name="scientificInstrumentID" />
@@ -83,7 +83,7 @@
   <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <script>
     const urlScientificInstruments = "{% url 'listScientificInstrumentApi' %}"
-    const urlBookings = "{% url 'scientific-instruments-calendar' %}"
+    const urlBookings = "{% url 'scientificInstrumentsCalendarPage' %}"
     const urlGetBookingId = "{% url 'GetBookingByID' %}"
     const idScientificInstrument = "{{ idScientificInstrument }}"
     const csrf_token = "{{csrf_token}}"

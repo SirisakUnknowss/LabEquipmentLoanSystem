@@ -1,0 +1,11 @@
+{% extends 'pages/scientificInstruments/base.html' %}
+{% block content %}
+{% include 'pages/scientificInstruments/landing.html' %}
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+    <script>
+        let name_page = "id_home_page"
+    </script>
+{% endblock %}

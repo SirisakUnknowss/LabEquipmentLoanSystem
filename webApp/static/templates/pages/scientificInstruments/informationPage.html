@@ -5,7 +5,7 @@
         
         <div class="row">
             <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-3">
-                <h5>ข้อมูลการยืม-คืนอุปกรณ์วิทยาศาสตร์</h5>
+                <h5>ข้อมูลการจองเครื่องมือวิทยาศาสตร์</h5>
             </div>
         </div>
 
@@ -64,7 +64,7 @@
                                         {% endif %}
                                     </td>
                                     <td class="align-middle text-center text-sm">
-                                        <form id="confirm-scientificInstrument" method="post" action="{% url 'scientificInstrument-detail' %}">
+                                        <form id="confirm-scientificInstrument" method="post" action="{% url 'detailScientificInstrumentPage' %}">
                                             {% csrf_token %}
                                             <input type="hidden" value="{{ booking.id }}" name="bookingID" />
                                             <input type="hidden" value="{{ booking.status }}" name="StatusBooking" />
@@ -89,7 +89,7 @@
                         {% else %}
                             <div class="text-center mt-5 mb-5">
                                 <span class="text-secondary text-2xl d-block mb-3">ไม่มีข้อมูลการจองเครื่องมือวิทยาศาสตร์</span>
-                                <a href="{% url 'scientific-instruments-list' %}">
+                                <a href="{% url 'scientificInstrumentsListPage' %}">
                                     <button class="btn bg-gradient-info" type="submit">จองเครื่องมือวิทยาศาสตร์</button>
                                 </a>
                             </div>

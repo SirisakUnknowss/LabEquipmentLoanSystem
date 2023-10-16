@@ -14,7 +14,7 @@
                         <div class="card-body">
                             <div class="right">
                                 {% if user.account.status == "admin" %}
-                                <a href="{% url 'usermanagementpage' %}"><img src="{{ STATIC_URL }}/images/cancel.png" /></a>
+                                <a href="{% url 'userManagementPage' %}"><img src="{{ STATIC_URL }}/images/cancel.png" /></a>
                                 {% else %}
                                 <a href="{% url 'homepage' %}"><img src="{{ STATIC_URL }}/images/cancel.png" /></a>
                                 {% endif %}

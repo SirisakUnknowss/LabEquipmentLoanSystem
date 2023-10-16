@@ -30,6 +30,7 @@ class ScientificInstrument(models.Model):
     detail      = models.TextField(null=True, blank=True, default=None)
     annotation  = models.TextField(null=True, blank=True, default=None)
     image       = models.ImageField(upload_to=getClassPath, max_length=100, null=True, blank=True)
+    statistics  = models.IntegerField(default=0)
 
     @property
     def thumbnail(self):

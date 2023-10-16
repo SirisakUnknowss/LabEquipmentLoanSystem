@@ -37,7 +37,7 @@ class AddScientificInstrument(LabAPIGetView):
         scientificInstrument    = self.perform_create(serializerInput)
         serializerOutput        = SlzScientificInstrument(scientificInstrument)
         self.response["result"] = serializerOutput.data
-        return redirect(reverse('scientific-instruments-list'))
+        return redirect(reverse('scientificInstrumentsListPage'))
     
     def perform_create(self, serializer):
         validated               = serializer.validated_data
@@ -74,7 +74,7 @@ class RemoveScientificInstrument(LabAPIGetView):
         if account.status != "admin":
             raise ValidationError('Please login with admin account.')
         ScientificInstrument.objects.filter(id=request.POST["scientificInstrument"]).delete()
-        return redirect(reverse('scientific-instruments-list'))
+        return redirect(reverse('scientificInstrumentsListPage'))
 
 class EditScientificInstrument(LabAPIGetView):
     queryset            = ScientificInstrument.objects.all()
@@ -87,7 +87,7 @@ class EditScientificInstrument(LabAPIGetView):
             raise ValidationError('Please login with admin account.')
         scientificInstrument = ScientificInstrument.objects.filter(id=request.POST["scientificInstrument"])
         if not scientificInstrument.exists():
-            return redirect(reverse('scientific-instruments-list'))
+            return redirect(reverse('scientificInstrumentsListPage'))
         scientificInstrument.update(
             name        = request.POST["name"],
             number      = request.POST["number"],
@@ -96,7 +96,7 @@ class EditScientificInstrument(LabAPIGetView):
             annotation  = request.POST["annotation"],
             )
         if not(request.FILES.get('upload', False)):
-            return redirect(reverse('scientific-instruments-list'))
+            return redirect(reverse('scientificInstrumentsListPage'))
         scientificInstrument:ScientificInstrument = scientificInstrument[0]
         upload      = self.request.FILES['upload']
         fss         = FileSystemStorage()
@@ -105,7 +105,7 @@ class EditScientificInstrument(LabAPIGetView):
         file_url    = fss.url(file)
         scientificInstrument.image = file_url
         scientificInstrument.save()
-        return redirect(reverse('scientific-instruments-list'))
+        return redirect(reverse('scientificInstrumentsListPage'))
 
 class GetTimeStartCanBooking(LabAPIGetView):
     permission_classes = [ AllowAny ]
@@ -210,7 +210,7 @@ class BookingScientificInstrumentApi(LabAPIGetView):
         booking                 = self.perform_create(serializerInput, account)
         serializerOutput        = SlzBooking(booking)
         self.response["result"] = serializerOutput.data
-        return redirect(reverse('scientific-instruments-list'))
+        return redirect(reverse('scientificInstrumentsListPage'))
     
     def perform_create(self, serializer, account):
         validated = serializer.validated_data
@@ -233,12 +233,12 @@ class DisapprovedBookingApi(LabAPIView):
         account     = request.user.account
         bookingID   = self.request.data.get("bookingID")
         if account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('notifications-booking'))
+            return redirect(reverse('notificationBookingPage'))
         booking = Booking.objects.filter(id=bookingID)
         if not booking.exists():
-            return redirect(reverse('notifications-booking'))
+            return redirect(reverse('notificationBookingPage'))
         booking.update(status=Order.STATUS.DISAPPROVED)
-        return redirect(reverse('notifications-booking'))
+        return redirect(reverse('notificationBookingPage'))
 
 class ApprovedBookingApi(LabAPIView):
     queryset            = Booking.objects.all()
@@ -248,16 +248,20 @@ class ApprovedBookingApi(LabAPIView):
         account     = request.user.account
         bookingID   = self.request.data.get("bookingID")
         if account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('notifications-booking'))
+            return redirect(reverse('notificationBookingPage'))
         booking = Booking.objects.filter(id=bookingID)
         if not booking.exists():
-            return redirect(reverse('notifications-booking'))
+            return redirect(reverse('notificationBookingPage'))
         booking.update(
             status=Order.STATUS.APPROVED,
             approver=account,
             dateApproved=datetime.now()
         )
-        return redirect(reverse('notifications-booking'))
+        scientificInstrument = booking.first().scientificInstrument
+        scientificInstrument.statistics += 1
+        scientificInstrument.save(update_fields=['statistics'])
+        
+        return redirect(reverse('notificationBookingPage'))
 
 class CancelBookingApi(LabAPIView):
     queryset            = Booking.objects.all()
@@ -268,9 +272,9 @@ class CancelBookingApi(LabAPIView):
         bookingID   = self.request.data.get("bookingID")
         booking     = Booking.objects.filter(id=bookingID, user=account)
         if not booking.exists():
-            return redirect(reverse('information-scientificInstrument'))
+            return redirect(reverse('informationBookingPage'))
         booking.update( status=Order.STATUS.CANCELED)
-        return redirect(reverse('notifications-booking'))
+        return redirect(reverse('notificationBookingPage'))
 
 class GetBookingByID(LabAPIGetView):
     queryset            = Booking.objects.all()

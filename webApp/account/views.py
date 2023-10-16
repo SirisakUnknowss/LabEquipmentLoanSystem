@@ -54,7 +54,7 @@ def user_register(request):
     if request.user.is_authenticated:
         account = request.user.account
         if account.status == "admin":
-            return redirect(reverse('usermanagementpage'))
+            return redirect(reverse('userManagementPage'))
     login(request, user)
     return redirect(reverse('homepage'))
 
@@ -159,7 +159,7 @@ def user_edit(request):
             category=data['category'],
             status=data['status'],
             )
-    return redirect(reverse('managepage'))
+    return redirect(reverse('userEditPage'))
 
 def delete_account(request):
     if request.method == "GET":
@@ -168,4 +168,4 @@ def delete_account(request):
         return redirect(reverse('homepage'))
     if request.POST['accountID']:
         Account.objects.filter(id=request.POST['accountID']).delete()
-    return redirect(reverse('managepage'))
+    return redirect(reverse('userEditPage'))

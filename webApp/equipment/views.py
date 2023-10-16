@@ -30,7 +30,7 @@ class AddEquipment(LabAPIGetView):
         equipment               = self.perform_create(serializerInput)
         serializerOutput        = SlzEquipment(equipment)
         self.response["result"] = serializerOutput.data
-        return redirect(reverse('equipment-list'))
+        return redirect(reverse('equipmentListPage'))
     
     def perform_create(self, serializer):
         validated = serializer.validated_data
@@ -70,7 +70,7 @@ class RemoveEquipment(LabAPIGetView):
         if account.status != "admin":
             raise ValidationError('Please login with admin account.')
         Equipment.objects.filter(id=request.POST["equipment"]).delete()
-        return redirect(reverse('equipment-list'))
+        return redirect(reverse('equipmentListPage'))
 
 class EditEquipment(LabAPIGetView):
     queryset            = Equipment.objects.all()
@@ -83,7 +83,7 @@ class EditEquipment(LabAPIGetView):
             raise ValidationError('Please login with admin account.')
         equipment = Equipment.objects.filter(id=request.POST["equipment"])
         if not equipment.exists():
-            return redirect(reverse('equipment-list'))
+            return redirect(reverse('equipmentListPage'))
             
         unit = request.POST["unit"]
         if unit == 'Other_Other':
@@ -95,7 +95,7 @@ class EditEquipment(LabAPIGetView):
             unit=unit,
             )
         if not(request.FILES.get('upload', False)):
-            return redirect(reverse('equipment-list'))
+            return redirect(reverse('equipmentListPage'))
         equipment:Equipment = equipment[0]
         upload      = self.request.FILES['upload']
         fss         = FileSystemStorage()
@@ -104,4 +104,4 @@ class EditEquipment(LabAPIGetView):
         file_url    = fss.url(file)
         equipment.image = file_url
         equipment.save()
-        return redirect(reverse('equipment-list'))
+        return redirect(reverse('equipmentListPage'))

@@ -11,12 +11,12 @@
       </div>
       {% if user.account.status == "user" %}
       <div class="col-lg-2 col-md-4 col-12 text-end">
-          <a href="{% url 'equipmentcart-list' %}">
+          <a href="{% url 'addScientificInstrumentPage' %}">
             <button class="btn bg-gradient-warning w-100 mb-0 toast-btn" type="button" data-target="warningToast">ยืมอุปกรณ์</button>
           </a>
       </div>
       <div class="col-lg-2 col-md-4 col-12 text-end">
-          <a href="{% url 'information-equipment' %}">
+          <a href="{% url 'informationEquipmentPage' %}">
               <button class="btn bg-gradient-danger w-100 mb-0 toast-btn" type="button" data-target="warningToast">คืนอุปกรณ์</button>
           </a>
       </div>
@@ -25,7 +25,7 @@
     
     <div class="row">
       <div class="col-lg-4 col-md-8 col-12 mx-auto mt-1 mb-1 py-1">
-          <form role="form" class="text-start" id="login-form" method="post" action="{% url 'equipment-list' %}">
+          <form role="form" class="text-start" id="login-form" method="post" action="{% url 'equipmentListPage' %}">
           {% csrf_token %}
           <div class="input-group input-group-outline mb-2">
               <label class="form-label">ชื่ออุปกรณ์</label>
@@ -70,7 +70,7 @@
 
                   <div class="row">
                     <div class="col-12 col-md-12 col-xl-6 col-lg-6">
-                      <form id="add-equipment" method="post" action="{% url 'addequipmentpage' %}">
+                      <form id="add-equipment" method="post" action="{% url 'addEquipmentPage' %}">
                         {% csrf_token %}
                         <input type="hidden" value="{{ equipment.id }}" name="EquipmentID" />
                         <button class="btn bg-gradient-warning w-100 px-0" type="submit">แก้ไขข้อมูล</button>
@@ -112,7 +112,7 @@
   
   {% if user.account.status == "admin" %}
   <div class="fixed-plugin ps">
-    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2" href="{% url 'addequipmentpage' %}">
+    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2" href="{% url 'addEquipmentPage' %}">
       <i class="material-icons py-2">add</i>
     </a> 
   </div>

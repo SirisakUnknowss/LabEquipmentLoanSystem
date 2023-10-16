@@ -24,7 +24,7 @@ class AddItemForBorrowingApi(LabAPIGetView):
         equipment               = self.perform_create(serializerInput, account)
         serializerOutput        = SlzEquipmentCart(equipment)
         self.response["result"] = serializerOutput.data
-        return redirect(reverse('equipment-list'))
+        return redirect(reverse('equipmentListPage'))
     
     def perform_create(self, serializer, account):
         validated = serializer.validated_data
@@ -49,7 +49,7 @@ class RemoveItemForBorrowingApi(LabAPIGetView):
         account     = request.user.account
         idCart      = request.data['equipmentCart']
         EquipmentCart.objects.filter(id=idCart, user=account).delete()
-        return redirect(reverse('equipmentcart-list'))
+        return redirect(reverse('addScientificInstrumentPage'))
 
 class ConfirmBorringApi(LabAPIView):
     queryset            = Order.objects.all()
@@ -59,18 +59,18 @@ class ConfirmBorringApi(LabAPIView):
         account     = request.user.account
         equipments  = EquipmentCart.objects.filter(user=account)
         if not equipments.exists():
-            return redirect(reverse('equipmentcart-list'))
+            return redirect(reverse('addScientificInstrumentPage'))
         order = Order.objects.create(user=account)
         for item in equipments:
             equipment = Equipment.objects.get(id=item.equipment.id)
             if equipment.quantity < item.quantity:
-                return redirect(reverse('equipmentcart-list'))
+                return redirect(reverse('addScientificInstrumentPage'))
             equipment.quantity -= item.quantity
             equipment.save()
             borrowing = Borrowing.objects.create(user=account, equipment=item.equipment, quantity=item.quantity)
             order.equipment.add(borrowing)
         equipments.delete()
-        return redirect(reverse('information-equipment'))
+        return redirect(reverse('informationEquipmentPage'))
 
 class DisapprovedBorringApi(LabAPIView):
     queryset            = Order.objects.all()
@@ -80,12 +80,12 @@ class DisapprovedBorringApi(LabAPIView):
         account     = request.user.account
         orderID     = self.request.data.get("orderID")
         if account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('notifications-forgetten'))
+            return redirect(reverse('notificationsEquipmentPage'))
         order       = Order.objects.filter(id=orderID)
         if not order.exists():
-            return redirect(reverse('notifications-forgetten'))
+            return redirect(reverse('notificationsEquipmentPage'))
         order.update(status=Order.STATUS.DISAPPROVED)
-        return redirect(reverse('notifications-forgetten'))
+        return redirect(reverse('notificationsEquipmentPage'))
 
 class ApprovedBorringApi(LabAPIView):
     queryset            = Order.objects.all()
@@ -95,10 +95,10 @@ class ApprovedBorringApi(LabAPIView):
         account     = request.user.account
         orderID     = self.request.data.get("orderID")
         if account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('notifications-forgetten'))
+            return redirect(reverse('notificationsEquipmentPage'))
         order       = Order.objects.filter(id=orderID)
         if not order.exists():
-            return redirect(reverse('notifications-forgetten'))
+            return redirect(reverse('notificationsEquipmentPage'))
         for item in order[0].equipment.all():
             equipment:Equipment = Equipment.objects.get(id=item.equipment.id)
             equipment.statistics += 1
@@ -109,7 +109,7 @@ class ApprovedBorringApi(LabAPIView):
             dateApproved=datetime.now(),
             dateReturn=datetime.now() + timedelta(days=7)
         )
-        return redirect(reverse('notifications-forgetten'))
+        return redirect(reverse('notificationsEquipmentPage'))
 
 class CancelBorringApi(LabAPIView):
     queryset            = Order.objects.all()
@@ -120,9 +120,9 @@ class CancelBorringApi(LabAPIView):
         orderID     = self.request.data.get("orderID")
         order       = Order.objects.filter(id=orderID, user=account)
         if not order.exists():
-            return redirect(reverse('information-equipment'))
+            return redirect(reverse('informationEquipmentPage'))
         order.update( status=Order.STATUS.CANCELED)
-        return redirect(reverse('borrowing-history'))
+        return redirect(reverse('borrowingHistoryPage'))
 
 class RemoveBorringApi(LabAPIView):
     queryset            = Order.objects.all()
@@ -133,9 +133,9 @@ class RemoveBorringApi(LabAPIView):
         orderID     = self.request.data.get("orderID")
         order       = Order.objects.filter(id=orderID, user=account)
         if not order.exists():
-            return redirect(reverse('information-equipment'))
+            return redirect(reverse('informationEquipmentPage'))
         order.delete()
-        return redirect(reverse('borrowing-history'))
+        return redirect(reverse('borrowingHistoryPage'))
 
 class ReturningApi(LabAPIView):
     queryset            = Order.objects.all()
@@ -147,12 +147,12 @@ class ReturningApi(LabAPIView):
         if account.status == Account.STATUS.ADMIN:
             order = Order.objects.filter(id=orderID)
             order.update(status=Order.STATUS.RETURNED, dateReturn=datetime.now())
-            return redirect(reverse('notifications-forgetten'))
+            return redirect(reverse('notificationsEquipmentPage'))
         order = Order.objects.filter(id=orderID, user=account, status=Order.STATUS.APPROVED)
         if not order.exists():
-            return redirect(reverse('information-equipment'))
+            return redirect(reverse('informationEquipmentPage'))
         order.update(status=Order.STATUS.RETURNED, dateReturn=datetime.now())
-        return redirect(reverse('information-equipment'))
+        return redirect(reverse('informationEquipmentPage'))
     
 class BorrowAgainApi(LabAPIView):
     queryset            = Order.objects.all()
@@ -164,12 +164,12 @@ class BorrowAgainApi(LabAPIView):
         if account.status == Account.STATUS.ADMIN:
             order = Order.objects.filter(id=orderID)
             order.update(status=Order.STATUS.RETURNED, dateReturn=datetime.now())
-            return redirect(reverse('notifications-forgetten'))
+            return redirect(reverse('notificationsEquipmentPage'))
         order = Order.objects.filter(id=orderID, user=account, status=Order.STATUS.APPROVED)
         if not order.exists():
-            return redirect(reverse('information-equipment'))
+            return redirect(reverse('informationEquipmentPage'))
         order.update(status=Order.STATUS.WAITING, dateReturn=datetime.now())
-        return redirect(reverse('information-equipment'))
+        return redirect(reverse('informationEquipmentPage'))
 
 class ConfirmreturnApi(LabAPIView):
     queryset            = Order.objects.all()
@@ -179,12 +179,12 @@ class ConfirmreturnApi(LabAPIView):
         account     = request.user.account
         orderID     = self.request.data.get("orderID")
         if account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('notifications-forgetten'))
+            return redirect(reverse('notificationsEquipmentPage'))
         order       = Order.objects.filter(id=orderID, status=Order.STATUS.RETURNED)
         if not order.exists():
-            return redirect(reverse('information-equipment'))
+            return redirect(reverse('informationEquipmentPage'))
         for borrowing in order[0].equipment.all():
             borrowing.equipment.quantity += borrowing.quantity
             borrowing.equipment.save()
         order.update(status=Order.STATUS.COMPLETED)
-        return redirect(reverse('information-equipment'))
+        return redirect(reverse('informationEquipmentPage'))

@@ -1,5 +1,6 @@
 #Django
 from django.contrib import admin
+from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 #Project
 from scientificInstrument.models import ScientificInstrument, Booking
@@ -20,11 +21,26 @@ class ScientificInstrumentAdmin(ImportExportModelAdmin):
     thumbnail_preview.short_description = 'Thumbnail'
     thumbnail_preview.allow_tags = True
 
-@admin.register(Booking)
-class BookingAdmin(ImportExportModelAdmin):
+class BookingModelResource(resources.ModelResource):
 
-    list_display    = [ 'id', 'dateBooking', 'status', 'createAt' ]
-    
     class Meta:
         model = Booking
-        field = '__all__'
+        fields = ('user__studentID','scientificInstrument__name','createAt','startBooking','endBooking','approver__studentID','status')
+
+    def export(self, queryset=None, *args, **kwargs):
+        queryset = super().export(queryset, *args, **kwargs)
+        return queryset
+
+@admin.register(Booking)
+class BookingAdmin(ImportExportModelAdmin):
+    resource_class = BookingModelResource
+
+class ScientificInstrumentModelResource(resources.ModelResource):
+
+    class Meta:
+        model = ScientificInstrument
+        fields = ('name','place','number','detail','annotation','statistics')
+
+    def export(self, queryset=None, *args, **kwargs):
+        queryset = super().export(queryset, *args, **kwargs)
+        return queryset

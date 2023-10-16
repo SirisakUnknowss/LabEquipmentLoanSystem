@@ -1,4 +1,5 @@
 # Python
+import os
 from datetime import datetime
 # Django
 from django.db.models import Q
@@ -19,6 +20,7 @@ from borrowing.models import EquipmentCart, Order
 from equipment.admin import EquipmentModelResource
 from equipment.models import Equipment
 from scientificInstrument.models import ScientificInstrument, Booking
+from scientificInstrument.admin import BookingModelResource, ScientificInstrumentModelResource
 from settings.base import MEDIA_ROOT
 
 class LabAPIView(GenericAPIView):
@@ -77,20 +79,20 @@ def homepage(request):
     checkOverDued(request)
     return render(request, 'base/index.html')
 
-def registerpage(request):
+def registerPage(request):
     if  request.method == 'POST' and request.POST['accountID']:
         account = Account.objects.get(id=request.POST['accountID'])
         context = { 'account': account }
         return render(request, 'base/signup.html', context)
     return render(request, 'base/signup.html')
 
-def equipmentpage(request):
+def equipmentLandingPage(request):
     if not(request.user.is_authenticated):
         return render(request, 'base/login.html')
     checkOverDued(request)
     return render(request, 'pages/equipments/index.html')
 
-def notificationspage(request):
+def notificationsEquipmentPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     account = request.user.account
     checkOverDued(request)
@@ -116,7 +118,7 @@ def getBookings(account: Account):
         bookings      = Booking.objects.filter(waiting)
     return bookings
 
-def informationpage(request):
+def informationEquipmentPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     waiting     = Q(status=Order.STATUS.WAITING)
@@ -128,7 +130,7 @@ def informationpage(request):
     context     = { 'orders': orders }
     return render(request, 'pages/equipments/information_page.html', context)
 
-def borrowinghistorypage(request):
+def borrowingHistoryPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     canceled    = Q(status=Order.STATUS.CANCELED)
@@ -140,14 +142,14 @@ def borrowinghistorypage(request):
     context     = { 'orders': orders }
     return render(request, 'pages/equipments/borrowing_history_page.html', context)
 
-def analysispage(request):
+def analysisPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     context = { 'orders': orderAll(), 'accounts': accountAll(), 'equipments': topEquipment() }
-    return render(request, 'pages/equipments/analysis_page.html', context)
+    return render(request, 'pages/equipments/analysisPage.html', context)
 
 def topEquipment():
-    equipments = Equipment.objects.all().order_by('-statistics').filter(statistics__gt=1)
+    equipments = Equipment.objects.all().order_by('-statistics').filter(statistics__gt=1)[:20]
     return equipments
     
 def accountAll():
@@ -163,7 +165,7 @@ def accountAll():
 def orderAll():
     waiting     = Q(status=Order.STATUS.WAITING)
     approved    = Q(status=Order.STATUS.APPROVED)
-    overdued    = Q(status=Order.STATUS.OVERDUED)
+    overDued    = Q(status=Order.STATUS.OVERDUED)
     returned    = Q(status=Order.STATUS.RETURNED)
     canceled    = Q(status=Order.STATUS.CANCELED)
     completed   = Q(status=Order.STATUS.COMPLETED)
@@ -176,20 +178,20 @@ def orderAll():
     order['canceled']       = orders.filter(canceled).count()
     order['returned']       = orders.filter(returned).count()
     order['approved']       = orders.filter(approved).count()
-    order['overdued']       = orders.filter(overdued).count()
+    order['overdued']       = orders.filter(overDued).count()
     order['completed']      = orders.filter(completed).count()
     order['disapproved']    = orders.filter(disapproved).count()
     return order
 
 
-def contactpage(request):
+def contactPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     dataWeb = DataWeb.objects.all().first()
     context = { 'dataWeb': dataWeb }
     return render(request, 'pages/contact_page.html', context)
 
-def profilepage(request):
+def profilePage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     approved    = Q(status=Order.STATUS.APPROVED)
@@ -203,7 +205,7 @@ def profilepage(request):
         context = { 'orders': orders }
     return render(request, 'pages/user_profile.html', context)
 
-def addequipmentpage(request):
+def addEquipmentPage(request):
     if not(request.user.is_authenticated) or request.user.account.status != Account.STATUS.ADMIN:
         return redirect(reverse('homepage'))
     if request.method == 'POST':
@@ -212,22 +214,22 @@ def addequipmentpage(request):
         if equipment.exists():
             context = { 'equipment': equipment.first() }
             return render(request, 'pages/equipments/add_equipment.html', context)
-        return redirect(reverse('equipment-list'))
+        return redirect(reverse('equipmentListPage'))
     return render(request, 'pages/equipments/add_equipment.html')
 
-def equipmentlistpage(request):
+def equipmentListPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     equipments = Equipment.objects.all().order_by('name')
     if request.method == 'POST':
-        nameequipment   = request.POST['nameequipment']
-        name            = Q(name__contains=nameequipment)
+        nameEquipment   = request.POST['nameequipment']
+        name            = Q(name__contains=nameEquipment)
         equipments      = Equipment.objects.filter(name).order_by('name')
     equipmentsJson = serializers.serialize("json", equipments)
     context = { 'equipments': equipments, 'equipmentsJson': equipmentsJson }
     return render(request, 'pages/equipments/equipment_list_page.html', context)
 
-def equipmentdetailpage(request):
+def detailEquipmentPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     if request.method == 'GET':
@@ -239,21 +241,21 @@ def equipmentdetailpage(request):
         context = { 'order': order, 'status': status }
         return render(request, 'pages/equipments/equipment_detail_page.html', context)
     except ObjectDoesNotExist:
-        return redirect(reverse('equipment-list'))
+        return redirect(reverse('equipmentListPage'))
 
-def equipmentcartlistpage(request):
+def addScientificInstrumentPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     equipmentsCart = EquipmentCart.objects.filter(user=request.user.account)
     context = { 'equipmentsCart': equipmentsCart }
     return render(request, 'pages/equipments/cart_equipment_page.html', context)
 
-def usermanagementpage(request):
+def userManagementPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     return render(request, 'pages/user_management_page.html')
 
-def usereditpage(request):
+def userEditPage(request):
     if not(request.user.is_authenticated) or request.user.account.status != Account.STATUS.ADMIN:
         return redirect(reverse('homepage'))
     context = dict()
@@ -329,15 +331,20 @@ class ExportEquipments(LabAPIView):
         xlsxFile = getDataFile(dirPath, fileName, EquipmentModelResource, queryset)
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
+def scientificInstrumentLandingPage(request):
+    if not(request.user.is_authenticated):
+        return render(request, 'base/login.html')
+    checkOverDued(request)
+    return render(request, 'pages/scientificInstruments/index.html')
 
-def scientificinstrumentscalendarpage(request):
+def scientificInstrumentsCalendarPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     scientificInstrumentID = None
     if request.method == "POST":
         scientificInstrumentID = request.POST["scientificInstrumentID"]
     checkOverDued(request)
     context = { 'scientificInstruments': scientificInstruments(), 'bookings': bookings(scientificInstrumentID), 'scientificInstrumentID':scientificInstrumentID }
-    return render(request, 'pages/scientificInstruments/calendarpage.html', context)
+    return render(request, 'pages/scientificInstruments/calendarPage.html', context)
 
 def scientificInstruments():
     scientificInstrumentsAll        = ScientificInstrument.objects.all()
@@ -371,7 +378,7 @@ def getBookingList(bookingsAll):
         bookingList.append(jsonData)
     return (str(bookingList)).replace("\'", "\"")
 
-def scientificinstrumentslistpage(request):
+def scientificInstrumentsListPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     scientificInstruments = ScientificInstrument.objects.all().order_by('number')
@@ -382,9 +389,9 @@ def scientificinstrumentslistpage(request):
         scientificInstruments       = ScientificInstrument.objects.filter(name | number).order_by('name')
     scientificInstrumentsJson = serializers.serialize("json", scientificInstruments)
     context = { 'scientificInstruments': scientificInstruments, 'scientificInstrumentsJson': scientificInstrumentsJson }
-    return render(request, 'pages/scientificInstruments/listpage.html', context)
+    return render(request, 'pages/scientificInstruments/listPage.html', context)
 
-def addscientificinstrumentspage(request):
+def addScientificInstrumentPage(request):
     if not(request.user.is_authenticated) or request.user.account.status != Account.STATUS.ADMIN:
         return redirect(reverse('homepage'))
     if request.method == 'POST':
@@ -393,10 +400,10 @@ def addscientificinstrumentspage(request):
         if scientificInstrument.exists():
             context = { 'scientificInstrument': scientificInstrument.first() }
             return render(request, 'pages/scientificInstruments/add_scientific_instruments.html', context)
-        return redirect(reverse('scientific-instruments-list'))
+        return redirect(reverse('scientificInstrumentsListPage'))
     return render(request, 'pages/scientificInstruments/add_scientific_instruments.html')
 
-def informationscientificInstrumentspage(request):
+def informationBookingPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     waiting     = Q(status=Order.STATUS.WAITING)
@@ -405,9 +412,9 @@ def informationscientificInstrumentspage(request):
     if request.user.account.status == Account.STATUS.USER:
         bookings  = bookings.filter(user=request.user.account)
     context     = { 'bookings': bookings.order_by('-dateBooking', '-timeBooking') }
-    return render(request, 'pages/scientificInstruments/information_page.html', context)
+    return render(request, 'pages/scientificInstruments/informationEquipmentPage.html', context)
 
-def detailscientificInstrumentpage(request):
+def detailScientificInstrumentPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     if request.method == 'GET':
@@ -419,12 +426,78 @@ def detailscientificInstrumentpage(request):
         context = { 'booking': booking, 'status': status }
         return render(request, 'pages/scientificInstruments/detail_page.html', context)
     except ObjectDoesNotExist:
-        return redirect(reverse('information-scientificInstrument'))
+        return redirect(reverse('informationBookingPage'))
 
-def notificationsbookingpage(request):
+def notificationBookingPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     account = request.user.account
     checkOverDued(request)
     bookings    = getBookings(account)
     context     = {'bookings': bookings.order_by('-dateBooking', '-timeBooking') }
-    return render(request, 'pages/scientificInstruments/notifications_page.html', context)
+    return render(request, 'pages/scientificInstruments/notificationPage.html', context)
+
+
+def analysisScientificInstrumentPage(request):
+    if not(request.user.is_authenticated): return redirect(reverse('homepage'))
+    context = { 'bookings': bookingAll(), 'scientificInstruments': topScientificInstrument() }
+    return render(request, 'pages/scientificInstruments/analysisPage.html', context)
+
+def topScientificInstrument():
+    scientificInstruments = ScientificInstrument.objects.all().order_by('-statistics').filter(statistics__gt=1)[:20]
+    return scientificInstruments
+
+def bookingAll():
+    waiting     = Q(status=Order.STATUS.WAITING)
+    approved    = Q(status=Order.STATUS.APPROVED)
+    canceled    = Q(status=Order.STATUS.CANCELED)
+    disapproved = Q(status=Order.STATUS.DISAPPROVED)
+    order       = dict()
+    bookings    = Booking.objects.all()
+
+    order['all']            = bookings.count()
+    order['waiting']        = bookings.filter(waiting).count()
+    order['canceled']       = bookings.filter(canceled).count()
+    order['approved']       = bookings.filter(approved).count()
+    order['disapproved']    = bookings.filter(disapproved).count()
+    return order
+
+class ExportScientificInstruments(LabAPIView):
+    permission_classes = [ AllowAny ]
+
+    def get(self, request, *args, **kwargs):
+        parameter_value = request.GET['getData']
+        filePath, fileName = self.writeFile(parameter_value)
+        return download_file(filePath, fileName)
+
+    def writeFile(self, parameter_value):
+        userFileDir = "ScientificInstruments"
+        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
+        queryset = ScientificInstrument.objects.all()
+        if parameter_value != "":
+            queryset = ScientificInstrument.objects.all().order_by('-statistics').filter(statistics__gt=1)
+        fileName = f"Equipments{parameter_value}Data"
+        
+        xlsxFile = getDataFile(dirPath, fileName, ScientificInstrumentModelResource, queryset)
+        return f"{dirPath}/{xlsxFile}", xlsxFile
+
+class ExportBookingData(LabAPIView):
+    permission_classes = [ AllowAny ]
+
+    def get(self, request, *args, **kwargs):
+        parameter_value     = request.GET['getData']
+        filePath, fileName  = self.writeFile(parameter_value)
+        return download_file(filePath, fileName)
+
+    def writeFile(self, parameter_value):
+        userFileDir = "BookingData"
+        dirPath     = f"{MEDIA_ROOT}/files/{userFileDir}"
+        if not os.path.exists(dirPath):
+            os.makedirs(dirPath)
+        queryset    = Booking.objects.filter(status=parameter_value)
+        fileName    = f"{parameter_value}Data"
+        if parameter_value == "":
+            queryset = Booking.objects.all()
+            fileName = "allData"
+        
+        xlsxFile = getDataFile(dirPath, fileName, BookingModelResource, queryset)
+        return f"{dirPath}/{xlsxFile}", xlsxFile
