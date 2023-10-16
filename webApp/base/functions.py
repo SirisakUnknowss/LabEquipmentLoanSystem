@@ -10,14 +10,12 @@ def download_file(file_path, fileName):
     response['Content-Type'] = 'application/octet-stream'
     return response
 
-def getDataFile(dirPath: str, fileName: str, dataCls, queryset=None):
+def getDataFile(dirPath: str, fileName: str, dataCls, queryset):
     if not(os.path.exists(dirPath)):
         os.makedirs(dirPath)
     fileRes     = f"{fileName}.csv"
     filePath    = os.path.join(dirPath, fileRes)
-    dataset     = dataCls().export()
-    if queryset:
-        dataset = dataCls().export(queryset=queryset)
+    dataset = dataCls().export(queryset=queryset)
     with open(filePath, "w") as f:
         f.write(dataset.csv)
     df = pd.read_csv(filePath)

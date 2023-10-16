@@ -36,23 +36,25 @@ exportAllBookingButton.addEventListener('click', (event) => {
 
 exportWaitingBookingButton.addEventListener('click', (event) => {
     nameFile = "waitingApproveBookingData.xlsx"
-    requestContent(urlExportDataBorrowing + "?getData=waiting")
+    requestContent(urlExportDataBooking + "?getData=waiting")
 })
 exportApprovedBookingButton.addEventListener('click', (event) => {
     nameFile = "ApprovedBookingData.xlsx"
-    requestContent(urlExportDataBorrowing + "?getData=approved")
+    requestContent(urlExportDataBooking + "?getData=approved")
 })
 exportCanceledBookingButton.addEventListener('click', (event) => {
     nameFile = "canceledBookingData.xlsx"
-    requestContent(urlExportDataBorrowing + "?getData=canceled")
+    requestContent(urlExportDataBooking + "?getData=canceled")
 })
 
 exportDisapprovedBookingButton.addEventListener('click', (event) => {
     nameFile = "disapprovedBookingData.xlsx"
-    requestContent(urlExportDataBorrowing + "?getData=disapproved")
+    requestContent(urlExportDataBooking + "?getData=disapproved")
 })
-
-exportMostScientificInstrumentButton.addEventListener('click', (event) => {
-    nameFile = "mostScientificInstrumentData.xlsx"
-    requestContent(urlExportData + "?getData=Most")
-})
+if (exportMostScientificInstrumentButton)
+{
+    exportMostScientificInstrumentButton.addEventListener('click', (event) => {
+        nameFile = "mostScientificInstrumentData.xlsx"
+        requestContent(urlExportData + "?getData=Most")
+    })
+}
