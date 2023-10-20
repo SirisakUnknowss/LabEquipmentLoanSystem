@@ -40,6 +40,7 @@ urlpatterns = [
     path('equipment/list', baseViews.equipmentListPage, name='equipmentListPage'),
     path('equipment/detail', baseViews.detailEquipmentPage, name='detailEquipmentPage'),
     path('equipment/notifications', baseViews.notificationsEquipmentPage, name='notificationsEquipmentPage'),
+    path('equipment/borrowing', baseViews.equipmentCartListPage, name='equipmentCartListPage'),
     path('equipment/information', baseViews.informationEquipmentPage, name='informationEquipmentPage'),
     path('equipment/history-borrowing', baseViews.borrowingHistoryPage, name='borrowingHistoryPage'),
     path('export/api/equipments', baseViews.ExportEquipments.as_view(), name='ExportEquipments'),

@@ -32,7 +32,7 @@
                                 <span class="small">{{ user.account.bookingoverduedcount }}</span>
                             </span>
                         {% endifequal %}
-                        <a href="{% url 'addScientificInstrumentPage' %}"><i class="material-icons opacity-10 text-white me-sm-3">shopping_basket</i></a>
+                        <a href="{% url 'equipmentCartListPage' %}"><i class="material-icons opacity-10 text-white me-sm-3">shopping_basket</i></a>
                         {% ifequal user.account.equipmentcartcount 0 %}
                         {% else %}
                             <span class="position-absolute top-10 badge rounded-pill bg-danger border border-white small mx-10 py-1 px-2">

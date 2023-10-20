@@ -243,7 +243,7 @@ def detailEquipmentPage(request):
     except ObjectDoesNotExist:
         return redirect(reverse('equipmentListPage'))
 
-def addScientificInstrumentPage(request):
+def equipmentCartListPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
     checkOverDued(request)
     equipmentsCart = EquipmentCart.objects.filter(user=request.user.account)
