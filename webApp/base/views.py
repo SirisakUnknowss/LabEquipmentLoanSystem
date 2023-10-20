@@ -412,7 +412,7 @@ def informationBookingPage(request):
     if request.user.account.status == Account.STATUS.USER:
         bookings  = bookings.filter(user=request.user.account)
     context     = { 'bookings': bookings.order_by('-dateBooking', '-timeBooking') }
-    return render(request, 'pages/scientificInstruments/informationEquipmentPage.html', context)
+    return render(request, 'pages/scientificInstruments/informationPage.html', context)
 
 def detailScientificInstrumentPage(request):
     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
