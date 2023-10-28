@@ -15,7 +15,7 @@ class AccountResource(resources.ModelResource):
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
 
-    list_display = ['id', 'studentID', 'email', 'nameprefix', 'firstname', 'lastname', 'status', 'category']
+    list_display = ['id', 'studentID', 'email', 'nameprefix', 'firstname', 'lastname', 'status', 'categoryTH', 'branchTH', ]
     fieldsets = (
         ('Account', {'fields': ('user', 'studentID', 'password', 'levelclass', 'branch', 'faculty')}),
         ('Personal info', {'fields': ('nameprefix', 'firstname', 'lastname', 'email', 'phone', 'status', 'category')}),
@@ -29,3 +29,4 @@ class AccountAdmin(admin.ModelAdmin):
     )
     search_fields = ['studentID', 'nameprefix', 'firstname', 'lastname', 'levelclass', 'branch', 'faculty', 'status', 'category']
     ordering = ['id', 'studentID', 'nameprefix', 'firstname', 'lastname', 'levelclass', 'branch', 'faculty', 'status', 'category']
+    list_filter = ['category', 'status']

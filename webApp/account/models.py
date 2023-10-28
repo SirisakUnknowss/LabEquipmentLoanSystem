@@ -112,3 +112,36 @@ class Account(models.Model):
                 count = "9+"
             return count
         return 0
+
+    @property
+    def categoryTH(self):
+        categoryDict = {
+            self.CATEGORY.STUDENT : "นักเรียน",
+            self.CATEGORY.TEACHER : "ครู/อาจารย์",
+            self.CATEGORY.PERSONNEL : "บุคลากร",
+            self.CATEGORY.USER : "บุคคลภายนอก",
+            self.CATEGORY.NOTSPECIFIED : "ไม่ระบุ",
+        }
+        if self.category in categoryDict:
+            return categoryDict[self.category]
+        if self.category is self.CATEGORY.OTHER and self.categoryOther:
+            return self.categoryOther
+        return "-"
+
+    @property
+    def branchTH(self):
+        facultyDict = {
+            "B-Ed" : "(คบ.)",
+            "B-S" : "(วท.บ.)",
+            "Other" : "",
+        }
+        branchDict = {
+            "Chemistry" : "สาขาวิชาเคมี",
+            "Physical" : "สาขาวิชาฟิสิกส์",
+            "Biology" : "สาขาวิชาชีววิทยา",
+        }
+        if self.faculty in facultyDict and self.branch in branchDict:
+            return branchDict[self.branch] + facultyDict[self.faculty]
+        if f"{self.faculty}".lower() is self.CATEGORY.OTHER and self.branch:
+            return self.branch
+        return "-"

@@ -36,6 +36,12 @@
                             ผู้จองเครื่องมือวิทยาศาสตร์ : {{ booking.user.firstname }} {{ booking.user.lastname }}
                         </p>
                         <p class="text-s text-start mb-0">
+                            สถานะ : {{ booking.user.categoryTH }}
+                        </p>
+                        <p class="text-s text-start mb-0">
+                            สาขา : {{ booking.user.branchTH }}
+                        </p>
+                        <p class="text-s text-start mb-0">
                             ผู้อนุมัติ : {% if booking.approver.firstname %} {{ booking.approver.firstname }} {% endif %} {% if booking.approver.lastname %} {{ booking.approver.lastname }} {% endif %}
                         </p>
                         <p class="text-s text-start mb-0">

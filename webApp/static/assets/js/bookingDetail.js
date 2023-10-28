@@ -62,7 +62,7 @@ function display(jsonObject)
     numberScientificInstrument.innerHTML = data.scientificInstrument.number
     usernameBooking.innerHTML = data.user.firstname + " " + data.user.lastname
     userIdBooking.innerHTML = data.user.studentID
-    placeScientificInstrument.innerHTML = data.scientificInstrument.annotation
+    placeScientificInstrument.innerHTML = data.scientificInstrument.place
     datetimeBooking.innerHTML = data.dateBooking + " " + data.timeBooking
     createAtBooking.innerHTML = formatDateTime(data.createAt)
     setStatusBooking(data.status)
