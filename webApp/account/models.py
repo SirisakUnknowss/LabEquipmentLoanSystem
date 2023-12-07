@@ -1,10 +1,17 @@
+# Python
+import random
+# Framework
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
-
+# Project
 from borrowing.models import EquipmentCart, Order
 from scientificInstrument.models import Booking
-# Module
-from django.db.models import Q
+
+def getClassPath(instance, filename):
+    className = instance.__class__.__name__
+    filename  = "{}.png".format(instance.studentID)
+    return "{}/{}".format(className, filename)
 
 LEVEL_CLASS = [
     (1, '1'),
@@ -64,6 +71,7 @@ class Account(models.Model):
     category    = models.CharField(max_length=20, choices=CATEGORY.choices, null=True, blank=True)
     categoryOther = models.CharField(max_length=100, null=True, blank=True)
     status      = models.CharField(max_length=10, choices=STATUS.choices, null=True, blank=True)
+    image       = models.ImageField(upload_to=getClassPath, max_length=100, null=True, blank=True)
 
     def __str__(self):
         return self.studentID
