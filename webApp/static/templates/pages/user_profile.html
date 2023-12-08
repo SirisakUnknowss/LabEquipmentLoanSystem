@@ -11,19 +11,26 @@
                 <div class="card-body ms-5 mt-n5 pb-2">
                     <div class="row gx-4 mb-2">
                         <div class="col-auto">
-                            <div class="avatar avatar-xl position-relative">
-                                <img src="{{ STATIC_URL }}/images/profile.png" alt="profile_image" class="w-100 border-radius-section shadow-sm">
+                            <div class="chart text-center m-3">
+                                {% if user.account.image %}
+                                <img src="{{ user.account.image }}" alt="profile_image" class="image-scientificInstruments img-fluid shadow border-radius-xl thumb1">
+                                {% else %}
+                                <img src="{{ STATIC_URL }}/images/profile.png" alt="profile_image" class="image-scientificInstruments border-radius-xl">
+                                {% endif %}
                             </div>
                         </div>
                     </div>
 
                     <ul class="list-group">
-                        <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">ชื่อ - นามสกุล </strong> &nbsp; {{ user.account.firstname }} &nbsp; {{ user.account.lastname }}</li>
-                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">รหัสนักศึกษา </strong> &nbsp; {{ user.account.studentID }}</li>
-                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">สาขา </strong> &nbsp; {{ user.account.branch }}</li>
-                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">เบอร์โทรติดต่อ </strong> &nbsp; {{ user.account.phone }}</li>
-                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">อีเมล์ </strong> &nbsp; {{ user.account.email }}</li>
+                        <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">ชื่อ - นามสกุล</strong> :&nbsp;{{ user.account.firstname }}&nbsp;{{ user.account.lastname }}</li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">รหัสนักศึกษา</strong> :&nbsp;{{ user.account.studentID }}</li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">สาขา</strong> :&nbsp;{{ user.account.branch }}</li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">เบอร์โทรติดต่อ</strong> :&nbsp;{{ user.account.phone }}</li>
+                        <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">อีเมล์</strong> :&nbsp;{{ user.account.email }}</li>
                     </ul>
+                    <a href="{% url 'registerPage' %}">
+                        <button class="btn bg-gradient-warning" type="submit">แก้ไขข้อมูล</button>
+                    </a>
                 </div>
                 
             {% if user.is_authenticated %}

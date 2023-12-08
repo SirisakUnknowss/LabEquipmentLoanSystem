@@ -1,3 +1,4 @@
+# Django
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.contrib.auth import login, logout
@@ -5,10 +6,11 @@ from django.contrib.auth.models import User
 from django.http import Http404
 from django.http.response import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
-
-from .form import AuthenForm, RegisterForm, UpdateForm
-from .models import Account
-from .serializers import SlzAccountCreate
+# Project
+from base.functions import uploadImage
+from account.form import AuthenForm, RegisterForm, UpdateForm
+from account.models import Account, getClassPath
+from account.serializers import SlzAccountCreate
 
 # Create your views here.
 
@@ -110,6 +112,11 @@ def createAccount(request, user:User, form:RegisterForm):
         status=data['status'],
         )
     account.save()
+    if not(request.FILES.get('upload', False)):
+        return account
+    upload  = request.FILES['upload']
+    name    = getClassPath(account, data['studentID'])
+    uploadImage(name, upload, account)
     return account
 
 def split_branch(value:str):
@@ -122,44 +129,62 @@ def user_edit(request):
         raise Http404("A Page does not exist")
     if request.user.account.status != Account.STATUS.ADMIN:
         return redirect(reverse('homepage'))
+    if request.POST['accountID']:
+        data = setData(request)
+        editProfile(data)
+    return redirect(reverse('userEditPage'))
+
+def setData(request):
     form = UpdateForm(request.POST)
     if not form.is_valid():
         return HttpResponse(form.errors, content_type='application/json')
-    if request.POST['accountID']:
-        user        = Account.objects.get(id=request.POST['accountID'])
-        branch      = split_branch(form['branch'].data)
-        branchs     = request.POST['branch']
-        category    = request.POST['category']
-        if branchs == 'Other_Other':
-            branch['branch'] = request.POST['branchOther']
-        if category == 'other':
-            category = request.POST['categoryOther']
-        data = {
-            "user": user.id,
-            "nameprefix": form['nameprefix'].data,
-            "firstname": form['firstname'].data,
-            "lastname": form['lastname'].data,
-            "email": form['email'].data,
-            "phone": form['phone'].data,
-            "levelclass": form['levelclass'].data,
-            "branch": branch['branch'],
-            "faculty": branch['faculty'],
-            "category": category,
-            "status": 'user'
-        }
-        Account.objects.filter(id=request.POST['accountID']).update(
-            nameprefix=data['nameprefix'],
-            firstname=data['firstname'],
-            lastname=data['lastname'],
-            email=data['email'],
-            phone=data['phone'],
-            levelclass=data['levelclass'],
-            branch=data['branch'],
-            faculty=data['faculty'],
-            category=data['category'],
-            status=data['status'],
-            )
-    return redirect(reverse('userEditPage'))
+    user        = Account.objects.get(id=request.POST['accountID'])
+    branch      = split_branch(form['branch'].data)
+    branchs     = request.POST['branch']
+    category    = request.POST['category']
+    if branchs == 'Other_Other':
+        branch['branch'] = request.POST['branchOther']
+    if category == 'other':
+        category = request.POST['categoryOther']
+    data = {
+        "studentID": user.studentID,
+        "id": request.POST['accountID'],
+        "user": user.id,
+        "nameprefix": form['nameprefix'].data,
+        "firstname": form['firstname'].data,
+        "lastname": form['lastname'].data,
+        "email": form['email'].data,
+        "phone": form['phone'].data,
+        "levelclass": form['levelclass'].data,
+        "branch": branch['branch'],
+        "faculty": branch['faculty'],
+        "category": category,
+        "status": 'user',
+        "image": None,
+    }
+    print(request.FILES)
+    if request.FILES.get('upload', False):
+        data['image'] = request.FILES['upload']
+    return data
+
+def editProfile(data):
+    Account.objects.filter(id=data['id']).update(
+        nameprefix=data['nameprefix'],
+        firstname=data['firstname'],
+        lastname=data['lastname'],
+        email=data['email'],
+        phone=data['phone'],
+        levelclass=data['levelclass'],
+        branch=data['branch'],
+        faculty=data['faculty'],
+        category=data['category'],
+        status=data['status'],
+        )
+    if data['image'] == None:
+        return
+    account = Account.objects.get(id=data['id'])
+    name    = getClassPath(account, data['studentID'])
+    uploadImage(name, data['image'], account)
 
 def delete_account(request):
     if request.method == "GET":

@@ -1,11 +1,11 @@
 #Django
-from django.core.files.storage import FileSystemStorage
 from rest_framework.permissions import AllowAny
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.db.models import F
 from rest_framework.exceptions import ValidationError
 #Project
+from base.functions import uploadImage
 from base.views import LabListView, LabAPIGetView
 from .serializers import SlzEquipmentInput, SlzEquipment
 from .models import Equipment, getClassPath
@@ -51,13 +51,9 @@ class AddEquipment(LabAPIGetView):
             equipment.save()
             if not(self.request.FILES.get('upload', False)):
                 return equipment
-            upload      = self.request.FILES['upload']
-            fss         = FileSystemStorage()
-            name        = getClassPath(equipment, validated.get("name"))
-            file        = fss.save(name, upload)
-            file_url    = fss.url(file)
-            equipment.image = file_url
-            equipment.save()
+            upload  = self.request.FILES['upload']
+            name    = getClassPath(equipment, validated.get("name"))
+            uploadImage(name, upload, equipment)
             return equipment
         
 class RemoveEquipment(LabAPIGetView):
@@ -96,12 +92,8 @@ class EditEquipment(LabAPIGetView):
             )
         if not(request.FILES.get('upload', False)):
             return redirect(reverse('equipmentListPage'))
-        equipment:Equipment = equipment[0]
+        equipment   = equipment[0]
         upload      = self.request.FILES['upload']
-        fss         = FileSystemStorage()
         name        = getClassPath(equipment, request.POST["name"])
-        file        = fss.save(name, upload)
-        file_url    = fss.url(file)
-        equipment.image = file_url
-        equipment.save()
+        uploadImage(name, upload, equipment)
         return redirect(reverse('equipmentListPage'))

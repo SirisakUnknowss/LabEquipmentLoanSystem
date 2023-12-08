@@ -2,8 +2,6 @@
 import calendar
 from datetime import datetime, date, timedelta, time
 #Django
-from django.core.files.storage import FileSystemStorage
-from django.db.models import F
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from rest_framework.exceptions import ValidationError
@@ -11,6 +9,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 #Project
 from account.models import Account
+from base.functions import uploadImage
 from base.views import LabAPIGetView, LabAPIView, LabListView
 from borrowing.models import Order
 from scientificInstrument.models import ScientificInstrument, Booking, getClassPath
@@ -55,13 +54,9 @@ class AddScientificInstrument(LabAPIGetView):
             scientificInstrument.save()
             if not(self.request.FILES.get('upload', False)):
                 return scientificInstrument
-            upload      = self.request.FILES['upload']
-            fss         = FileSystemStorage()
-            name        = getClassPath(scientificInstrument, validated.get("name"))
-            file        = fss.save(name, upload)
-            file_url    = fss.url(file)
-            scientificInstrument.image = file_url
-            scientificInstrument.save()
+            upload  = self.request.FILES['upload']
+            name    = getClassPath(scientificInstrument, validated.get("name"))
+            uploadImage(name, upload, scientificInstrument)
             return scientificInstrument
         
 class RemoveScientificInstrument(LabAPIGetView):
@@ -98,13 +93,9 @@ class EditScientificInstrument(LabAPIGetView):
         if not(request.FILES.get('upload', False)):
             return redirect(reverse('scientificInstrumentsListPage'))
         scientificInstrument:ScientificInstrument = scientificInstrument[0]
-        upload      = self.request.FILES['upload']
-        fss         = FileSystemStorage()
-        name        = getClassPath(scientificInstrument, request.POST["name"])
-        file        = fss.save(name, upload)
-        file_url    = fss.url(file)
-        scientificInstrument.image = file_url
-        scientificInstrument.save()
+        upload  = self.request.FILES['upload']
+        name    = getClassPath(scientificInstrument, request.POST["name"])
+        uploadImage(name, upload, scientificInstrument)
         return redirect(reverse('scientificInstrumentsListPage'))
 
 class GetTimeStartCanBooking(LabAPIGetView):

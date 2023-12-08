@@ -17167,3 +17167,7 @@ input[type=number] {
 .text-vw-1 {
   font-size: 1vw;
 }
+
+.thumb1 { 
+  background: 50% 50% no-repeat; /* 50% 50% centers image in div */
+}

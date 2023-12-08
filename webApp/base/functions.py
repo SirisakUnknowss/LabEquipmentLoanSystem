@@ -1,8 +1,10 @@
 # Python
 import os
 import pandas as pd
-# Django
+#Django
+from django.core.files.storage import FileSystemStorage
 from django.http import FileResponse
+from equipment.models import getClassPath
     
 def download_file(file_path, fileName):
     response = FileResponse(open(file_path, 'rb'), as_attachment=True)
@@ -22,3 +24,10 @@ def getDataFile(dirPath: str, fileName: str, dataCls, queryset):
     xlsxPath = os.path.join(dirPath, f"{fileName}.xlsx")
     df.to_excel(xlsxPath, index=False, engine='openpyxl')
     return f"{fileName}.xlsx"
+
+def uploadImage(name, imageFile, model):
+    fss         = FileSystemStorage()
+    file        = fss.save(name, imageFile)
+    file_url    = fss.url(file)
+    model.image = file_url
+    model.save(update_fields=['image'])

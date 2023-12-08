@@ -80,11 +80,11 @@ def homepage(request):
     return render(request, 'base/index.html')
 
 def registerPage(request):
+    context = { 'account': request.user.account }
     if  request.method == 'POST' and request.POST['accountID']:
         account = Account.objects.get(id=request.POST['accountID'])
-        context = { 'account': account }
-        return render(request, 'base/signup.html', context)
-    return render(request, 'base/signup.html')
+        context['account'] = account
+    return render(request, 'base/signup.html', context)
 
 def equipmentLandingPage(request):
     if not(request.user.is_authenticated):
