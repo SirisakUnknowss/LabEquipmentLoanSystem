@@ -80,7 +80,9 @@ def homepage(request):
     return render(request, 'base/index.html')
 
 def registerPage(request):
-    context = { 'account': request.user.account }
+    context = {}
+    if request.user.is_authenticated:
+        context['account'] = request.user.account
     if  request.method == 'POST' and request.POST['accountID']:
         account = Account.objects.get(id=request.POST['accountID'])
         context['account'] = account
