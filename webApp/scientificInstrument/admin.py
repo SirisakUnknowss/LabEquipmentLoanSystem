@@ -25,7 +25,8 @@ class BookingModelResource(resources.ModelResource):
 
     class Meta:
         model = Booking
-        fields = ('user__studentID','scientificInstrument__name','createAt','startBooking','endBooking','approver__studentID','status')
+        fields = ('user__studentID','scientificInstrument__name','createAt', 'dateBooking', 'startBooking','endBooking','approver__studentID','status')
+        export_order = ['dateBooking']
 
     def export(self, queryset=None, *args, **kwargs):
         queryset = super().export(queryset, *args, **kwargs)

@@ -495,11 +495,10 @@ class ExportBookingData(LabAPIView):
         dirPath     = f"{MEDIA_ROOT}/files/{userFileDir}"
         if not os.path.exists(dirPath):
             os.makedirs(dirPath)
-        queryset    = Booking.objects.filter(status=parameter_value)
+        queryset    = Booking.objects.filter(status=parameter_value).order_by('dateBooking')
         fileName    = f"{parameter_value}Data"
         if parameter_value == "":
-            queryset = Booking.objects.all()
+            queryset = Booking.objects.all().order_by('dateBooking')
             fileName = "allData"
-        
         xlsxFile = getDataFile(dirPath, fileName, BookingModelResource, queryset)
         return f"{dirPath}/{xlsxFile}", xlsxFile
