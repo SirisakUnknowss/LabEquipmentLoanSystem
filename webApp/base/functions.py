@@ -26,6 +26,8 @@ def getDataFile(dirPath: str, fileName: str, dataCls, queryset):
     return f"{fileName}.xlsx"
 
 def uploadImage(name, imageFile, model):
+    if os.path.isfile(name):
+        os.remove(name)
     fss         = FileSystemStorage()
     file        = fss.save(name, imageFile)
     file_url    = fss.url(file)

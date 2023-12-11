@@ -127,11 +127,14 @@ def split_branch(value:str):
 def user_edit(request):
     if request.method == "GET":
         raise Http404("A Page does not exist")
-    if request.user.account.status != Account.STATUS.ADMIN:
-        return redirect(reverse('homepage'))
+    if str(request.user.account.id) != str(request.POST['accountID']):
+        if request.user.account.status != Account.STATUS.ADMIN:
+            return redirect(reverse('homepage'))
     if request.POST['accountID']:
         data = setData(request)
         editProfile(data)
+    if not(request.user.is_authenticated) or request.user.account.status != Account.STATUS.ADMIN:
+        return redirect(reverse('profilePage'))
     return redirect(reverse('userEditPage'))
 
 def setData(request):
@@ -162,7 +165,6 @@ def setData(request):
         "status": 'user',
         "image": None,
     }
-    print(request.FILES)
     if request.FILES.get('upload', False):
         data['image'] = request.FILES['upload']
     return data
