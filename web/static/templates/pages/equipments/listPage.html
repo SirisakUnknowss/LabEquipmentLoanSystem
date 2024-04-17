@@ -1,0 +1,175 @@
+{% extends 'base/base.html' %}
+
+{% block head_css_site %}
+{{ block.super }}
+<link id="pagestyle" href="{{ STATIC_URL }}css/list_equipment.css" rel="stylesheet" />
+{% endblock %}
+{{% block content %}
+{% include 'base/navside.html' %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+    {% include "base/navbar.html" %}
+  <div class="container-fluid py-4 ">
+    <div class="row">
+      <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-3">
+        <h5>รายการอุปกรณ์วิทยาศาสตร์</h5>
+        {% if user.account.status == "admin" %}
+        <button class="btn bg-gradient-faded-dark mb-4 mt-n2 ms-2 toast-btn text-white" id="exportEquipmentAllButton" type="button" data-target="warningToast">
+          <i class="material-icons opacity-10">download</i>
+        </button>
+        {% endif %}
+      </div>
+      {% if user.account.status == "user" %}
+      <div class="col-lg-2 col-md-4 col-12 text-end">
+          <a href="{% url 'equipmentCartListPage' %}">
+            <button class="btn bg-gradient-warning w-100 mb-0 toast-btn" type="button" data-target="warningToast">ยืมอุปกรณ์</button>
+          </a>
+      </div>
+      <div class="col-lg-2 col-md-4 col-12 text-end">
+          <a href="{% url 'notificationsEquipmentPage' %}">
+              <button class="btn bg-gradient-danger w-100 mb-0 toast-btn" type="button" data-target="warningToast">คืนอุปกรณ์</button>
+          </a>
+      </div>
+      {% endif %}
+    </div>
+    
+    <div class="row">
+      <div class="col-lg-4 col-md-8 col-12 mx-auto mt-1 mb-1 py-1">
+          <form role="form" class="text-start" id="login-form" method="post" action="{% url 'equipmentListPage' %}">
+          {% csrf_token %}
+          <div class="input-group input-group-outline mb-2">
+              <label class="form-label">ชื่ออุปกรณ์</label>
+              <input type="text" class="form-control bg-gradient-faded-white" id="id_nameequipment" name="nameequipment" onfocus="focused(this)" onfocusout="defocused(this)">
+          </div>
+          <div class="text-center">
+              <button type="submit" class="btn bg-gradient-primary w-100 mb-2">ค้นหา</button>
+          </div>
+          </form>
+      </div>
+  </div>
+    <div class="row mt-4">
+      {% if equipments %}
+        {% for equipment in equipments %}
+          <div class="col-xl-4 col-lg-6 col-md-10 col-sm-12 col-12 mt-3 mb-4">
+            <div class="card z-index-2 ">
+              <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+                <div class="bg-gradient-light shadow-secondary border-radius-lg py-3 pe-1">
+                  <div class="chart">
+                    {% if equipment.image %}
+                      <img src="{{ equipment.image }}" onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/equipment/PlaceHolder.png' ;" class="image-equipments img-fluid shadow border-radius-xl" />
+                    {% else %}
+                      <img src="{{ STATIC_URL }}/images/equipment/PlaceHolder.png" class="image-equipments border-radius-xl" />
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="card-body mb-n3 text-center">
+                <h5 class="mb-1">{{ equipment.name }}</h5>
+                <span class="d-block">
+                  ขนาด : {{ equipment.size }} 
+                  {% ifequal equipment.unit "NotSpecified" %}{% endifequal %}
+                  {% ifequal equipment.unit "Celsius" %}&#8451;{% endifequal %}
+                  {% ifequal equipment.unit "CubicCentimeter" %}cm³{% endifequal %}
+                  {% ifequal equipment.unit "Millimeter" %}mm{% endifequal %}
+                  {% ifequal equipment.unit "Milliliter" %}mL{% endifequal %}
+                  {% ifequal equipment.unit "Centimeter" %}cm{% endifequal %}
+                  {% ifequal equipment.unit "Liter" %}L{% endifequal %}
+                </span>
+                <span class="d-block mb-3">จำนวนที่มี : {{ equipment.quantity }}</span>
+                  {% if user.account.status == "admin" %}
+
+                  <div class="row">
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
+                      <form id="add-equipment" method="post" action="add">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ equipment.id }}" name="EquipmentID" />
+                        <button class="btn bg-gradient-warning w-100 px-0" type="submit">แก้ไขข้อมูล</button>
+                      </form>
+                    </div>
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
+                        <button class="btn bg-gradient-danger w-100 px-0" onclick="showConfirmDelete({{ equipment.id }})">ลบข้อมูล</button>
+                    </div>
+                  </div>
+                  {% else %}
+                    {% if equipment.quantity == 0 %}
+                    <label class="form-label">จำนวนที่ยืม : </label>
+                    <input type="number" class="text-center mb-3 border-radius-md" id="quantity" name="quantity" min="1" value="0" max="{{ equipment.quantity }}"></br>
+                    <button class="btn bg-gradient-secondary" type="submit">เพิ่มลงตะกร้า</button>
+                    {% else %}
+                    <form id="add-equipment" method="post" action="{% url 'addItemForBorrowingApi' %}">
+                      {% csrf_token %}
+                      <label class="form-label">จำนวนที่ยืม : </label>
+                      <input type="number" class="text-center mb-3 border-radius-md" id="quantity" name="quantity" min="1" value="0" max="{{ equipment.quantity }}">
+                      <input type="hidden" value="{{ equipment.id }}" name="equipment" /></br>
+                      <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
+                    </form>
+                    {% endif %}
+                  {% endif %}
+              </div>
+            </div>
+          </div>
+
+
+          
+        {% comment %} <div class="mini-card col-2 mx-3">
+          <div class="menu-group-18">
+            <div class="rectangle-19 center-items">
+              
+              {% if equipment.image %}
+                <img src="{{ equipment.image }}" class="w-100 h-100 img-fluid shadow border-radius-2xl" />
+              {% else %}
+                <img src="{{ STATIC_URL }}/images/equipment/PlaceHolder.png" class="w-100 h-100 border-radius-2xl" />
+              {% endif %}
+            </div>
+            <div class="menu-items-1a">
+              <span class="text-f">{{ equipment.name }}</span>
+            </div>
+            <button class="cont-1b">
+              <div class="menu-items-1c">
+                <div class="icon-1d">
+                  <div class="vuesax-linear-bag">
+                    <div class="vuesax-linear-bag-1e"></div>
+                  </div>
+                </div>
+                <span class="text-10">ตะกร้า</span>
+              </div>
+            </button>
+          </div>
+        </div> {% endcomment %}
+
+
+        {% endfor %}
+      {% else %}
+        <div class="col-lg-12 col-md-12 mt-3 mb-4">
+          <div class="card-body mb-n3 text-center">
+            <p>ไม่พบรายการอุปกรณ์วิทยาศาสตร์</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  {% include 'pages/popUpconfirmDeleteEquipment.html' %}
+  
+  {% if user.account.status == "admin" %}
+  <div class="fixed-plugin ps">
+    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2" href="add">
+      <i class="material-icons py-2">add</i>
+    </a> 
+  </div>
+  {% endif %}
+</main>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+
+  <script>
+    const equipmentsJson = JSON.parse('{{ equipmentsJson | safe }}')
+      let name_page = "id_equipment_list_page"
+      const urlExportData = "{% url 'ExportEquipments' %}"
+  </script>
+  <script src="{{ STATIC_URL }}js/equipmentDetail.js"></script>
+  {% if user.account.status == "admin" %}
+  <script src="{{ STATIC_URL }}js/exportEquipment.js"></script>
+  {% endif %}
+{% endblock %}

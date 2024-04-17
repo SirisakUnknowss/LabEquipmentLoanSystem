@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>{% block title %}Page Not Found{% endblock title %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="{{ STATIC_URL }}images/nrru-logo.ico">
+        <link rel="apple-touch-icon" sizes="76x76" href="{{ STATIC_URL }}images/nrru-logo.ico">
+
+        {% block head_css %}
+        <!-- CSS Files -->
+        <link id="pagestyle" href="{{ STATIC_URL }}assets/css/404.css" rel="stylesheet" />
+
+        {% endblock head_css %}
+
+    </head>
+
+    <body>
+
+        <div id="notfound">
+            <div class="notfound">
+                <div class="notfound-404">
+                    <h1>404</h1>
+                </div>
+                <h2>Oops! Nothing was found</h2>
+                <a href="{% url "homepage" %}">Return to homepage</a></p>
+            </div>
+        </div>
+
+    </body>
+</html>

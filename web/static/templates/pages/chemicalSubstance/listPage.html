@@ -1,0 +1,131 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+{% include 'base/navside.html' %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+    {% include "base/navbar.html" %}
+  <div class="container-fluid py-4">
+    <div class="row mx-md-0">
+      {% if results %}
+      <div class="card border-radius-sm mb-4">
+        <div class="card-body px-0 pb-2">
+          <div class="d-flex ms-3">
+            <form role="form" class="flex-grow-1 text-start d-inline-block" id="login-form" method="post" action="{% url 'chemicalSubstanceListPage' %}">
+            {% csrf_token %}
+            <div class="input-group input-group-outline mb-2">
+                <label class="form-label">ชื่อสารเคมี</label>
+                <input type="text" class="form-control bg-gradient-faded-white" id="id_name" name="id_name" onfocus="focused(this)" onfocusout="defocused(this)">
+            </div>
+            </form>
+            {% if user.account.status == "admin" %}
+            <div class="flex-grow-1 text-end mb-n3">
+              {% comment %} <button class="btn border bg-white border-danger text-danger mx-2">
+                <i class="material-icons opacity-10">delete</i>
+                ลบสารเคมี
+              </button> {% endcomment %}
+  
+              <a class="" href="{% url 'chemicalSubstanceAddPage' %}">
+                <button class="btn border border-info bg-gradient-info mx-2">
+                  <i class="material-icons opacity-10">add_circle_outline</i>
+                  เพิ่มสารเคมี
+                </button>
+              </a>
+            </div>
+            {% endif %}
+          </div>
+          <div class="table-responsive p-0">
+            <hr class="hr-3">
+
+            <table class="table align-items-center justify-content-center mb-0">
+              <thead>
+                <tr class="bg-gray-200">
+                  <th class="text-uppercase font-weight-bolder text-center text-dark">รหัส</th>
+                  <th class="text-uppercase font-weight-bolder text-center text-dark">ชื่อ</th>
+                  <th class="text-uppercase font-weight-bolder text-center text-dark">CAS no.</th>
+                  <th class="text-uppercase font-weight-bolder text-center text-dark">ตู้จัดเก็บ</th>
+                  <th class="text-uppercase font-weight-bolder text-center text-dark">ปริมาณคงเหลือ</th>
+                  <th class="text-uppercase font-weight-bolder text-center text-dark">สถานะ</th>
+                  <th></th>
+                </tr>
+              </thead>
+              {% for result in results %}
+              <tbody>
+                <tr>
+                  <td class="text-center">
+                    <span class="text-sm text-dark mb-0">{{ result.serialNumber }}</span>
+                  </td>
+                  <td class="text-center">
+                    <span class="text-sm text-dark mb-0">{{ result.name }}</span>
+                  </td>
+                  <td class="text-center">
+                    <span class="text-sm text-dark mb-0">{{ result.casNo }}</span>
+                  </td>
+                  <td class="text-center">
+                    <span class="text-sm text-dark mb-0">{{ result.place }}</span>
+                  </td>
+                  <td class="text-center">
+                    <span class="text-sm text-dark mb-0">{{ result.remainingQuantity }}</span>
+                  </td>
+                  <td class="row text-center">
+                    {% if user.account.status == "admin" %}
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6 text-end">
+                      <form action="{% url 'chemicalSubstanceEditPage' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="ChemicalSubstanceID" value="{{ result.pk }}" />
+                        <button class="btn bg-gradient-warning">
+                          <i class="material-icons opacity-10">edit_note</i>
+                          แก้ไขข้อมูล
+                        </button>
+                      </form>
+                    </div>
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6 text-start">
+                        <button class="btn border bg-white border-danger text-danger mx-2" data-bs-toggle="modal" data-bs-target="#modalDelete" onclick="showConfirmDelete({{ result.id }})">
+                          
+                          <i class="material-icons opacity-10">delete</i>
+                          ลบข้อมูล
+                        </button>
+                    </div>
+                    {% endif %}
+                  </td>
+                </tr>
+              </tbody>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="add-btn-middle">
+        <div class="card-body mb-n3 text-center">
+          <p>ไม่พบรายการสารเคมี</p>
+  
+          {% if user.account.status == "admin" %}
+  
+          <a class="" href="{% url 'chemicalSubstanceAddPage' %}">
+            <button class="btn border border-info bg-gradient-info mx-2">
+              <i class="material-icons opacity-10">add_circle_outline</i>
+              เพิ่มสารเคมี
+            </button>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% include 'pages/popUpconfirmDeleteData.html' %}
+</main>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+  {% if user.account.status == "admin" %}
+  <script>
+    function showConfirmDelete(id)
+    {
+        const deleteID = document.querySelector("#deleteID")
+        deleteID.value = id
+    }
+  </script>
+  {% endif %}
+{% endblock %}

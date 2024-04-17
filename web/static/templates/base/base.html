@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Equipment Borrowing System for Laboratory{% endblock title %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ STATIC_URL }}images/nrru-logo.ico">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ STATIC_URL }}images/nrru-logo.ico">
+
+    {% block head_css %}
+    {% block head_css_site %}
+    <!--     Fonts and icons     -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+    <!-- Nucleo Icons -->
+    <link href="{{ STATIC_URL }}assets/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="{{ STATIC_URL }}assets/css/nucleo-svg.css" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- CSS Files -->
+    <link id="pagestyle" href="{{ STATIC_URL }}assets/css/material-dashboard.css?v=3.0.0" rel="stylesheet" />
+    {% comment %} <link id="pagestyle" href="{{ STATIC_URL }}css/material-dashboard.css" rel="stylesheet" /> {% endcomment %}
+    
+    
+    {% endblock head_css_site %}
+    {% block head_css_section %}{% endblock head_css_section %}
+    {% block head_css_page %}{% endblock head_css_page %}
+    {% endblock head_css %}
+</head>
+<body class="g-sidenav-show  bg-gray-200">
+    {% block main %}
+        {% block content %}{% endblock %}
+        {% comment %} {% block footer %}{% include 'base/footer.html' %}{% endblock %} {% endcomment %}
+        {% block js %}
+        <!--   Core JS Files   -->
+        <script src="{{ STATIC_URL }}assets/js/core/popper.min.js"></script>
+        <script src="{{ STATIC_URL }}assets/js/core/bootstrap.min.js"></script>
+        <script>
+          var win = navigator.platform.indexOf('Win') > -1;
+          if (win && document.querySelector('#sidenav-scrollbar')) {
+            var options = {
+              damping: '0.5'
+            }
+            Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+          }
+        </script>
+        <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+        <script src="{{ STATIC_URL }}assets/js/material-dashboard.min.js?v=3.0.0"></script>
+        {% endblock %}
+    {% endblock %}
+</body>
+</html>

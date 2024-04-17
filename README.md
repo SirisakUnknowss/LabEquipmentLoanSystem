@@ -2,7 +2,7 @@
  
 1. Get Project 
   - ```git clone https://github.com/SirisakUnknowss/LabEquipmentLoanSystem.git```
-  - ``` cd Arkarus ```
+  - ``` cd LabEquipmentLoanSystem ```
 
 
 2. Start web service

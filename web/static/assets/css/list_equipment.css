@@ -1,0 +1,161 @@
+ 
+  .mini-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: nowrap;
+    position: relative;
+    /* width: 233px; */
+    padding: 12px 12px 12px 12px;
+    background: #ffffff;
+    border: 1px solid #488ee0;
+    z-index: 18;
+    border-radius: 16px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  
+  .menu-group-18 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    position: relative;
+    width: 210px;
+    z-index: 19;
+  }
+
+  
+  .rectangle-19 {
+    flex-shrink: 0;
+    position: relative;
+    width: 115%;
+    height: 150px;
+    background-size: cover;
+    z-index: 20;
+    border-radius: 5.869px;
+  }
+
+
+  .menu-items-1a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    position: relative;
+    width: 210px;
+    height: 53px;
+    padding: 16px 16px 12px 16px;
+    z-index: 21;
+    border-radius: 8px;
+  }
+
+  .text-f {
+    flex-shrink: 0;
+    flex-basis: auto;
+    position: relative;
+    height: 19px;
+    color: #000000;
+    font-family: Roboto, var(--default-font-family);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 18.75px;
+    text-align: left;
+    white-space: nowrap;
+    z-index: 22;
+  }
+  
+  .cont-1b {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    gap: 32px;
+    position: relative;
+    width: 203px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    z-index: 23;
+  }
+  
+  .menu-items-1c {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    position: relative;
+    width: 203px;
+    height: 52px;
+    padding: 12px 36px 12px 16px;
+    background: #488ee0;
+    z-index: 24;
+    border-radius: 8px;
+  }
+  
+  .icon-1d {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    gap: 16px;
+    position: relative;
+    width: 52px;
+    height: 52.5px;
+    padding: 16px 16px 16px 16px;
+    z-index: 25;
+    border-radius: 8px;
+  }
+  
+  .vuesax-linear-bag {
+    flex-shrink: 0;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    z-index: 26;
+  }
+  .vuesax-linear-bag-1e {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 0;
+    left: 0;
+    background: url(/static/images/cart.png)
+      no-repeat center;
+    background-size: cover;
+    z-index: 27;
+  }
+  .text-10 {
+    flex-shrink: 0;
+    flex-basis: auto;
+    position: relative;
+    height: 19px;
+    color: #ffffff;
+    font-family: Roboto, var(--default-font-family);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 18.75px;
+    text-align: left;
+    white-space: nowrap;
+    z-index: 28;
+  }
+
+  
+.span-ta-ge-la-44 {
+    flex-shrink: 0;
+    flex-basis: auto;
+    position: relative;
+    height: 19px;
+    color: #ffffff;
+    font-family: Roboto, var(--default-font-family);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 18.75px;
+    text-align: left;
+    white-space: nowrap;
+    z-index: 83;
+  }

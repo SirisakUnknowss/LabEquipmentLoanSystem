@@ -1,0 +1,77 @@
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-side-nav fixed-start bg-gradient-green-dark ps bg-white" id="sidenav-main">
+    <div class="sidenav-header">
+        <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
+        <a class="navbar-brand m-0" href="/">
+            <img src="{{ STATIC_URL }}images/title-menu.png" class="navbar-brand-img" alt="main_logo">
+        </a>
+    </div>
+    <hr class="horizontal light mt-0 mb-2">
+    <div class="collapse navbar-collapse  w-auto  max-height-vh-100" id="sidenav-collapse-main">
+        <ul class="navbar-nav">
+            {% for menu in menuUpList %}
+            <li class="nav-item">
+                {% if menu.active %}
+                <a class="nav-link text-white active bg-gradient-primary" href="{{ menu.link }}">
+                {% else %}
+                <a class="nav-link text-white" href="{{ menu.link }}">
+                {% endif %}
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">{{ menu.icon }}</i>
+                    </div>
+                    <span class="nav-link-text ms-1">{{ menu.name }}</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="sidenav-footer position-absolute w-100 bottom-0 ">
+        
+        <ul class="navbar-nav">
+            {% for menu in menuDownList %}
+            <li class="nav-item">
+                {% if menu.active %}
+                    <a class="nav-link text-white active bg-gradient-primary" href="{{ menu.link }}">
+                {% else %}
+                <a class="nav-link text-white" href="{{ menu.link }}">
+                {% endif %}
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">{{ menu.icon }}</i>
+                    </div>
+                    <span class="nav-link-text ms-1">{{ menu.name }}</span>
+                </a>
+            </li>
+            {% endfor %}
+            <li class="nav-item">
+                <a class="nav-link text-white " href="{% url 'logoutApi' %}">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">logout</i>
+                    </div>
+                    <span class="nav-link-text ms-1">ออกจากระบบ</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="account-info-container">
+            <a class="profile-info" href="{% url "profilePage" %}">
+                <div class="avatar">
+                    {% if user.account.image %}
+                    <img src="{{ user.account.image }}" onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/account/profile.png' ;" class="avatar img-fluid shadow" />
+                    {% endif %}
+                </div>
+                <div class="text-account-info">
+                    <span class="username-info">
+                        {% if user.account.firstname %} {{ user.account.firstname }} {% endif %} {% if user.account.lastname %} {{ user.account.lastname }} {% endif %}
+                    </span>
+                    <span class="status-info">{{ user.account.status }}</span>
+                </div>
+            </a>
+            {% if user.account.status == "admin" %}
+            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                <a href="/user/management" class="text-white text-center d-flex align-items-center justify-content-center">
+                    <i class="material-icons opacity-10 text-white">settings</i>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</aside>

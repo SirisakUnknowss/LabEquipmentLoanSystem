@@ -171,4 +171,4 @@ docker-compose.yaml
 web/item/test/testcase.csv
 *.csv
 *.xlsx
-webApp/static/media/*
+web/static/media/*
