@@ -55,7 +55,7 @@
             <a class="profile-info" href="{% url "profilePage" %}">
                 <div class="avatar">
                     {% if user.account.image %}
-                    <img src="{{ user.account.image }}" onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/account/profile.png' ;" class="avatar img-fluid shadow" />
+                    <img src="{{ user.account.image }}" onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/account/PlaceHolder.png' ;" class="avatar img-fluid shadow" />
                     {% endif %}
                 </div>
                 <div class="text-account-info">
