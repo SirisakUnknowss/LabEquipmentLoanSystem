@@ -138,6 +138,10 @@ STATICFILES_DIRS = [
     os.path.join(STATIC, "assets"),
 ]
 STATIC_ROOT = os.path.join(STATIC, "staticfiles")
+if DEBUG:
+  STATICFILES_DIRS = [os.path.join(STATIC, 'assets')]
+else:
+  STATIC_ROOT = os.path.join(STATIC, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(STATIC, "media")
 TEMPLATES = [
