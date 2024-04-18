@@ -1,0 +1,139 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% block head_css_site %}
+{{ block.super }}
+  
+<link href="{{ STATIC_URL }}fullcalendar/packages/core/main.css" rel="stylesheet" />
+<link href="{{ STATIC_URL }}fullcalendar/packages/daygrid/main.css" rel="stylesheet" />
+{% endblock head_css_site %}
+{% include 'base/navside.html' %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+    {% include "base/navbar.html" %}
+  <div class="container-fluid py-4 ">
+    <div class="row">
+      <div class="col-lg-10 col-md-6 col-8 d-flex align-items-center mb-3">
+        <h5>รายการเครื่องมือวิทยาศาตร์</h5>
+      </div>
+      <div class="col-lg-2 col-md-4 col-12 text-end">
+          <a href="{% url 'scientificInstrumentsListPage' %}">
+            <button class="btn bg-green-dark w-100 mb-0 toast-btn text-white" type="button" data-target="warningToast">จองใช้งาน</button>
+          </a>
+      </div>
+    </div>
+    <div class="row mb-3 mt-3">
+      <div class="col-lg-3 col-md-4 mt-4 mb-3">
+        <div class="card">
+          <div class="card-header p-3 pt-2 text-start">
+              <div class="icon icon-lg icon-shape bg-gradient-success shadow-success text-center border-radius-xl mt-n4 position-absolute">
+                  <i class="material-icons opacity-10">biotech</i>
+              </div>
+              <div class="text-end pt-1">
+                  <p class="text-lg mb-0 text-capitalize">เครื่องมือวิทยาศาตร์</p>
+                  <h2 class="mb-0 text-success">{{ scientificInstruments.all }}</h2>
+              </div>
+          </div>
+          <div class="card-footer p-3">
+              
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-4 mt-4 mb-3">
+        <div class="card">
+          <div class="card-header p-3 pt-2 text-start">
+              <div class="icon icon-lg icon-shape bg-gradient-info shadow-success text-center border-radius-xl mt-n4 position-absolute">
+                  <i class="material-icons opacity-10">event_available</i>
+              </div>
+              <div class="text-end pt-1">
+                  <p class="text-lg mb-0 text-capitalize">จำนวนจองวันนี้</p>
+                  <h2 class="mb-0 text-info">{{ bookings.all }}</h2>
+              </div>
+          </div>
+          <div class="card-footer p-3">
+              
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="card align-items-end">
+        <div class="input-group input-group-outline my-3">
+          <form id="searchByID" class="w-100 ms-lg-6 me-lg-6 ms-xl-12 me-xl-12" name="searchByID" method="post" action="{% url 'scientificInstrumentsCalendarPage' %}">
+              {% csrf_token %}
+            <label for="scientificInstrumentsSelect" class="text-black text-bold">ค้นหาตามเครื่องมือ</label>
+            <input type="hidden" value="{{ scientificInstrumentID }}" id="scientificInstrumentIDInput" name="scientificInstrumentID" />
+            <div class="input-group input-group-outline w-100">
+              <select class="form-select mb-3 pe-5" id="scientificInstrumentsSelect" name="scientificInstrumentsSelect" onchange="onSelectSearch()"></select></br>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="card mt-3 mb-7 p-5">
+        <div id='calendar-container'>
+          <div id='calendar'></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% include 'pages/popUpBookingDetail.html' %}
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script>
+    const urlScientificInstruments = "{% url 'listScientificInstrumentApi' %}"
+    const urlBookings = "{% url 'scientificInstrumentsCalendarPage' %}"
+    const urlGetBookingId = "{% url 'GetBookingByID' %}"
+    const idScientificInstrument = "{{ idScientificInstrument }}"
+    const csrf_token = "{{csrf_token}}"
+    const scientificInstrumentID = "{{scientificInstrumentID}}"
+    let urlPlaceHolder = "{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png"
+    
+    const todaystr = '{% now "Y-m-d" %}'
+    let dataList = JSON.parse('{{ bookings.data | escapejs }}');
+    
+    let name_page = "id_equipment_list_page"
+    document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var testData = [
+      {
+        title: 'All Day Event',
+        start: '2022-02-01',
+      },
+      {
+        title: 'Click for Google',
+        url: 'http://google.com/',
+        start: '2023-02-28'
+      }
+    ]
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
+      height: 'parent',
+      header: {
+        left: 'prev,next today',
+        center: 'title',
+        //right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+      },
+      defaultView: 'dayGridMonth',
+      defaultDate: todaystr,
+      navLinks: true, // can click day/week names to navigate views
+      editable: true,
+      eventLimit: true, // allow "more" link when too many events
+      events: dataList
+    });
+
+    calendar.render();
+  });
+  </script>
+
+  <script src="{{ STATIC_URL }}fullcalendar/packages/core/main.js"></script>
+  <script src="{{ STATIC_URL }}fullcalendar/packages/interaction/main.js"></script>
+  <script src="{{ STATIC_URL }}fullcalendar/packages/daygrid/main.js"></script>
+  <script src="{{ STATIC_URL }}fullcalendar/packages/timegrid/main.js"></script>
+  <script src="{{ STATIC_URL }}fullcalendar/packages/list/main.js"></script>
+  <script src="{{ STATIC_URL }}js/bookingDetail.js"></script>
+{% endblock %}

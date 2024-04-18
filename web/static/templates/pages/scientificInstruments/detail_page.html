@@ -1,0 +1,103 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% include 'base/navside.html' %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+    {% include "base/navbar.html" %}
+    <div class="container-fluid py-4 ">
+        <div class="row">
+            <div class="col-lg-12 col-md-10 col-8 d-flex align-items-center mb-3">
+                
+                <h5 class="mx-3">รายละเอียดการยืม-คืนอุปกรณ์วิทยาศาสตร์</h5>
+                {% ifequal booking.status "waiting" %}
+                <span class="badge badge-sm bg-gradient-warning">รออนุมัติ</span>
+                {% endifequal %}
+                {% ifequal booking.status "approved" %}
+                <span class="badge badge-sm bg-gradient-info">อนุมัติแล้ว</span>
+                {% endifequal %}
+                {% ifequal booking.status "canceled" %}
+                <span class="badge badge-sm bg-gradient-danger">ยกเลิก</span>
+                {% endifequal %}
+                {% ifequal booking.status "disapproved" %}
+                <span class="badge badge-sm bg-gradient-danger">คำขอล้มเหลว</span>
+                {% endifequal %}
+            </div>
+        </div>
+        
+        <div class="row">
+            {% ifequal booking.status "waiting" %}
+            <span class="text-secondary text-xs mt-n3 mb-3 ps-5"> อนุมัติภายใน 24 ชั่วโมง ณ วันทำการ</span>
+            {% endifequal %}
+        </div>
+
+        <div class="row mt-4">
+            <div class="card card-body mx-2 mx-md-1 mt-n4">
+                <div class="card-header p-3">
+                    <h5 class="mb-3">ข้อมูลการจองเครื่องมือวิทยาศาสตร์</h5>
+                    <div class="align-items-center col-6">
+                        <p class="text-s text-start mb-0">
+                            ผู้จองเครื่องมือวิทยาศาสตร์ : {{ booking.user.firstname }} {{ booking.user.lastname }}
+                        </p>
+                        <p class="text-s text-start mb-0">
+                            สถานะ : {{ booking.user.categoryTH }}
+                        </p>
+                        <p class="text-s text-start mb-0">
+                            สาขา : {{ booking.user.branchTH }}
+                        </p>
+                        <p class="text-s text-start mb-0">
+                            ผู้อนุมัติ : {% if booking.approver.firstname %} {{ booking.approver.firstname }} {% endif %} {% if booking.approver.lastname %} {{ booking.approver.lastname }} {% endif %}
+                        </p>
+                        <p class="text-s text-start mb-0">
+                            วันที่จอง : {{ booking.createAt|date:"d/m/Y" }}
+                        </p>
+                        <p class="text-s text-start mb-0">
+                            วันที่ใช้งาน : {{ booking.dateBooking|date:"d/m/Y" }}
+                        </p>
+                        <p class="text-s text-start mb-0">
+                            
+                            {% if booking.startBooking and booking.endBooking %}
+                            เวลาใช้งาน : {% load tz %}{{ booking.startBooking|time:"H:i น."}} - {{ booking.endBooking|time:"H:i น." }}
+                            {% else %}
+                            เวลาใช้งาน : -
+                            {% endif %}
+                        </p>
+                        <p class="text-s text-start mb-0">
+                            วันที่อนุมัติ : {% load tz %}{{ booking.dateApproved|timezone:'Asia/Bangkok'|date:"d/m/Y เวลา H:m น." }}
+                        </p>
+                    </div>
+                </div>
+                    
+                <div class="align-items-start col-12">
+                {% ifequal booking.status "waiting" %}
+                {% ifequal user.account.status "admin" %}
+                    <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-booking" method="post" action="{% url 'approvedBookingApi' %}">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ booking.id }}" name="bookingID" />
+                        <button class="btn bg-gradient-success" type="submit">อนุมัติ</button>
+                        </form>
+                        <form class="align-items-start text-start mx-2 d-inline" id="confirm-booking" method="post" action="{% url 'disapprovedBookingApi' %}">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ booking.id }}" name="bookingID" />
+                        <button class="btn bg-gradient-danger" type="submit">ไม่อนุมัติ</button>
+                    </form>
+                {% endifequal %}
+                {% ifequal user.account.status "user" %}
+                    <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-booking" method="post" action="{% url 'cancelBookingApi' %}">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ booking.id }}" name="bookingID" />
+                        <button class="btn bg-gradient-danger" type="submit">ยกเลิก</button>
+                    </form>
+                {% endifequal %}
+                {% endifequal %}
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+    <script>
+        let name_page = ""
+    </script>
+{% endblock %}

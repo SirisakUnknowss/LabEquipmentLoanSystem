@@ -1,0 +1,87 @@
+<h4 class="text-black font-weight-bolder text-center mt-2 mb-0">แก้ไขข้อมูลผู้ใช้งาน</h4>
+<div class="chart text-center m-3">
+    {% if account.image %}
+    <img src="{{ account.image }}"  onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/account/PlaceHolder.png' ;" class="image-scientificInstruments border-radius-xl" />
+    {% else %}
+    <img src="{{ STATIC_URL }}/images/account/PlaceHolder.png" class="image-scientificInstruments border-radius-xl" />
+    {% endif %}
+</div>
+<div class="my-3 text-center">
+    <span class="text-black text-center">รหัสนักศึกษา : {{ account.studentID }}</span>
+</div>
+
+<form enctype="multipart/form-data" role="form" class="text-start" id="login-form" name="formSignin" onsubmit="return checkInp()" method="post" action="{% url 'updateAccoutApi' %}">
+    {% csrf_token %}
+    <input type="hidden" value="{{ account.id }}" name="accountID" />
+    <input type="hidden" value="{{ account.username }}" name="username" />
+    <div class="input-group input-group-outline mb-3">
+        <select class="form-select" id="idNamePrefix" name="nameprefix" required>
+            <option value="">-------- คำนำหน้า --------</option>
+            <option value="Mr.">นาย</option>
+            <option value="Mrs.">นาง</option>
+            <option value="Miss">นางสาว</option>
+        </select>
+    </div>
+    <div class="input-group input-group-outline my-3 is-filled">
+        <label class="form-label">ชื่อ</label>
+        <input type="text" class="form-control" id="id_firstname" name="firstname" value="{{ account.firstname }}" required pattern="[^0-9]*">
+    </div>
+    <div class="input-group input-group-outline mb-3 is-filled">
+        <label class="form-label">นามสกุล</label>
+        <input type="text" class="form-control" id="id_lastname" name="lastname" value="{{ account.lastname }}" place required pattern="[^0-9]*">
+    </div>
+    <div class="input-group input-group-outline mb-3">
+        <select class="form-select" id="id_branch" name="branch" required>
+            <option value="">-------- สาขา --------</option>
+            <option value="B-Ed_Chemistry">สาขาวิชาเคมี (คบ.)</option>
+            <option value="B-S_Chemistry">สาขาวิชาเคมี (วท.บ.)</option>
+            <option value="B-Ed_Physical">สาขาวิชาฟิสิกส์ (คบ.)</option>
+            <option value="B-S_Physical">สาขาวิชาฟิสิกส์ (วท.บ.)</option>
+            <option value="B-Ed_Biology">สาขาวิชาชีววิทยา (คบ.)</option>
+            <option value="B-S_Biology">สาขาวิชาชีววิทยา (วท.บ.)</option>
+            <option value="Other_Other">อื่น ๆ</option>
+        </select>
+    </div>
+    <div id="branchOther" class="d-none">
+        <label class="form-label">ระบุสาขา</label>
+        <input type="text" class="form-control" id="id_branchOther" name="branchOther">
+    </div>
+    <div class="input-group input-group-outline mb-3">
+        <select class="form-select" id="idLevelClass" name="levelclass" required>
+            <option value="">-------- ชั้นปี --------</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+    </div>
+    <div class="input-group input-group-outline mb-3 is-filled">
+        <label class="form-label">เบอร์มือถือ</label>
+        <input type="tel" class="form-control" id="id_phone" name="phone" pattern="[0-9]{3}[0-9]{3}[0-9]{4}" value="{{ account.phone }}" required>
+    </div>
+    <div class="input-group input-group-outline mb-3 is-filled">
+        <label class="form-label">อีเมล์</label>
+        <input type="email" class="form-control" id="id_email" name="email" value="{{ account.email }}" required>
+    </div>
+    <div class="input-group input-group-outline mb-3">
+        <select class="form-select" id="id_category" name="category" required>
+            <option value="">-------- สถานะ --------</option>
+            <option value="student">นักศึกษา</option>
+            <option value="teacher">อาจารย์</option>
+            <option value="personnel">บุคลากร</option>
+            <option value="other">อื่นๆ</option>
+            <option value="notSpecified">ไม่ระบุ</option>
+        </select>
+    </div>
+    <div id="categoryOther" class="d-none">
+        <label class="form-label">ระบุสถานะ</label>
+        <input type="text" class="form-control" id="id_categoryOther" name="categoryOther" required>
+    </div>
+    <h2 class="my-4">เพิ่มรูปภาพโปรไฟล์</h2>
+    <input type="file" name="upload" accept="image/*">
+    <br>
+    <div class="text-center">
+        <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">บันทึกข้อมูล</button>
+    </div>
+</form>

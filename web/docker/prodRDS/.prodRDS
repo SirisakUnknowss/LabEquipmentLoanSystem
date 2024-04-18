@@ -1,0 +1,12 @@
+DJANGO_SETTINGS_MODULE=settings.prodRDS
+# python manage.py createsuperuser --noinput
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_PASSWORD=EquipmentLab01
+DJANGO_SUPERUSER_EMAIL=sirisak.unknowss@gmail.com
+# DB settings
+DJANGO_DB_ENGINE=django.db.backends.postgresql_psycopg2
+DJANGO_DB_NAME=equipmentlab
+DJANGO_DB_USER=postgres
+DJANGO_DB_PASSWORD=EquipmentLab01
+DJANGO_DB_HOST=192.168.16.133
+DJANGO_DB_PORT=5432

@@ -1,0 +1,122 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% include 'base/navside.html' %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+    {% include "base/navbar.html" %}
+  <div class="container-fluid py-4 ">
+    <div class="row">
+      <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-3">
+        <h5>รายการเครื่องมือวิทยาศาตร์</h5>
+        {% if user.account.status == "admin" %}
+        <button class="btn bg-gradient-faded-dark mb-4 mt-n2 ms-2 toast-btn text-white" id="exportScientificInstrumentAllButton" type="button" data-target="warningToast">
+          <i class="material-icons opacity-10">download</i>
+        </button>
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-lg-4 col-md-8 col-12 mx-auto mt-1 mb-1 py-1">
+          <form role="form" class="text-start" id="login-form" method="post" action="{% url 'scientificInstrumentsListPage' %}">
+          {% csrf_token %}
+          <div class="input-group input-group-outline mb-2">
+              <label class="form-label">ชื่อเครื่องมือ | รหัส</label>
+              <input type="text" class="form-control bg-gradient-faded-white" id="id_nameScientificInstrument" name="nameScientificInstrument" onfocus="focused(this)" onfocusout="defocused(this)">
+          </div>
+          <div class="text-center">
+              <button type="submit" class="btn bg-gradient-primary w-100 mb-2">ค้นหา</button>
+          </div>
+          </form>
+      </div>
+  </div>
+    <div class="row mt-4">
+      {% if scientificInstruments %}
+        {% for scientificInstrument in scientificInstruments %}
+          <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 col-12 mt-3 mb-4">
+            <div class="card z-index-2 ">
+              <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+                <div class="mt-5">
+                  <h5 class="truncate mt-1">{{ scientificInstrument.name }}</h5>
+                  <span class="mb-1 text-sm-center fs-xl">รหัส : {{ scientificInstrument.number }}</span>
+                  <div class="chart-scientificInstruments mt-1 mb-3">
+                    {% if scientificInstrument.image %}
+                      <img src="{{ scientificInstrument.image }}" onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png' ;"
+                      class="image-scientificInstruments border-radius-xl" />
+                    {% else %}
+                      <img src="{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png" 
+                      class="image-scientificInstruments border-radius-xl" />
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="card-body mb-n3 text-center">
+                  {% if user.account.status == "admin" %}
+                  <div class="row">
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
+                      <form id="add-scientificInstrument" method="post" action="add">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ scientificInstrument.id }}" name="ScientificInstrumentID" />
+                        <button class="btn bg-gradient-warning w-100 px-0" type="submit">แก้ไขข้อมูล</button>
+                      </form>
+                    </div>
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
+                        <button class="btn bg-gradient-danger w-100 px-0" onclick="showConfirmDelete({{ scientificInstrument.id }})">ลบข้อมูล</button>
+                    </div>
+                  </div>
+                  {% else %}
+                  <div class="row">
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
+                        <input type="hidden" value="{{ scientificInstrument.id }}" name="ScientificInstrumentID" />
+                        <button class="btn bg-gradient-primary w-100 px-0" onclick="showBooking({{ scientificInstrument.id }})" data-bs-toggle="modal" data-bs-target="#modalScientificBooking">จอง</button>
+                    </div>
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
+                      <button id="scientificInstrumentDetail" class="btn bg-gradient-warning w-100 px-0" onclick="showDetail({{ scientificInstrument.id }})" data-bs-toggle="modal" data-bs-target="#modalScientificDetail">รายละเอียด</button>
+                    </div>
+                  </div>
+                  {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="col-lg-12 col-md-12 mt-3 mb-4">
+          <div class="card-body mb-n3 text-center">
+            <p>ไม่พบรายการเครื่องมือวิทยาศาตร์</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  {% include 'pages/scientificInstruments/popUpScientificDetail.html' %}
+  {% include 'pages/scientificInstruments/popUpScientificBooking.html' %}
+  {% include 'pages/scientificInstruments/popUpconfirmDeleteScientific.html' %}
+  
+  {% if user.account.status == "admin" %}
+  <div class="fixed-plugin ps">
+    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2" href="add">
+      <i class="material-icons py-2">add</i>
+    </a> 
+  </div>
+  {% endif %}
+</main>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script>
+    const urlExportData = "{% url 'ExportScientificInstruments' %}"
+    const scientificInstrumentsJson = JSON.parse('{{ scientificInstrumentsJson | safe }}')
+    let urlPlaceHolder = "{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png"
+    let name_page = "id_equipment_list_page"
+    let urlGetTimeStartCanBooking = "{% url 'GetTimeStartCanBooking' %}"
+    let urlGetTimeEndCanBooking = "{% url 'GetTimeEndCanBooking' %}"
+  </script>
+  
+  <script src="{{ STATIC_URL }}js/scientificDetail.js"></script>
+  <script src="{{ STATIC_URL }}js/scientificDelete.js"></script>
+  <script src="{{ STATIC_URL }}js/scientificBooking.js"></script>
+  {% if user.account.status == "admin" %}
+  <script src="{{ STATIC_URL }}js/exportScientificInstrument.js"></script>
+  {% endif %}
+{% endblock %}

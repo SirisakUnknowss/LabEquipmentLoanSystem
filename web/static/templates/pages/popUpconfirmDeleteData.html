@@ -1,0 +1,23 @@
+<!-- Modal -->
+<div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="modalDelete" aria-modal="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content p-4">
+            <form id="formDeleteData" method="post" action="{{ deleteUrl }}">
+                {% csrf_token %}
+                <input type="hidden" id="deleteID" name="deleteID">
+                <div class="modal-body text-center">
+                    <img src="{{ STATIC_URL }}images/delete.png" class="navbar-brand-img w-15 mb-3" alt="main_logo">
+                    <span class="d-block">ยืนยันการลบข้อมูล</span>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <button id="dismissModalDelete" type="button" data-bs-dismiss="modal" class="btn btn-outline-dark w-100" data-dismiss="modal">ยกเลิก</button>
+                    </div>
+                    <div class="col-6">
+                        <button type="submit" id="confirmDeleteNumber" class="btn bg-gradient-danger w-100">ตกลง</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

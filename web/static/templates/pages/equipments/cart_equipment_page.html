@@ -1,0 +1,88 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% include 'base/navside.html' %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+    {% include "base/navbar.html" %}
+    <div class="container-fluid py-4 ">
+
+        <div class="row">
+            <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center">
+                <h5>อุปกรณ์วิทยาศาสตร์ที่จองไว้</h5>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="card card-body mx-2 mx-md-1 mt-3">
+                <div class="card-body px-0 pb-2">
+                    <div class="table-responsive p-0">
+                    {% if equipmentsCart %}
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">รหัสนักศึกษา</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">อุปกรณ์</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">ขนาด</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">จำนวน</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">สถานะ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for equipmentCart in equipmentsCart %}
+                                <tr>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-s">{{ equipmentCart.user.studentID }}</span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-s">{{ equipmentCart.equipment.name }}</span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-s">
+                                            {{ equipmentCart.equipment.size }} 
+                                            {% ifequal equipmentCart.equipment.unit "NotSpecified" %}{% endifequal %}
+                                            {% ifequal equipmentCart.equipment.unit "Celsius" %}&#8451;{% endifequal %}
+                                            {% ifequal equipmentCart.equipment.unit "CubicCentimeter" %}cm³{% endifequal %}
+                                            {% ifequal equipmentCart.equipment.unit "Millimeter" %}mm{% endifequal %}
+                                            {% ifequal equipmentCart.equipment.unit "Milliliter" %}mL{% endifequal %}
+                                            {% ifequal equipmentCart.equipment.unit "Centimeter" %}cm{% endifequal %}
+                                            {% ifequal equipmentCart.equipment.unit "Liter" %}L{% endifequal %}
+                                        </span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-s">{{ equipmentCart.quantity }}</span>
+                                    </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <form id="remove-equipmentCart" method="post" action="{% url 'removeItemForBorrowingApi' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" value="{{ equipmentCart.id }}" name="equipmentCart" />
+                                            <button class="btn bg-gradient-danger" type="submit">ลบรายการ</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                                
+                                <tr>
+                                    <td class="align-middle text-center"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-center mt-4 mb-4">
+                            <form id="confirm-equipment" method="post" action="{% url 'confirmBorringApi' %}">
+                              {% csrf_token %}
+                              <button class="btn bg-gradient-success" type="submit">ยืนยันการยืมอุปกรณ์วิทยาศาสตร์</button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <div class="text-center mt-5 mb-5">
+                            <span class="text-secondary text-2xl d-block mb-3">ไม่มีรายการอุปกรณ์วิทยาศาสตร์ที่จองไว้</span>
+                            <a href="{% url 'equipmentListPage' %}">
+                                <button class="btn bg-gradient-info" type="submit">เลือกอุปกรณ์วิทยาศาสตร์</button>
+                            </a>
+                        </div>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
