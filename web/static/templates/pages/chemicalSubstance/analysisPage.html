@@ -1,0 +1,302 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% include 'base/navside.html' %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+    {% include "base/navbar.html" %}
+    <div class="container-fluid py-4 ">
+        
+        {% comment %} <div class="row">
+            <div class="col-lg-10 col-md-10 col-10 d-flex align-items-center mb-3">
+                <h5>จัดการข้อมูลผู้ใช้บริการอุปกรณ์วิทยาศาสตร์</h5>
+            </div>
+            {% if user.account.status == "admin" %}
+            <div class="col-lg-2 col-md-4 col-12 text-end">
+                <button class="btn bg-gradient-faded-dark w-100 mb-0 toast-btn text-white" id="exportUserButton" type="button" data-target="warningToast">Export User</button>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="container-fluid py-4 ">
+            <div class="row mb-7">
+
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2 text-start">
+                            <div class="icon icon-lg icon-shape bg-gradient-success shadow-success text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">person</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-lg mb-0 text-capitalize">ผู้ใช้งานทั้งหมด</p>
+                                <h2 class="mb-0 text-success">{{ accounts.all }}</h2>
+                            </div>
+                        </div>
+                        <div class="card-footer p-3">
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2 text-start">
+                            <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">person</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-lg mb-0 text-capitalize">ผู้ดูแลระบบ</p>
+                                <h2 class="mb-0 text-info">{{ accounts.admin }}</h2>
+                            </div>
+                        </div>
+                        <div class="card-footer p-3">
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2 text-start">
+                            <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-icons opacity-10">person</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-lg mb-0 text-capitalize">ผู้ใช้งาน</p>
+                                <h2 class="mb-0 text-info">{{ accounts.user }}</h2>
+                            </div>
+                        </div>
+                        <div class="card-footer p-3">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-2">
+                
+                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2 text-start">
+                            <div class="bg-gradient-info shadow-info border-radius-lg  pt-2 pb-2 mt-n4">
+                                <p class="text-s mb-0 text-white">รายการทั้งหมด</p>
+                            </div>
+                            <div class="text-center pt-3">
+                                <h1 class="mb-0 text-info">{{ orders.all }}</h1>
+                                <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
+                                <button class="btn bg-gradient-faded-dark mb-0 mt-3 toast-btn text-white" id="exportAllOrderButton" type="button" data-target="warningToast">
+                                    <i class="material-icons opacity-10">download</i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer p-3">
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2 text-start">
+                            <div class="bg-gradient-success shadow-success border-radius-lg pt-2 pb-2 mt-n4">
+                                <p class="text-s mb-0 text-white">รายการที่อนุมัติแล้ว</p>
+                            </div>
+                            <div class="text-center pt-3">
+                                <h1 class="mb-0 text-success">{{ orders.approved }}</h1>
+                                <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
+                                <button class="btn bg-gradient-faded-dark mb-0 mt-3 toast-btn text-white" id="exportApprovedOrderButton" type="button" data-target="warningToast">
+                                    <i class="material-icons opacity-10">download</i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer p-3">
+
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2 text-start">
+                            <div class="bg-gradient-success shadow-success border-radius-lg pt-2 pb-2 mt-n4">
+                                <p class="text-s mb-0 text-white">รายการที่คืนเรียบร้อยแล้ว</p>
+                            </div>
+                            <div class="text-center pt-3">
+                                <h1 class="mb-0 text-success">{{ orders.completed }}</h1>
+                                <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
+                                <button class="btn bg-gradient-faded-dark mb-0 mt-3 toast-btn text-white" id="exportCompletedOderButton" type="button" data-target="warningToast">
+                                    <i class="material-icons opacity-10">download</i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer p-3">
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2 text-start">
+                            <div class="bg-gradient-warning shadow-warning border-radius-lg pt-2 pb-2 mt-n4">
+                                <p class="text-s mb-0 text-white">รายการที่รออนุมัติ</p>
+                            </div>
+                            <div class="text-center pt-3">
+                                <h1 class="mb-0 text-warning">{{ orders.waiting }}</h1>
+                                <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
+                                <button class="btn bg-gradient-faded-dark mb-0 mt-3 toast-btn text-white" id="exportWaittingOrderButton" type="button" data-target="warningToast">
+                                    <i class="material-icons opacity-10">download</i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer p-3">
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2 text-start">
+                            <div class="bg-gradient-warning shadow-warning border-radius-lg pt-2 pb-2 mt-n4">
+                                <p class="text-s mb-0 text-white">รายการที่รอยืนยันการคืน</p>
+                            </div>
+                            <div class="text-center pt-3">
+                                <h1 class="mb-0 text-warning">{{ orders.returned }}</h1>
+                                <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
+                                <button class="btn bg-gradient-faded-dark mb-0 mt-3 toast-btn text-white" id="exportReturnedOrderButton" type="button" data-target="warningToast">
+                                    <i class="material-icons opacity-10">download</i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer p-3">
+
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2 text-start">
+                            <div class="bg-gradient-danger shadow-danger border-radius-lg  pt-2 pb-2 mt-n4">
+                                <p class="text-s mb-0 text-white">รายการที่ยกเลิกแล้ว</p>
+                            </div>
+                            <div class="text-center pt-3">
+                                <h1 class="mb-0 text-danger">{{ orders.canceled }}</h1>
+                                <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
+                                <button class="btn bg-gradient-faded-dark mb-0 mt-3 toast-btn text-white" id="exportCanceledOrderButton" type="button" data-target="warningToast">
+                                    <i class="material-icons opacity-10">download</i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer p-3">
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2 text-start">
+                            <div class="bg-gradient-danger shadow-danger border-radius-lg pt-2 pb-2 mt-n4">
+                                <p class="text-s mb-0 text-white">รายการที่ไม่อนุมัติ</p>
+                            </div>
+                            <div class="text-center pt-3">
+                                <h1 class="mb-0 text-danger">{{ orders.disapproved }}</h1>
+                                <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
+                                <button class="btn bg-gradient-faded-dark mb-0 mt-3 toast-btn text-white" id="exportDisapprovedOrderButton" type="button" data-target="warningToast">
+                                    <i class="material-icons opacity-10">download</i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer p-3">
+
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2 text-start">
+                            <div class="bg-gradient-danger shadow-danger border-radius-lg  pt-2 pb-2 mt-n4">
+                                <p class="text-s mb-0 text-white">รายการที่เกินกำหนดคืน</p>
+                            </div>
+                            <div class="text-center pt-3">
+                                <h1 class="mb-0 text-danger">{{ orders.overdued }}</h1>
+                                <p class="text-md mb-0 text-capitalize">รายการ</p>
+                                {% if user.account.status == "admin" %}
+                                <button class="btn bg-gradient-faded-dark mb-0 mt-3 toast-btn text-white" id="exportOverduedOrderButton" type="button" data-target="warningToast">
+                                    <i class="material-icons opacity-10">download</i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer p-3">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="row">
+                <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-3">
+                    <h6>อุปกรณ์ที่มีการยืมสูงสุด</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-2 col-md-4 col-12">
+                    {% if user.account.status == "admin" %}
+                    <button class="btn bg-gradient-faded-dark mb-4 mt-n2 toast-btn text-white" id="exportMostEquipmentButton" type="button" data-target="warningToast">
+                        <i class="material-icons opacity-10">download</i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                {% for equipment in equipments %}
+                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2 text-start">
+                            <div class="bg-gradient-info shadow-info border-radius-lg  pt-2 pb-2 mt-n4">
+                                <p class="text-s mb-0 text-white">{{ equipment.name }}</p>
+                            </div>
+                            <div class="text-center pt-3">
+                                <h1 class="mb-0 text-info">{{ equipment.statistics }}</h1>
+                                <p class="text-md mb-0 text-capitalize">ครั้ง</p>
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer p-3">
+                            
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+         {% endcomment %}
+    </div>
+</main>
+{% endblock %}

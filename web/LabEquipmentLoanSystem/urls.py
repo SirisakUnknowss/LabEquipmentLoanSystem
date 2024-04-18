@@ -70,4 +70,7 @@ urlpatterns = [
     path('chemicalSubstance/list', CSViews.ListPageView.as_view(), name='chemicalSubstanceListPage'),
     path('chemicalSubstance/add', CSViews.AddPageView.as_view(), name='chemicalSubstanceAddPage'),
     path('chemicalSubstance/edit', CSViews.EditPageView.as_view(), name='chemicalSubstanceEditPage'),
+    path('chemicalSubstance/notifications', CSViews.NotificationsPageView.as_view(), name='chemicalSubstanceNotificationPage'),
+    path('chemicalSubstance/history', CSViews.WithdrawHistoryView.as_view(), name='withdrawHistoryPage'),
+    path('chemicalSubstance/analysis', CSViews.AnalysisView.as_view(), name='analysisChemicalSubstancePage'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

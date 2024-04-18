@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from rest_framework.generics import GenericAPIView
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 #Project
@@ -93,7 +94,7 @@ class NotFoundPageView(View):
 class SignupView(View):
 
     def get(self, request, *args, **kwargs):
-        self.context = {}
+        self.context = { 'title': 'ลงทะเบียน' }
         if request.user.is_authenticated and request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('homepage'))
         return render(request, 'base/signup.html', self.context)
@@ -167,19 +168,21 @@ class ProfileView(MenuList):
 
 class EditProfileView(View):
     
-    def get(self, request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs):
         self.context = {}
         if request.user.is_authenticated:
-            self.context['account'] = request.user.account
+            self.context['account']     = request.user.account
+            self.context['titlePage']   = 'แก้ไขข้อมูลส่วนตัว'
             return render(request, 'base/signup.html', self.context)
         return redirect(reverse('homepage'))
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args, **kwargs):
         self.context = {}
         account = request.POST['accountID']
         if account:
             account = Account.objects.get(id=account)
-            self.context['account'] = account
+            self.context['account']     = account
+            self.context['titlePage']   = 'แก้ไขข้อมูลส่วนตัว'
         return render(request, 'base/signup.html', self.context)
 
 class UserManagementView(MenuList):

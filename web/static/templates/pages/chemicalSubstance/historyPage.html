@@ -1,0 +1,91 @@
+{% extends 'base/base.html' %}
+{% block content %}
+{% include 'base/navside.html' %}
+<main class="main-content position-relative max-height-vh-100 h-100">
+    {% include "base/navbar.html" %}
+    <div class="container-fluid py-4 ">
+        <div class="row">
+            <div class="col-lg-8 col-md-6 col-8 mt-3 mb-4 d-flex align-items-center mb-3">
+                <h5>ประวัติการเบิกใช้สารเคมี</h5>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="card card-body mx-2 mx-md-1 mt-n4">
+                <div class="card-body px-0 pb-2">
+                    <div class="table-responsive p-0">
+                        {% if orders %}
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">รหัสนักศึกษา</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">จำนวน</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่ยืม</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่อนุมัติ</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">สถานะ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td class="align-middle text-center">
+                                    <span class="text-secondary text-s">{{ order.user.studentID }}</span>
+                                </td>
+                                <td class="align-middle text-center">
+                                    <span class="text-secondary text-s">{{ order.equipment.all.count }}</span>
+                                </td>
+                                <td class="align-middle text-center">
+                                    {% if order.dateBorrowing %}
+                                        <span class="text-secondary text-s">{% load tz %}{{ order.dateBorrowing|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
+                                    {% else %}
+                                        <span class="text-secondary text-s">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="align-middle text-center">
+                                    {% if order.dateReturn %}
+                                        <span class="text-secondary text-s">{% load tz %}{{ order.dateApproved|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
+                                    {% else %}
+                                        <span class="text-secondary text-s">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="align-middle text-center text-sm">
+                                    <form class="align-items-center text-center d-inline-block" id="confirm-equipment" method="post" action="{% url 'detailEquipmentPage' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{ order.id }}" name="EquipmentID" />
+                                        <input type="hidden" value="{{ order.status }}" name="StatusBorrowing" />
+                                        <button class="btn badge badge-sm bg-gradient-info" type="submit">เพิ่มเติม</button>
+                                    </form>
+                                    {% if user.account.status == "admin" %}
+                                    <form class="align-items-center text-center d-inline-block" id="confirm-equipment" method="post" action="{% url 'removeBorringApi' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{ order.id }}" name="orderID" />
+                                        <button class="btn badge badge-sm bg-gradient-danger" type="submit">ลบประวัติ</button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                            <div class="text-center mt-5 mb-5">
+                                <span class="text-secondary text-2xl d-block mb-3">ประวัติการเบิกใช้สารเคมี</span>
+                                <a href="{% url 'chemicalSubstanceNotificationPage' %}">
+                                    <button class="btn bg-gradient-info" type="submit">แจ้งเตือนการเบิกใช้สารเคมี</button>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+    <script>
+        let name_page = "id_borrowing_history_page"
+    </script>
+{% endblock %}

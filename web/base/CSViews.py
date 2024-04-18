@@ -60,3 +60,30 @@ class EditPageView(AdminOnly):
             return render(request, 'pages/chemicalSubstance/addPage.html', self.context)
         except Http404:
             return redirect(reverse('chemicalSubstanceListPage'))
+
+
+class NotificationsPageView(MenuList):
+
+    def get(self, request, *args, **kwargs):
+        super(MenuList, self).get(request)
+        self.addMenuPage(2, -1)
+        self.context['orders'] = []
+        return render(request, 'pages/chemicalSubstance/notificationPage.html', self.context)
+class WithdrawHistoryView(MenuList):
+
+    def get(self, request, *args, **kwargs):
+        super(MenuList, self).get(request)
+        self.addMenuPage(2, 2)
+        self.context['orders'] = []
+        return render(request, 'pages/chemicalSubstance/historyPage.html', self.context)
+
+class AnalysisView(MenuList):
+
+    def get(self, request, *args, **kwargs):
+        return redirect(reverse('chemicalSubstanceListPage'))
+        super(MenuList, self).get(request)
+        self.addMenuPage(2, 3)
+        self.context['orders']      = []
+        self.context['accounts']    = []
+        self.context['equipments']  = []
+        return render(request, 'pages/chemicalSubstance/analysisPage.html', self.context)
