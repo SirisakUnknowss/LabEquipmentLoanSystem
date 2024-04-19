@@ -5,12 +5,12 @@
 {% endblock %}
 {% block content %}
 <main class="main-content position-relative max-height-vh-100 h-100">
-    {% include "base/navbar.html" %}
+    {% include "base/navbar2.html" %}
     <div class="container-fluid py-4 px-md-5">
-        <form enctype="multipart/form-data" id="add-chemicalSubstance" method="post" action="{{ confirmUrl }}">
-        {% comment %} <form enctype="multipart/form-data" id="add-chemicalSubstance" onsubmit="return validateForm()"> {% endcomment %}
+        {% comment %} <form enctype="multipart/form-data" id="add-chemicalSubstance" method="post" action="{{ confirmUrl }}"> {% endcomment %}
+        <form enctype="multipart/form-data" id="add-chemicalSubstance">
             {% csrf_token %}
-            <input type="hidden" value="{{ chemicalSubstance.id }}" name="chemicalSubstanceID" />
+            <input type="hidden" value="{{ result.id }}" name="chemicalSubstanceID" />
             <div class="row mt-4">
                 <div class="col-md-12 col-lg-6 my-2">
                     <div class="card card-body rounded-0">
@@ -20,45 +20,45 @@
 
                             <div class="input-group input-group-outline is-filled">
                                 <label class="form-label">ชื่อสารเคมี</label>
-                                <input type="text" class="form-control" id="id_name" name="name" value="{{ chemicalSubstance.name }}" required>
+                                <input type="text" class="form-control" id="id_name" name="name" value="{{ result.name }}" required>
                             </div>
                             <div class="row mt-4">
                                 <div class="col-6">
-                                    <div class="input-group input-group-outline{% if chemicalSubstance.serialNumber %} is-filled{% endif %}">
+                                    <div class="input-group input-group-outline{% if result.serialNumber %} is-filled{% endif %}">
                                         <label class="form-label">รหัส</label>
-                                        <input type="text" class="form-control" id="id_serialNumber" name="serialNumber" value="{{ chemicalSubstance.serialNumber }}" required>
+                                        <input type="text" class="form-control" id="id_serialNumber" name="serialNumber" value="{{ result.serialNumber }}" required>
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="input-group input-group-outline{% if chemicalSubstance.casNo %} is-filled{% endif %}">
+                                    <div class="input-group input-group-outline{% if result.casNo %} is-filled{% endif %}">
                                         <label class="form-label">CAS no.2</label>
-                                        <input type="text" class="form-control" id="id_casNo" name="casNo" value="{{ chemicalSubstance.casNo }}" required>
+                                        <input type="text" class="form-control" id="id_casNo" name="casNo" value="{{ result.casNo }}" required>
                                     </div>
                                 </div>
                             </div>
                             <hr class="hr-3">
-                            <div class="input-group input-group-outline{% if chemicalSubstance.place %} is-filled{% endif %}">
+                            <div class="input-group input-group-outline{% if result.place %} is-filled{% endif %}">
                                 <label class="form-label">ที่จัดเก็บ</label>
-                                <input type="text" class="form-control" id="id_place" name="place" value="{{ chemicalSubstance.place }}" required>
+                                <input type="text" class="form-control" id="id_place" name="place" value="{{ result.place }}" required>
                             </div>
                             <hr class="hr-3">
                             <div class="row">
                                 <div class="col-4">
-                                    <div class="input-group input-group-outline{% if chemicalSubstance.initialQuantity %} is-filled{% endif %}">
+                                    <div class="input-group input-group-outline{% if result.initialQuantity %} is-filled{% endif %}">
                                         <label class="form-label">ปริมาณเริ่มต้น</label>
-                                        <input type="number" class="form-control" id="id_initialQuantity" name="initialQuantity" value="{{ chemicalSubstance.initialQuantity }}" required>
+                                        <input type="number" class="form-control" id="id_initialQuantity" name="initialQuantity" value="{{ result.initialQuantity }}" required>
                                     </div>
                                 </div>
                                 <div class="col-4">
-                                    <div class="input-group input-group-outline{% if chemicalSubstance.remainingQuantity %} is-filled{% endif %}">
+                                    <div class="input-group input-group-outline{% if result.remainingQuantity %} is-filled{% endif %}">
                                         <label class="form-label">ปริมาณคงเหลือ</label>
-                                        <input type="number" class="form-control" id="id_remainingQuantity" name="remainingQuantity" value="{{ chemicalSubstance.remainingQuantity }}" required>
+                                        <input type="number" class="form-control" id="id_remainingQuantity" name="remainingQuantity" value="{{ result.remainingQuantity }}" required>
                                     </div>
                                 </div>
                                 <div class="col-4">
-                                    <div class="input-group input-group-outline{% if chemicalSubstance.unit %} is-filled{% endif %}">
+                                    <div class="input-group input-group-outline{% if result.unit %} is-filled{% endif %}">
                                         <label class="form-label">หน่วย</label>
-                                        <input type="text" class="form-control" id="id_unit" name="unit" value="{{ chemicalSubstance.unit }}" required>
+                                        <input type="text" class="form-control" id="id_unit" name="unit" value="{{ result.unit }}" required>
                                     </div>
                                 </div>
                             </div>
@@ -94,55 +94,55 @@
                             <span class="fw-bold fs-5">ข้อมูลเพิ่มเติม</span>
                             <hr class="hr-2 border-dark">
 
-                            <div class="input-group input-group-outline{% if chemicalSubstance.catalogNo %} is-filled{% endif %}">
+                            <div class="input-group input-group-outline{% if result.catalogNo %} is-filled{% endif %}">
                                 <label class="form-label">Catalog no./ product no.</label>
-                                <input type="text" class="form-control" id="id_catalogNo" name="catalogNo" value="{{ chemicalSubstance.catalogNo }}">
+                                <input type="text" class="form-control" id="id_catalogNo" name="catalogNo" value="{{ result.catalogNo }}">
                             </div>
                             <div class="row mt-4">
                                 <div class="col-6">
-                                    <div class="input-group input-group-outline{% if chemicalSubstance.manufacturer %} is-filled{% endif %}">
+                                    <div class="input-group input-group-outline{% if result.manufacturer %} is-filled{% endif %}">
                                         <label class="form-label">ผู้ผลิต</label>
-                                        <input type="text" class="form-control" id="id_manufacturer" name="manufacturer" value="{{ chemicalSubstance.manufacturer }}">
+                                        <input type="text" class="form-control" id="id_manufacturer" name="manufacturer" value="{{ result.manufacturer }}">
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="input-group input-group-outline{% if chemicalSubstance.distributor %} is-filled{% endif %}">
+                                    <div class="input-group input-group-outline{% if result.distributor %} is-filled{% endif %}">
                                         <label class="form-label">ผู้จัดจำหน่าย</label>
-                                        <input type="text" class="form-control" id="id_distributor" name="distributor" value="{{ chemicalSubstance.distributor }}">
+                                        <input type="text" class="form-control" id="id_distributor" name="distributor" value="{{ result.distributor }}">
                                     </div>
                                 </div>
                             </div>
                             <div class="row mt-4">
                                 <div class="col-6">
-                                    <div class="input-group input-group-outline{% if chemicalSubstance.grade %} is-filled{% endif %}">
+                                    <div class="input-group input-group-outline{% if result.grade %} is-filled{% endif %}">
                                         <label class="form-label">เกรด/ความเข้มข้น</label>
-                                        <input type="text" class="form-control" id="id_grade" name="grade" value="{{ chemicalSubstance.grade }}">
+                                        <input type="text" class="form-control" id="id_grade" name="grade" value="{{ result.grade }}">
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="input-group input-group-outline{% if chemicalSubstance.price %} is-filled{% endif %}">
+                                    <div class="input-group input-group-outline{% if result.price %} is-filled{% endif %}">
                                         <label class="form-label">ราคา</label>
-                                        <input type="number" class="form-control" id="id_price" name="price" value="{{ chemicalSubstance.price }}">
+                                        <input type="number" class="form-control" id="id_price" name="price" value="{{ result.price }}">
                                     </div>
                                 </div>
                             </div>
                             <div class="row mt-4">
                                 <div class="col-4">
-                                    <div class="input-group input-group-outline{% if chemicalSubstance.buyInDate %} is-filled{% endif %}">
+                                    <div class="input-group input-group-outline{% if result.buyInDate %} is-filled{% endif %}">
                                         <label class="form-label">รับเข้า</label>
-                                        <input type="text" class="form-control" id="id_buyInDate" name="buyInDate" value="{{ chemicalSubstance.buyInDate }}">
+                                        <input type="text" class="form-control" id="id_buyInDate" name="buyInDate" value="{{ result.buyInDate }}">
                                     </div>
                                 </div>
                                 <div class="col-4">
-                                    <div class="input-group input-group-outline{% if chemicalSubstance.activateDate %} is-filled{% endif %}">
+                                    <div class="input-group input-group-outline{% if result.activateDate %} is-filled{% endif %}">
                                         <label class="form-label">เปิดใช้</label>
-                                        <input type="text" class="form-control" id="id_activateDate" name="activateDate" value="{{ chemicalSubstance.activateDate }}">
+                                        <input type="text" class="form-control" id="id_activateDate" name="activateDate" value="{{ result.activateDate }}">
                                     </div>
                                 </div>
                                 <div class="col-4">
-                                    <div class="input-group input-group-outline{% if chemicalSubstance.expirationDate %} is-filled{% endif %}">
+                                    <div class="input-group input-group-outline{% if result.expirationDate %} is-filled{% endif %}">
                                         <label class="form-label">หมดอายุ</label>
-                                        <input type="text" class="form-control" id="id_expirationDate" name="expirationDate" value="{{ chemicalSubstance.expirationDate }}">
+                                        <input type="text" class="form-control" id="id_expirationDate" name="expirationDate" value="{{ result.expirationDate }}">
                                     </div>
                                 </div>
                             </div>
@@ -151,20 +151,20 @@
                             </div>
                             <div class="container">
                                 <div class="radio">
-                                    {% if chemicalSubstance.hazardCategory == "ghs" %}
+                                    {% if result.hazardCategory == "ghs" %}
                                     <input id="id_GHS" name="hazardCategory" type="radio" value="ghs" checked>
                                     {% else %}
-                                    <input id="id_GHS" name="hazardCategory" type="radio" value="ghs">
+                                    <input id="id_GHS" name="hazardCategory" type="radio" value="ghs" checked>
                                     {% endif %}
                                     <label  for="radio" class="radio-label">GHS</label>
-                                    {% if chemicalSubstance.hazardCategory == "ghs" %}
+                                    {% if result.hazardCategory == "ghs" %}
                                     <ul class="flex-container" id="ghsList">
                                     {% else %}
-                                    <ul class="d-none" id="ghsList">
+                                    <ul class="flex-container" id="ghsList">
                                     {% endif %}
                                         {% for result in ghsList %}
                                         <li class="flex-item">
-                                            {% if result.serialNumber in chemicalSubstance.ghs %}
+                                            {% if result.serialNumber in result.ghs %}
                                             <input id="{{ result.serialNumber }}" name="ghs" type="checkbox" value={{ result.serialNumber }} class="d-flex" checked>
                                             {% else %}
                                             <input id="{{ result.serialNumber }}" name="ghs" type="checkbox" value={{ result.serialNumber }} class="d-flex">
@@ -175,22 +175,22 @@
                                     </ul>
                                 </div>
                             
-                                <div class="radio">
-                                    {% if chemicalSubstance.hazardCategory == "unClass" %}
+                                {% comment %} <div class="radio">
+                                    {% if result.hazardCategory == "unClass" %}
                                     <input id="id_unClass" name="hazardCategory" type="radio" value="unClass" checked>
                                     {% else %}
                                     <input id="id_unClass" name="hazardCategory" type="radio" value="unClass">
                                     {% endif %}
                                     <label  for="id_unClass" class="radio-label">UN Class/ UN no.</label>
                                 </div>
-                                {% if chemicalSubstance.hazardCategory == "unClass" %}
+                                {% if result.hazardCategory == "unClass" %}
                                 <ul class="flex-container" id="unList">
                                 {% else %}
                                 <ul class="d-none" id="unList">
                                 {% endif %}
                                     {% for result in unList %}
                                     <li class="flex-item">
-                                        {% if result.serialNumber in chemicalSubstance.unClass %}
+                                        {% if result.serialNumber in result.unClass %}
                                         <input id="{{ result.serialNumber }}" name="unClass" type="checkbox" value={{ result.serialNumber }} class="d-flex" checked>
                                         {% else %}
                                         <input id="{{ result.serialNumber }}" name="unClass" type="checkbox" value={{ result.serialNumber }} class="d-flex">
@@ -198,7 +198,7 @@
                                         <label for={{ result.serialNumber }}><img src="{{ STATIC_URL }}images/hazard/{{ result.serialNumber }}.png"  onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png' ;" class="image-scientificInstruments border-radius-xl" /></label>
                                     </li>
                                     {% endfor %}
-                                </ul>
+                                </ul> {% endcomment %}
                             
                             </div>
                         </div>
@@ -208,8 +208,8 @@
 
             <div class="row text-center">
                 <div class="col-lg-6 col-12 text-lg-end">
-                    <button class="btn border border-info bg-gradient-info my-2 w-100 w-lg-50" type="submit" id="confirmBtn">ยืนยัน</button>
-                    {% comment %} <a class="btn border border-info bg-gradient-info my-2 w-100 w-lg-50" data-bs-toggle="modal" href="#loadingModal" role="button">ยืนยัน</a> {% endcomment %}
+                    <input class="btn border border-info bg-gradient-info my-2 w-100 w-lg-50" type="submit" id="confirmBtn" value="บันทึก" / >
+                    {% comment %} <a class="btn border border-info bg-gradient-info my-2 w-100 w-lg-50" data-bs-toggle="modal" href="#loadingModal" role="button">บันทึก</a> {% endcomment %}
                 </div>
                 <div class="col-lg-6 col-12 text-lg-start">
                     <a class="" href="{% url 'chemicalSubstanceListPage' %}">
@@ -221,24 +221,16 @@
 
     </div>
 </main>
-
-<div class="modal fade" id="loadingModal" aria-hidden="true" aria-labelledby="loadingModalLabel" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content p-6">
-            <div class="modal-body">
-                <div class="spinner">
-                    <svg viewBox="25 25 50 50">
-                        <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
-                        <span class="text-black d-block mt-2">กำลังบันทึกข้อมูล ...</span>
-                    </svg>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+{% include "modal/loading.html" %}
+{% include "modal/success.html" %}
 {% endblock %}
 {% block js %}
 {{ block.super }}
+<script>
+    const confirmUrl = '{{ confirmUrl }}'
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script src="{{ STATIC_URL }}assets/js/upload-file.js"></script>
 <script src="{{ STATIC_URL }}assets/js/add-chemicalSubstance.js"></script>
 {% endblock %}

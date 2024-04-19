@@ -121,8 +121,8 @@ class GetTimeStartCanBooking(LabAPIGetView):
         tomorrow = datetime.combine((today + timedelta(days=1)), datetime.min.time())
         if not self.dateInput >= tomorrow and self.dateInput <= self.lastDateOfMonth():
             raise ValueError("date input invalid.")
-        if self.isWeekend():
-            raise ValueError("Date is Weekend.")
+        # if self.isWeekend():
+        #     raise ValueError("Date is Weekend.")
         times = list()
         
         scientificInstrument = ScientificInstrument.objects.get(pk=self.id)

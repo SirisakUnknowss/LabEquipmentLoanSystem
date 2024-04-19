@@ -15,7 +15,7 @@ Including another URLconf
 """
 # Django
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls import url
 from django.conf.urls.static import static
@@ -74,6 +74,12 @@ urlpatterns = [
     path('chemicalSubstance/notifications', CSViews.NotificationsPageView.as_view(), name='chemicalSubstanceNotificationPage'),
     path('chemicalSubstance/history', CSViews.WithdrawHistoryView.as_view(), name='withdrawHistoryPage'),
     path('chemicalSubstance/analysis', CSViews.AnalysisView.as_view(), name='analysisChemicalSubstancePage'),
-    url(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
-    url(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    urlpatterns += [
+        re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
+        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    ]

@@ -1,5 +1,4 @@
 # Django
-from django.core import serializers
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework.request import Request
@@ -34,10 +33,11 @@ class AddPageView(AdminOnly):
     def get(self, request: Request, *args, **kwargs):
         super(AdminOnly, self).get(request)
         ghsList                     = HazardCategory.objects.filter(category=HazardCategory.CATEGORY.GHS)
-        unList                      = HazardCategory.objects.filter(category=HazardCategory.CATEGORY.UN)
+        # unList                      = HazardCategory.objects.filter(category=HazardCategory.CATEGORY.UN)
         self.context['ghsList']     = SlzHazardCategory(ghsList, many=True).data
-        self.context['unList']      = SlzHazardCategory(unList, many=True).data
+        # self.context['unList']      = SlzHazardCategory(unList, many=True).data
         self.context['confirmUrl']  = '/api/chemicalSubstance/add'
+        self.context['titleBar']    = 'เพิ่มสารเคมี'
         return render(request, 'pages/chemicalSubstance/addPage.html', self.context)
 
 class EditPageView(AdminOnly):
@@ -49,14 +49,15 @@ class EditPageView(AdminOnly):
     def post(self, request: Request, *args, **kwargs):
         super(AdminOnly, self).post(request)
         try:
-            ghsList                             = HazardCategory.objects.filter(category=HazardCategory.CATEGORY.GHS)
-            unList                              = HazardCategory.objects.filter(category=HazardCategory.CATEGORY.UN)
-            id                                  = request.POST['ChemicalSubstanceID']
-            instance                            = get_object_or_404(ChemicalSubstance, id=id)
-            self.context['ghsList']             = SlzHazardCategory(ghsList, many=True).data
-            self.context['unList']              = SlzHazardCategory(unList, many=True).data
-            self.context['chemicalSubstance']   = SlzChemicalSubstance(instance).data
-            self.context['confirmUrl']          = '/api/chemicalSubstance/edit'
+            ghsList                     = HazardCategory.objects.filter(category=HazardCategory.CATEGORY.GHS)
+            # unList                      = HazardCategory.objects.filter(category=HazardCategory.CATEGORY.UN)
+            id                          = request.POST['ChemicalSubstanceID']
+            instance                    = get_object_or_404(ChemicalSubstance, id=id)
+            self.context['ghsList']     = SlzHazardCategory(ghsList, many=True).data
+            # self.context['unList']      = SlzHazardCategory(unList, many=True).data
+            self.context['result']      = SlzChemicalSubstance(instance).data
+            self.context['confirmUrl']  = '/api/chemicalSubstance/edit'
+            self.context['titleBar']    = 'เพิ่มสารเคมี'
             return render(request, 'pages/chemicalSubstance/addPage.html', self.context)
         except Http404:
             return redirect(reverse('chemicalSubstanceListPage'))

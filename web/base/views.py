@@ -2,6 +2,7 @@
 import os
 # Django
 from django.db.models import Q
+from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
@@ -68,10 +69,8 @@ class LabListPaginatedView(LabAPIView):
         self.response["result"] = serializer.data
         return Response(self.response)
 
-
-
 def bad_request(request, exception):
-    return render(request, "base/404.html", {})
+    return HttpResponseNotFound(render(request, "base/404.html", {}))
 
 # ==================================== MAIN PAGE ==================================== #
 

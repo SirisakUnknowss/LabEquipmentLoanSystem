@@ -1,8 +1,10 @@
 # Django
 from django.shortcuts import redirect
 from django.urls import reverse
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.request import Request
+from rest_framework.response import Response
 # Project
 from base.functions import uploadImage, convertToFloat, checkTextBlank
 from base.views import LabAPIView
@@ -22,11 +24,14 @@ class AddChemicalSubstance(LabAPIView):
             serializerInput.is_valid(raise_exception=True)
             chemicalSubstance       = self.perform_create(serializerInput.validated_data, checkList)
             serializerOutput        = SlzChemicalSubstance(chemicalSubstance)
-            self.response["result"] = serializerOutput.data
-            return redirect(reverse('chemicalSubstanceListPage'))
+            self.response["result"] = '/chemicalSubstance/list'
+            return Response(self.response)
+            # return redirect(reverse('chemicalSubstanceListPage'))
         except Exception as ex:
             print("AddChemicalSubstance == " + ex)
-            return redirect(reverse('chemicalSubstanceAddPage'))
+            self.response["result"] = '/chemicalSubstance/add'
+            return Response(self.response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # return redirect(reverse('chemicalSubstanceAddPage'))
     
     def perform_create(self, validated: dict, checkList: list):
         chemicalSubstance = ChemicalSubstance(
