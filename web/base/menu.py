@@ -1,5 +1,5 @@
 # Python
-from datetime import datetime
+from django.utils import timezone
 # Django
 from django.views import View
 from django.shortcuts import render, redirect
@@ -12,7 +12,11 @@ def checkOverdue(request):
     orders = Order.objects.filter(user=request.user.account, status=Order.STATUS.APPROVED)
     if request.user.account.status == Account.STATUS.ADMIN:
         orders = Order.objects.filter(status=Order.STATUS.APPROVED)
-    orders = orders.filter(dateReturn__lt=datetime.now()).update(status=Order.STATUS.OVERDUED)
+    try:
+        orders = orders.filter(dateReturn__lt=timezone.now()).update(status=Order.STATUS.OVERDUED)
+    except Exception as ex:
+        print(ex)
+        print("----------------------------------------")
 
 class AuthenticationMixin(View):
     def dispatch(self, request, *args, **kwargs):
@@ -24,11 +28,9 @@ class LabWebView(AuthenticationMixin):
 
     def get(self, request, *args, **kwargs):
         checkOverdue(request)
-        return render(request, 'base/404.html')
 
     def post(self, request, *args, **kwargs):
         checkOverdue(request)
-        return render(request, 'base/404.html')
 
 class AdminMixin(View):
 

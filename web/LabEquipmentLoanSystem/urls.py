@@ -25,13 +25,14 @@ from base import views as baseViews
 from base import equipmentViews
 from base import SLViews
 from base import CSViews
+from base import errorPageView
 
 
 
-handler400 = baseViews.bad_request
-handler403 = baseViews.permission_denied
-handler404 = baseViews.page_not_found
-handler500 = baseViews.server_error
+handler400 = errorPageView.badRequest
+handler403 = errorPageView.permissionDenied
+handler404 = errorPageView.pageNotFound
+handler500 = errorPageView.serverError
 
 urlpatterns = [
     path('admin/', admin.site.urls),

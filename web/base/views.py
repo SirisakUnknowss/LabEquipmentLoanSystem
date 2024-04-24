@@ -2,9 +2,7 @@
 import os
 # Django
 from django.db.models import Q
-from django.http import HttpResponseNotFound, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseServerError
 from django.shortcuts import render, redirect
-from django.template import loader
 from django.urls import reverse
 from django.views import View
 from rest_framework.generics import GenericAPIView
@@ -69,20 +67,6 @@ class LabListPaginatedView(LabAPIView):
         serializer              = self.get_serializer(queryset, many=True, context={"request": request})
         self.response["result"] = serializer.data
         return Response(self.response)
-
-def bad_request(request, exception):
-    return HttpResponseBadRequest(render(request, "error/400.html", {}))
-
-def permission_denied(request, exception):
-    return HttpResponseForbidden(render(request, "error/403.html", {}))
-
-def page_not_found(request, exception):
-    return HttpResponseNotFound(render(request, "error/404.html", {}))
-
-def server_error(request, template_name='error/500.html'):
-    return HttpResponseNotFound(render(request, "error/500.html", {}))
-    template = loader.get_template(template_name)
-    return HttpResponseServerError(template.render())
 
 # ==================================== MAIN PAGE ==================================== #
 

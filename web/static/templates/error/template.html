@@ -3,7 +3,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>{% block title %}Bad Request{% endblock title %}</title>
+        <title>{% block title %}{{ titleName }}{% endblock title %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
         <!-- Favicon -->
@@ -23,9 +23,9 @@
         <div id="notfound">
             <div class="notfound">
                 <div class="notfound-404">
-                    <h1>400</h1>
+                    <h1>{{ statusCode }}</h1>
                 </div>
-                <h2>Oops! Your Request Invalid</h2>
+                <h2>{{ description }}</h2>
                 <a href="{% url "homepage" %}">Return to homepage</a></p>
             </div>
         </div>
