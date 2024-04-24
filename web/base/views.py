@@ -80,7 +80,8 @@ def page_not_found(request, exception):
     return HttpResponseNotFound(render(request, "error/404.html", {}))
 
 def server_error(request, template_name='error/500.html'):
-    template = loader.get_template('error/500.html')
+    return HttpResponseNotFound(render(request, "error/500.html", {}))
+    template = loader.get_template(template_name)
     return HttpResponseServerError(template.render())
 
 # ==================================== MAIN PAGE ==================================== #
