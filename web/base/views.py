@@ -4,6 +4,7 @@ import os
 from django.db.models import Q
 from django.http import HttpResponseNotFound, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseServerError
 from django.shortcuts import render, redirect
+from django.template import loader
 from django.urls import reverse
 from django.views import View
 from rest_framework.generics import GenericAPIView
@@ -79,7 +80,8 @@ def page_not_found(request, exception):
     return HttpResponseNotFound(render(request, "error/404.html", {}))
 
 def server_error(request, exception):
-    return HttpResponseServerError(render(request, "error/500.html", {}))
+    template = loader.get_template('error/500.html')
+    return HttpResponseServerError(template.render())
 
 # ==================================== MAIN PAGE ==================================== #
 
