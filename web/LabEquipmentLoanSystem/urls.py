@@ -14,10 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 # Django
+from django.conf.urls import handler404, handler500, handler403, handler400
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
-from django.conf.urls import url
 from django.conf.urls.static import static
 from django.views.static import serve
 # Project
@@ -28,7 +28,11 @@ from base import CSViews
 
 
 
-handler404 = baseViews.bad_request
+handler400 = baseViews.bad_request
+handler403 = baseViews.permission_denied
+handler404 = baseViews.page_not_found
+handler500 = baseViews.server_error
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', baseViews.LandingView.as_view(), name='homepage'),
