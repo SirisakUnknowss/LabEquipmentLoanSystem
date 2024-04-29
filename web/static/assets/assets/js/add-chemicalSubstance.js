@@ -1,10 +1,9 @@
 document.getElementById("successTitle").innerHTML = "เพิ่มรายการสารเคมีสำเร็จ"
+document.getElementById("loadingTitle").innerHTML = "กำลังบันทึกข้อมูล ..."
 
 
 document.getElementById("add-chemicalSubstance").addEventListener("submit", function(event) {
-  console.log(' ------------- Before ------------- ');
   event.preventDefault();
-  console.log(' ------------- After ------------- ');
   $('#successModal').modal({backdrop: 'static', keyboard: false})
   var formData = new FormData(this);
 
@@ -23,37 +22,13 @@ document.getElementById("add-chemicalSubstance").addEventListener("submit", func
     },
     error: function(xhr, status, error) {
       console.error('Error:', error);
+      var response = JSON.parse(xhr.responseText);
+      $('#errorTitle').html(response.error)
+      $('#errorModal').modal('show')
     }
   });
 });
 
-// document.addEventListener('DOMContentLoaded', function()
-// {
-//   const id_GHS = document.getElementById("id_GHS")
-//   const id_unClass = document.getElementById("id_unClass")
-//   const ghsList = document.getElementById("ghsList")
-//   const unList = document.getElementById("unList")
-//   var checkboxes = document.querySelectorAll('input[type="checkbox"]')
-
-//   function resetCheckboxes() {
-//     checkboxes.forEach(function(checkbox) {
-//       checkbox.checked = false
-//     })
-//   }
-  
-//   id_GHS.addEventListener('click', function() {
-//     resetCheckboxes()
-//     if (this.checked) {
-//       ghsList.className = "flex-container"
-//       unList.className = "d-none"
-//     }
-//   })
-  
-//   id_unClass.addEventListener('click', function() {
-//     resetCheckboxes()
-//     if (this.checked) {
-//       unList.className = "flex-container"
-//       ghsList.className = "d-none"
-//     }
-//   })
-// })
+function refreshPage() {
+  window.location.reload();
+} 

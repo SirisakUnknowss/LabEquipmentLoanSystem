@@ -2,7 +2,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 #Project
-from chemicalSubstance.models import ChemicalSubstance, HazardCategory
+from chemicalSubstance.models import ChemicalSubstance, HazardCategory, Order
 
 class SlzChemicalSubstance(serializers.ModelSerializer):
     class Meta:
@@ -37,11 +37,52 @@ class SlzChemicalSubstanceInput(serializers.ModelSerializer):
     def validate_name(self, value):
         try:
             instance = ChemicalSubstance.objects.get(name=value)
-            raise ValidationError("Error: Invalid name")
+            raise ValidationError("ชื่อสารเคมีไม่ถูกต้อง")
         except ChemicalSubstance.DoesNotExist:
             return value
+
+    def validate(self, instance):
+        print(instance['expirationDate'])
+        initialQuantity     = float(instance['initialQuantity'])
+        remainingQuantity   = float(instance['remainingQuantity'])
+        if remainingQuantity > initialQuantity:
+            raise ValidationError("ปริมาณคงเหลือไม่ถูกต้อง")
+        return instance
 
 class SlzHazardCategory(serializers.ModelSerializer):
     class Meta:
         model = HazardCategory
         fields = '__all__'
+
+class SlzApprovalInput(serializers.Serializer):
+    orderID = serializers.CharField()
+    status  = serializers.CharField()
+
+    def validate_orderID(self, value):
+        try:
+            order = Order.objects.get(id=value, status=Order.STATUS.WAITING, approver=None)
+            return order
+        except Order.DoesNotExist:
+            raise ValidationError('ไม่พบรายการเบิกสารเคมี')
+
+    def validate_status(self, value):
+        if not value in [ Order.STATUS.APPROVED, Order.STATUS.DISAPPROVED ]:
+            raise ValidationError('สถานะการยืนยันไม่ถูกต้อง')
+        return value
+
+class SlzCancelInput(serializers.Serializer):
+    orderID = serializers.CharField()
+
+    def validate_orderID(self, value):
+        try:
+            order = Order.objects.get(id=value, status=Order.STATUS.WAITING)
+            return order
+        except Order.DoesNotExist:
+            raise ValidationError('ไม่พบรายการเบิกสารเคมี')
+
+class SlzConfirmWithdrawalInput(serializers.Serializer):
+    orderList = serializers.ListField(child=serializers.JSONField())
+
+    def validate_orderList(self, value):
+        for order in value:
+            print(order)

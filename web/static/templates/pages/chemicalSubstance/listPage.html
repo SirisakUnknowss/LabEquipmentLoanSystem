@@ -10,19 +10,17 @@
       <div class="card border-radius-sm mb-4">
         <div class="card-body px-0 pb-2">
           <div class="d-flex ms-3">
-            <form role="form" class="flex-grow-1 text-start d-inline-block" id="login-form" method="post" action="{% url 'chemicalSubstanceListPage' %}">
+            <form role="form" class="flex-grow-1 text-start d-inline-block" id="login-form"
+            method="post" action="{% url 'chemicalSubstanceListPage' %}">
             {% csrf_token %}
             <div class="input-group input-group-outline mb-2">
                 <label class="form-label">ชื่อสารเคมี</label>
-                <input type="text" class="form-control bg-gradient-faded-white" id="id_name" name="id_name" onfocus="focused(this)" onfocusout="defocused(this)">
+                <input type="text" class="form-control bg-gradient-faded-white"
+                id="id_name" name="id_name" onfocus="focused(this)" onfocusout="defocused(this)">
             </div>
             </form>
             {% if user.account.status == "admin" %}
             <div class="flex-grow-1 text-end mb-n3">
-              {% comment %} <button class="btn border bg-white border-danger text-danger mx-2">
-                <i class="material-icons opacity-10">delete</i>
-                ลบสารเคมี
-              </button> {% endcomment %}
   
               <a class="" href="{% url 'chemicalSubstanceAddPage' %}">
                 <button class="btn border border-info bg-gradient-info mx-2">
@@ -79,12 +77,41 @@
                       </form>
                     </div>
                     <div class="col-12 col-md-12 col-xl-6 col-lg-6 text-start">
-                        <button class="btn border bg-white border-danger text-danger mx-2" data-bs-toggle="modal" data-bs-target="#modalDelete" onclick="showConfirmDelete({{ result.id }})">
-                          
+                        <button class="btn border bg-white border-danger text-danger mx-2" 
+                        data-bs-toggle="modal" data-bs-target="#modalDelete" onclick="showConfirmDelete({{ result.id }})">
                           <i class="material-icons opacity-10">delete</i>
                           ลบข้อมูล
                         </button>
                     </div>
+                    {% else %}
+                    {% comment %} <div class="well">
+                      <label class="input-stepper">
+                        <div>
+                          <a href="#0" role="button" id="step-decrement" class="btn btn-default" aria-label="remove 1" aria-labelledby="step-decrement label-text">
+                            <i aria-hidden="true" class="fa fa-minus"></i>
+                          </a>
+                          <input disabled type="text" id="spinner" class="text-strong form-control input-number text-center" value="1" aria-live="polite" tabindex="-1" aria-labelledby="label-text">
+                          <a href="#0" role="button" id="step-increment" class="btn btn-default" aria-label="add 1" aria-labelledby="step-increment label-text">
+                            <i aria-hidden="true" class="fa-solid fa-plus"></i>
+                          </a>
+                        </div>
+                      </label>
+                    </div>
+                  </div> {% endcomment %}
+                  
+                  {% if result.remainingQuantity == 0 %}
+                  <label class="form-label">จำนวนที่ยืม : </label>
+                  <input type="number" class="text-center mb-3 border-radius-md" id="remainingQuantity" name="remainingQuantity" min="0" value="0" max="{{ result.remainingQuantity }}"></br>
+                  <button class="btn bg-gradient-secondary" type="submit">เพิ่มลงตะกร้า</button>
+                  {% else %}
+                  <form id="add-result" method="post" action="{% url 'addItemForBorrowingApi' %}">
+                    {% csrf_token %}
+                    <label class="form-label">จำนวนที่ยืม : </label>
+                    <input type="number" class="text-center mb-3 border-radius-md" id="remainingQuantity" name="remainingQuantity" min="0" value="0" max="{{ result.remainingQuantity }}">
+                    <input type="hidden" value="{{ result.id }}" name="result" /></br>
+                    <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
+                  </form>
+                  {% endif %}
                     {% endif %}
                   </td>
                 </tr>
@@ -93,7 +120,6 @@
             </table>
           </div>
         </div>
-      </div>
       {% else %}
       <div class="add-btn-middle">
         <div class="card-body mb-n3 text-center">
@@ -113,7 +139,10 @@
       {% endif %}
     </div>
   </div>
-  {% include 'pages/popUpconfirmDeleteData.html' %}
+
+  {% include 'pages/popUpConfirmDeleteData.html' %}
+  {% include "modals/loading.html" %}
+  {% include 'modals/deleteSuccess.html' %}
 </main>
 {% endblock %}
 
@@ -121,11 +150,14 @@
 {{ block.super }}
   {% if user.account.status == "admin" %}
   <script>
+    const deleteUrl = '{{ deleteUrl }}'
     function showConfirmDelete(id)
     {
         const deleteID = document.querySelector("#deleteID")
         deleteID.value = id
     }
   </script>
+  <script src="{{ STATIC_URL }}assets/js/list-chemicalSubstance.js"></script>
+  <script src="{{ STATIC_URL }}assets/js/delete-chemicalSubstance.js"></script>
   {% endif %}
 {% endblock %}

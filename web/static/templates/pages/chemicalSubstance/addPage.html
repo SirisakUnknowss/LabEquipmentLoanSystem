@@ -162,14 +162,14 @@
                                     {% else %}
                                     <ul class="flex-container" id="ghsList">
                                     {% endif %}
-                                        {% for result in ghsList %}
+                                        {% for ghs in ghsList %}
                                         <li class="flex-item">
-                                            {% if result.serialNumber in result.ghs %}
-                                            <input id="{{ result.serialNumber }}" name="ghs" type="checkbox" value={{ result.serialNumber }} class="d-flex" checked>
+                                            {% if ghs.serialNumber in result.ghs %}
+                                            <input id="{{ ghs.serialNumber }}" name="ghs" type="checkbox" value={{ ghs.serialNumber }} class="d-flex" checked>
                                             {% else %}
-                                            <input id="{{ result.serialNumber }}" name="ghs" type="checkbox" value={{ result.serialNumber }} class="d-flex">
+                                            <input id="{{ ghs.serialNumber }}" name="ghs" type="checkbox" value={{ ghs.serialNumber }} class="d-flex">
                                             {% endif %}
-                                            <label for={{ result.serialNumber }}><img src="{{ STATIC_URL }}images/hazard/{{ result.serialNumber }}.png"  onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png' ;" class="image-scientificInstruments border-radius-xl" /></label>
+                                            <label for={{ ghs.serialNumber }}><img src="{{ STATIC_URL }}images/hazard/{{ ghs.serialNumber }}.png"  onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png' ;" class="image-scientificInstruments border-radius-xl" /></label>
                                         </li>
                                         {% endfor %}
                                     </ul>
@@ -221,15 +221,15 @@
 
     </div>
 </main>
-{% include "modal/loading.html" %}
-{% include "modal/success.html" %}
+{% include "modals/error.html" %}
+{% include "modals/loading.html" %}
+{% include "modals/success.html" %}
 {% endblock %}
 {% block js %}
 {{ block.super }}
 <script>
     const confirmUrl = '{{ confirmUrl }}'
 </script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script src="{{ STATIC_URL }}assets/js/upload-file.js"></script>
 <script src="{{ STATIC_URL }}assets/js/add-chemicalSubstance.js"></script>

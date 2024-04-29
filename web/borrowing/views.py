@@ -1,8 +1,10 @@
+# Python
 from datetime import datetime, timedelta
-from rest_framework.permissions import AllowAny
-from django.urls import reverse
-from django.shortcuts import redirect
+# Django
 from django.db.models import F
+from django.shortcuts import redirect
+from django.urls import reverse
+from rest_framework.permissions import AllowAny
 #Project
 from base.views import LabAPIGetView, LabAPIView
 from equipment.models import Equipment
@@ -51,7 +53,7 @@ class RemoveItemForBorrowingApi(LabAPIGetView):
         EquipmentCart.objects.filter(id=idCart, user=account).delete()
         return redirect(reverse('addScientificInstrumentPage'))
 
-class ConfirmBorringApi(LabAPIView):
+class ConfirmBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
     permission_classes  = [ AllowAny ]
 
@@ -72,7 +74,7 @@ class ConfirmBorringApi(LabAPIView):
         equipments.delete()
         return redirect(reverse('notificationsEquipmentPage'))
 
-class DisapprovedBorringApi(LabAPIView):
+class DisapprovedBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
     permission_classes  = [ AllowAny ]
 
@@ -87,7 +89,7 @@ class DisapprovedBorringApi(LabAPIView):
         order.update(status=Order.STATUS.DISAPPROVED)
         return redirect(reverse('notificationsEquipmentPage'))
 
-class ApprovedBorringApi(LabAPIView):
+class ApprovedBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
     permission_classes  = [ AllowAny ]
 
@@ -111,7 +113,7 @@ class ApprovedBorringApi(LabAPIView):
         )
         return redirect(reverse('notificationsEquipmentPage'))
 
-class CancelBorringApi(LabAPIView):
+class CancelBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
     permission_classes  = [ AllowAny ]
 
@@ -124,7 +126,7 @@ class CancelBorringApi(LabAPIView):
         order.update( status=Order.STATUS.CANCELED)
         return redirect(reverse('borrowingHistoryPage'))
 
-class RemoveBorringApi(LabAPIView):
+class RemoveBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
     permission_classes  = [ AllowAny ]
 

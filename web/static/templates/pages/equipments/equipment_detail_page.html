@@ -63,12 +63,12 @@
         <div class="align-items-start col-12">
           {% if user.account.status == "admin" %}
             {% if status == "waiting" %}
-            <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'approvedBorringApi' %}">
+            <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'approvedBorrowingApi' %}">
               {% csrf_token %}
               <input type="hidden" value="{{ order.id }}" name="orderID" />
               <button class="btn bg-gradient-success" type="submit">อนุมัติ</button>
             </form>
-            <form class="align-items-start text-start mx-2 d-inline" id="confirm-equipment" method="post" action="{% url 'disapprovedBorringApi' %}">
+            <form class="align-items-start text-start mx-2 d-inline" id="confirm-equipment" method="post" action="{% url 'disapprovedBorrowingApi' %}">
               {% csrf_token %}
               <input type="hidden" value="{{ order.id }}" name="orderID" />
               <button class="btn bg-gradient-danger" type="submit">ไม่อนุมัติ</button>
@@ -88,7 +88,7 @@
             {% endif %}
           {% elif user.account.status == "user" %}
             {% if status == "waiting" %}
-            <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'cancelBorringApi' %}">
+            <form class="align-items-start text-start mx-2 d-inline-block" id="confirm-equipment" method="post" action="{% url 'cancelBorrowingApi' %}">
               {% csrf_token %}
               <input type="hidden" value="{{ order.id }}" name="orderID" />
               <button class="btn bg-gradient-danger" type="submit">ยกเลิก</button>

@@ -1,0 +1,11 @@
+<div class="modal" id="errorModal" aria-labelledby="errorModalLabel" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content py-3 mx-3">
+            <div class="modal-body text-center">
+                <img src="{{ STATIC_URL }}images/fail.png" class="imageModal" />
+                <span class="text-dark d-block mt-2 w-100" id="errorTitle">Something went wrong!</span>
+                <button type="button" data-bs-dismiss="modal" class="btn btn-danger px-6 mt-3 mb-0" onClick="refreshPage()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

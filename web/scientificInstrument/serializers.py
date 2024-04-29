@@ -57,7 +57,7 @@ class SlzBookingInput(serializers.Serializer):
     def validate_startBooking(self, value):
         try:
             hour = int(value.split(":")[0])
-            if 16 > hour >= 9:
+            if 16 > hour >= 8:
                 self.startBooking = time(hour, 0)
                 return self.startBooking
             raise ValidationError('time start Booking Invalid.')
@@ -67,7 +67,7 @@ class SlzBookingInput(serializers.Serializer):
     def validate_endBooking(self, value):
         try:
             hour = int(value.split(":")[0])
-            if 16 >= hour > 9:
+            if 16 >= hour > 8:
                 self.endBooking = time(hour, 0)
                 return self.endBooking
             raise ValidationError('time end Booking Invalid.')

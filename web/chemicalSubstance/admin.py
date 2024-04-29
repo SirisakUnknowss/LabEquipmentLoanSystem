@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import ChemicalSubstance, HazardCategory
 from import_export.admin import ImportExportModelAdmin, ExportMixin
 from import_export import resources
+from .models import ChemicalSubstance, HazardCategory, Withdrawal, Order
 
 @admin.register(HazardCategory)
 class HazardCategoryCartAdmin(ImportExportModelAdmin):
@@ -32,3 +32,24 @@ class ChemicalSubstanceAdmin(ImportExportModelAdmin):
 
     thumbnail_preview.short_description = 'Thumbnail'
     thumbnail_preview.allow_tags = True
+
+class WithdrawalResource(resources.ModelResource): 
+    class Meta:
+        model = Withdrawal
+        exclude = ('id', 'user' )
+
+@admin.register(Withdrawal)
+class WithdrawalAdmin(admin.ModelAdmin):
+
+    list_display = ['id', 'user', 'quantity' ]
+
+class OrderResource(resources.ModelResource): 
+    class Meta:
+        model = Order
+        exclude = ('id', 'user', 'approver' )
+        export_order = ('id', 'user', 'dateWithdraw', 'dateApproved', 'status',)
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+
+    list_display = ['id', 'user', 'dateWithdraw', 'dateApproved', 'approver', 'status', ]

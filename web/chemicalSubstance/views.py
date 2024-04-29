@@ -1,16 +1,15 @@
 # Django
-from django.shortcuts import redirect
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
 # Project
-from base.functions import uploadImage, convertToFloat, checkTextBlank
+from base.functions import convertToFloat, checkTextBlank
+from account.models import Account
 from base.views import LabAPIView
-from chemicalSubstance.functions import updateHazard, updateImage
-from chemicalSubstance.models import ChemicalSubstance
-from chemicalSubstance.serializers import SlzChemicalSubstanceInput, SlzChemicalSubstance
+from chemicalSubstance.functions import updateHazard, updateImage, updateStatusOrder, cancelOrder
+from chemicalSubstance.models import ChemicalSubstance, Order
+from chemicalSubstance.serializers import SlzChemicalSubstanceInput, SlzChemicalSubstance, SlzApprovalInput, SlzCancelInput, SlzConfirmWithdrawalInput
 
 class AddChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
@@ -20,18 +19,17 @@ class AddChemicalSubstance(LabAPIView):
     def post(self, request: Request, *args, **kwargs):
         try:
             checkList               = request.data.getlist(request.data['hazardCategory'])
-            serializerInput         = self.get_serializer(data=request.data)
-            serializerInput.is_valid(raise_exception=True)
+            serializerInput         = SlzChemicalSubstanceInput(data=request.data)
+            if not serializerInput.is_valid():
+                self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+                return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
             chemicalSubstance       = self.perform_create(serializerInput.validated_data, checkList)
-            serializerOutput        = SlzChemicalSubstance(chemicalSubstance)
             self.response["result"] = '/chemicalSubstance/list'
             return Response(self.response)
-            # return redirect(reverse('chemicalSubstanceListPage'))
         except Exception as ex:
             print("AddChemicalSubstance == " + ex)
-            self.response["result"] = '/chemicalSubstance/add'
+            self.response["error"] = f"{ex}"
             return Response(self.response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            # return redirect(reverse('chemicalSubstanceAddPage'))
     
     def perform_create(self, validated: dict, checkList: list):
         chemicalSubstance = ChemicalSubstance(
@@ -65,19 +63,25 @@ class EditChemicalSubstance(LabAPIView):
     def post(self, request: Request, *args, **kwargs):
         self.chemicalSubstances = ChemicalSubstance.objects.filter(id=request.POST["chemicalSubstanceID"])
         if not self.chemicalSubstances.exists():
-            return redirect(reverse('chemicalSubstanceListPage'))
+            # return redirect(reverse('chemicalSubstanceListPage'))
+            self.response["result"] = '/chemicalSubstance/edit'
+            return Response(self.response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         chemicalSubstance = self.chemicalSubstances.first()
         name = self.request.POST.get('name')
         if name != self.chemicalSubstances.first().name:
             try:
                 chemicalSubstance = ChemicalSubstance.objects.get(name=name)
-                return redirect(reverse('chemicalSubstanceListPage'))
+                self.response["result"] = '/chemicalSubstance/edit'
+                return Response(self.response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                # return redirect(reverse('chemicalSubstanceListPage'))
             except ChemicalSubstance.DoesNotExist:
                 pass
         chemicalSubstance = self.update(chemicalSubstance)
         checkList = self.request.POST.getlist(self.request.POST.get('hazardCategory'))
         chemicalSubstance = updateHazard(chemicalSubstance, checkList)
-        return redirect(reverse('chemicalSubstanceListPage'))
+        self.response["result"] = '/chemicalSubstance/list'
+        return Response(self.response)
+        # return redirect(reverse('chemicalSubstanceListPage'))
 
     def update(self, cs: ChemicalSubstance) -> ChemicalSubstance:
         data                    = self.request.POST
@@ -101,7 +105,7 @@ class EditChemicalSubstance(LabAPIView):
         cs.save()
         cs = updateImage(cs, name, self.request.FILES)
         return cs
-        
+
 class RemoveChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
     serializer_class    = SlzChemicalSubstance
@@ -109,4 +113,69 @@ class RemoveChemicalSubstance(LabAPIView):
 
     def post(self, request: Request, *args, **kwargs):
         ChemicalSubstance.objects.filter(id=request.POST.get('deleteID')).delete()
-        return redirect(reverse('chemicalSubstanceListPage'))
+        self.response["result"] = '/chemicalSubstance/list'
+        return Response(self.response)
+
+class ApprovalChemicalSubstance(LabAPIView):
+    queryset            = ChemicalSubstance.objects.all()
+    serializer_class    = SlzApprovalInput
+    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+
+    def post(self, request: Request, *args, **kwargs):
+        serializerInput = SlzApprovalInput(data=request.data)
+        if not serializerInput.is_valid():
+            self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
+        self.order: Order   = serializerInput.validated_data['orderID']
+        statusStr: str      = serializerInput.validated_data['status']
+        self.updateApprover()
+        updateStatusOrder(self.order, statusStr)
+        self.response["result"] = 'Update Completed.'
+        return Response(self.response)
+
+    def updateApprover(self):
+        account: Account = self.request.user.account
+        self.order.approver = account
+        self.order.save(update_fields=["approver"])
+
+class CancelChemicalSubstance(LabAPIView):
+    queryset            = ChemicalSubstance.objects.all()
+    serializer_class    = SlzCancelInput
+    permission_classes  = [ IsAuthenticated ]
+
+    def post(self, request: Request, *args, **kwargs):
+        serializerInput = SlzCancelInput(data=request.data)
+        if not serializerInput.is_valid():
+            self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
+        self.order: Order   = serializerInput.validated_data['orderID']
+        cancelOrder(self.order)
+        self.response["result"] = 'Update Completed.'
+        return Response(self.response)
+
+class ConfirmWithdrawalApi(LabAPIView):
+    queryset            = Order.objects.all()
+    serializer_class    = SlzConfirmWithdrawalInput
+    permission_classes  = [ IsAuthenticated ]
+
+    def post(self, request, *args, **kwargs):
+        account     = request.user.account
+        serializerInput = SlzConfirmWithdrawalInput(data=request.data)
+        if not serializerInput.is_valid():
+            self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+        self.response["result"] = serializerInput.data
+        return Response(self.response)
+        # equipments  = EquipmentCart.objects.filter(user=account)
+        # if not equipments.exists():
+        #     return redirect(reverse('addScientificInstrumentPage'))
+        # order = Order.objects.create(user=account)
+        # for item in equipments:
+        #     equipment = Equipment.objects.get(id=item.equipment.id)
+        #     if equipment.quantity < item.quantity:
+        #         return redirect(reverse('addScientificInstrumentPage'))
+        #     equipment.quantity -= item.quantity
+        #     equipment.save()
+        #     borrowing = Borrowing.objects.create(user=account, equipment=item.equipment, quantity=item.quantity)
+        #     order.equipment.add(borrowing)
+        # equipments.delete()
+        # return redirect(reverse('notificationsEquipmentPage'))

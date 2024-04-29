@@ -2,6 +2,7 @@
 import re
 # Django
 from django.db import models
+from django.utils import timezone
 from django.utils.html import mark_safe
 
 def getClassPath(instance, filename):
@@ -63,3 +64,25 @@ class ChemicalSubstance(models.Model):
 
     def __str__(self):
         return self.name
+
+class Withdrawal(models.Model):
+    user                = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.CASCADE, related_name='accountWithdrawal')
+    chemicalSubstance   = models.ForeignKey(ChemicalSubstance, null=True, blank=True, on_delete=models.CASCADE, related_name='chemicalSubstanceWithdrawal')
+    quantity            = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.chemicalSubstance.name
+
+class Order(models.Model):
+    class STATUS(models.TextChoices):
+        WAITING     = 'waiting', 'Waiting'
+        APPROVED    = 'approved', 'Approved'
+        CANCELED    = 'canceled', 'Canceled'
+        DISAPPROVED = 'disapproved', 'Disapproved'
+
+    user                = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.CASCADE, related_name='userOrderWithdraw')
+    chemicalSubstance   = models.ManyToManyField(Withdrawal, default=None)
+    dateWithdraw        = models.DateTimeField(blank=True, null=True, default=timezone.now)
+    dateApproved        = models.DateTimeField(blank=True, null=True, default=None)
+    approver            = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.SET_NULL, related_name='approverWithdraw')
+    status              = models.CharField(null=True, blank=True, choices=STATUS.choices, default=STATUS.WAITING, max_length=20)

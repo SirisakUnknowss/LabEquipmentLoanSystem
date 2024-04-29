@@ -5,7 +5,7 @@ from rest_framework.request import Request
 # Project
 from base.menu import AdminOnly
 from base.views import *
-from chemicalSubstance.models import ChemicalSubstance, HazardCategory
+from chemicalSubstance.models import ChemicalSubstance, HazardCategory, Order
 from chemicalSubstance.serializers import SlzChemicalSubstance, SlzHazardCategory
 
 
@@ -75,7 +75,13 @@ class WithdrawHistoryView(MenuList):
     def get(self, request, *args, **kwargs):
         super(MenuList, self).get(request)
         self.addMenuPage(2, 2)
-        self.context['orders'] = []
+        canceled    = Q(status=Order.STATUS.CANCELED)
+        approved    = Q(status=Order.STATUS.APPROVED)
+        disapproved = Q(status=Order.STATUS.DISAPPROVED)
+        orders      = Order.objects.filter(disapproved | canceled | approved)
+        if request.user.account.status == Account.STATUS.USER:
+            orders  = orders.filter(user=request.user.account)
+        self.context['orders'] = orders
         return render(request, 'pages/chemicalSubstance/historyPage.html', self.context)
 
 class AnalysisView(MenuList):

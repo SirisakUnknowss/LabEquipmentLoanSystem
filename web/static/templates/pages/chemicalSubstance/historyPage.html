@@ -6,6 +6,8 @@
     <div class="container-fluid py-4 ">
         <div class="row">
             <div class="col-lg-8 col-md-6 col-8 mt-3 mb-4 d-flex align-items-center mb-3">
+                
+                <img src="{{ STATIC_URL }}images/alert.png" class="imageModal" />
                 <h5>ประวัติการเบิกใช้สารเคมี</h5>
             </div>
         </div>
@@ -18,10 +20,10 @@
                         <table class="table align-items-center mb-0">
                             <thead>
                                 <tr>
-                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">รหัสนักศึกษา</th>
-                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">จำนวน</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่ยืม</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">ชื่อ</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่อนุมัติ</th>
+                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">ผู้อนุมัติ</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder">สถานะ</th>
                                 </tr>
                             </thead>
@@ -29,39 +31,43 @@
                             {% for order in orders %}
                             <tr>
                                 <td class="align-middle text-center">
-                                    <span class="text-secondary text-s">{{ order.user.studentID }}</span>
-                                </td>
-                                <td class="align-middle text-center">
-                                    <span class="text-secondary text-s">{{ order.equipment.all.count }}</span>
-                                </td>
-                                <td class="align-middle text-center">
-                                    {% if order.dateBorrowing %}
-                                        <span class="text-secondary text-s">{% load tz %}{{ order.dateBorrowing|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
+                                    {% if order.dateWithdraw %}
+                                        <span class="text-secondary text-s">{% load tz %}{{ order.dateWithdraw|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
                                     {% else %}
                                         <span class="text-secondary text-s">-</span>
                                     {% endif %}
                                 </td>
                                 <td class="align-middle text-center">
-                                    {% if order.dateReturn %}
+                                    <span class="text-secondary text-s">
+                                        {% if order.user.firstname %} {{ order.user.firstname }} {% endif %} {% if order.user.lastname %} {{ order.user.lastname }} {% endif %}
+                                    </span>
+                                </td>
+                                <td class="align-middle text-center">
+                                    {% if order.dateApproved %}
                                         <span class="text-secondary text-s">{% load tz %}{{ order.dateApproved|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
                                     {% else %}
                                         <span class="text-secondary text-s">-</span>
                                     {% endif %}
                                 </td>
+                                <td class="align-middle text-center">
+                                    <span class="text-secondary text-s">
+                                        {% if order.approver.firstname %} {{ order.approver.firstname }} {% endif %} {% if order.approver.lastname %} {{ order.approver.lastname }} {% endif %}
+                                    </span>
+                                </td>
                                 <td class="align-middle text-center text-sm">
-                                    <form class="align-items-center text-center d-inline-block" id="confirm-equipment" method="post" action="{% url 'detailEquipmentPage' %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" value="{{ order.id }}" name="EquipmentID" />
-                                        <input type="hidden" value="{{ order.status }}" name="StatusBorrowing" />
-                                        <button class="btn badge badge-sm bg-gradient-info" type="submit">เพิ่มเติม</button>
-                                    </form>
-                                    {% if user.account.status == "admin" %}
-                                    <form class="align-items-center text-center d-inline-block" id="confirm-equipment" method="post" action="{% url 'removeBorringApi' %}">
+                                    <form class="align-items-center text-center form-control" id="confirm-equipment" method="post" action="{% url 'detailEquipmentPage' %}">
                                         {% csrf_token %}
                                         <input type="hidden" value="{{ order.id }}" name="orderID" />
-                                        <button class="btn badge badge-sm bg-gradient-danger" type="submit">ลบประวัติ</button>
+                                    {% ifequal order.status "approved" %}
+                                        <button class="btn badge badge-sm bg-gradient-info w-50" type="submit">อนุมัติแล้ว</button>
+                                    {% endifequal %}
+                                    {% ifequal order.status "canceled" %}
+                                        <button class="btn badge badge-sm bg-gradient-danger w-50" type="submit">ยกเลิก</button>
+                                    {% endifequal %}
+                                    {% ifequal order.status "disapproved" %}
+                                        <button class="btn badge badge-sm bg-gradient-danger w-50" type="submit">คำขอล้มเหลว</button>
+                                    {% endifequal %}
                                     </form>
-                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}
