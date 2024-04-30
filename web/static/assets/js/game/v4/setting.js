@@ -5,16 +5,16 @@ var scriptLoader = document.createElement("script")
 
 
 config = {
-    dataUrl: '/static/unity/'+gameVersion+'/iPhone/App.data',
-    frameworkUrl: '/static/unity/'+gameVersion+'/iPhone/App.asm.framework.js',
-    codeUrl: '/static/unity/'+gameVersion+'/iPhone/App.asm.js',
-    memoryUrl: '/static/unity/'+gameVersion+'/iPhone/App.asm.mem',
+    dataUrl: '/static/unity/'+gameVersion+'/App.data',
+    frameworkUrl: '/static/unity/'+gameVersion+'/App.framework.js',
+    codeUrl: '/static/unity/'+gameVersion+'/App.wasm',
+    // memoryUrl: '/static/unity/'+gameVersion+'/App.asm.mem',
     streamingAssetsUrl: "StreamingAssets",
     companyName: "MSoft",
     productName: "Fintasy",
     productVersion: "Alpha " + gameVersion,
 };
-scriptLoader.src = '/static/unity/'+gameVersion+'/iPhone/App.asm.loader.js'
+scriptLoader.src = '/static/unity/'+gameVersion+'/App.loader.js'
 
 
 scriptLoader.type = 'application/javascript'
