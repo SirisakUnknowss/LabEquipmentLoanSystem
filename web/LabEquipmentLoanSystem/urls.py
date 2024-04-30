@@ -79,6 +79,7 @@ urlpatterns = [
     path('chemicalSubstance/notifications', CSViews.NotificationsPageView.as_view(), name='chemicalSubstanceNotificationPage'),
     path('chemicalSubstance/history', CSViews.WithdrawHistoryView.as_view(), name='withdrawHistoryPage'),
     path('chemicalSubstance/analysis', CSViews.AnalysisView.as_view(), name='analysisChemicalSubstancePage'),
+    path('test', baseViews.Test.as_view(), name='testPage'),
 ]
 
 if settings.DEBUG:
