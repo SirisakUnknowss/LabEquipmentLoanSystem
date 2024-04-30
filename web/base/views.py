@@ -315,8 +315,3 @@ class ExportBookingData(LabAPIView):
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 # ==================================== EXPORT DATA ==================================== #
-
-class Test(MenuList):
-
-    def get(self, request, *args, **kwargs):
-        return render(request, 'pages/test.html', self.context)
