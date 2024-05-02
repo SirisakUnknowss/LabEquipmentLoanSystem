@@ -6,7 +6,7 @@ from rest_framework.request import Request
 from base.menu import AdminOnly
 from base.views import *
 from chemicalSubstance.models import ChemicalSubstance, HazardCategory, Order
-from chemicalSubstance.serializers import SlzChemicalSubstance, SlzHazardCategory
+from chemicalSubstance.serializers import SlzChemicalSubstanceOutput, SlzHazardCategory
 
 
 class ListPageView(MenuList):
@@ -55,7 +55,7 @@ class EditPageView(AdminOnly):
             instance                    = get_object_or_404(ChemicalSubstance, id=id)
             self.context['ghsList']     = SlzHazardCategory(ghsList, many=True).data
             # self.context['unList']      = SlzHazardCategory(unList, many=True).data
-            self.context['result']      = SlzChemicalSubstance(instance).data
+            self.context['result']      = SlzChemicalSubstanceOutput(instance).data
             self.context['confirmUrl']  = '/api/chemicalSubstance/edit'
             self.context['titleBar']    = 'เพิ่มสารเคมี'
             return render(request, 'pages/chemicalSubstance/addPage.html', self.context)
@@ -65,14 +65,14 @@ class EditPageView(AdminOnly):
 
 class NotificationsPageView(MenuList):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs):
         super(MenuList, self).get(request)
         self.addMenuPage(2, -1)
         self.context['orders'] = []
         return render(request, 'pages/chemicalSubstance/notificationPage.html', self.context)
 class WithdrawHistoryView(MenuList):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs):
         super(MenuList, self).get(request)
         self.addMenuPage(2, 2)
         canceled    = Q(status=Order.STATUS.CANCELED)
@@ -86,7 +86,7 @@ class WithdrawHistoryView(MenuList):
 
 class AnalysisView(MenuList):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs):
         return redirect(reverse('chemicalSubstanceListPage'))
         super(MenuList, self).get(request)
         self.addMenuPage(2, 3)

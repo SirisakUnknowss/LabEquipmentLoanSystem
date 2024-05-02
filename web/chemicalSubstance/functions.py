@@ -33,5 +33,13 @@ def cancelOrder(order: Order):
 
 def updateStatusOrder(order: Order, status):
     if not order == None and status in Order.STATUS:
+        if status == Order.STATUS.APPROVED:
+            updateStatistics(order)
         order.status = status
         order.save(update_fields=["status"])
+
+def updateStatistics(order: Order):
+    for chem in order.chemicalSubstance.all():
+        withdrawal : Withdrawal = chem
+        withdrawal.chemicalSubstance.statistics += 1
+        withdrawal.chemicalSubstance.save(update_fields=["statistics"])

@@ -1,3 +1,5 @@
+# Python
+from datetime import datetime
 # Django
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -8,8 +10,8 @@ from base.functions import convertToFloat, checkTextBlank
 from account.models import Account
 from base.views import LabAPIView
 from chemicalSubstance.functions import updateHazard, updateImage, updateStatusOrder, cancelOrder
-from chemicalSubstance.models import ChemicalSubstance, Order
-from chemicalSubstance.serializers import SlzChemicalSubstanceInput, SlzChemicalSubstance, SlzApprovalInput, SlzCancelInput, SlzConfirmWithdrawalInput
+from chemicalSubstance.models import ChemicalSubstance, Order, Withdrawal
+from chemicalSubstance.serializers import SlzChemicalSubstanceInput, SlzChemicalSubstanceOutput, SlzOrderOutput, SlzApprovalInput, SlzCancelInput, SlzConfirmWithdrawalInput
 
 class AddChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
@@ -57,13 +59,12 @@ class AddChemicalSubstance(LabAPIView):
 
 class EditChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
-    serializer_class    = SlzChemicalSubstance
+    serializer_class    = SlzChemicalSubstanceOutput
     permission_classes  = [ IsAuthenticated, IsAdminUser ]
 
     def post(self, request: Request, *args, **kwargs):
         self.chemicalSubstances = ChemicalSubstance.objects.filter(id=request.POST["chemicalSubstanceID"])
         if not self.chemicalSubstances.exists():
-            # return redirect(reverse('chemicalSubstanceListPage'))
             self.response["result"] = '/chemicalSubstance/edit'
             return Response(self.response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         chemicalSubstance = self.chemicalSubstances.first()
@@ -73,7 +74,6 @@ class EditChemicalSubstance(LabAPIView):
                 chemicalSubstance = ChemicalSubstance.objects.get(name=name)
                 self.response["result"] = '/chemicalSubstance/edit'
                 return Response(self.response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-                # return redirect(reverse('chemicalSubstanceListPage'))
             except ChemicalSubstance.DoesNotExist:
                 pass
         chemicalSubstance = self.update(chemicalSubstance)
@@ -81,7 +81,6 @@ class EditChemicalSubstance(LabAPIView):
         chemicalSubstance = updateHazard(chemicalSubstance, checkList)
         self.response["result"] = '/chemicalSubstance/list'
         return Response(self.response)
-        # return redirect(reverse('chemicalSubstanceListPage'))
 
     def update(self, cs: ChemicalSubstance) -> ChemicalSubstance:
         data                    = self.request.POST
@@ -108,7 +107,7 @@ class EditChemicalSubstance(LabAPIView):
 
 class RemoveChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
-    serializer_class    = SlzChemicalSubstance
+    serializer_class    = SlzChemicalSubstanceOutput
     permission_classes  = [ IsAuthenticated, IsAdminUser ]
 
     def post(self, request: Request, *args, **kwargs):
@@ -128,15 +127,16 @@ class ApprovalChemicalSubstance(LabAPIView):
             return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
         self.order: Order   = serializerInput.validated_data['orderID']
         statusStr: str      = serializerInput.validated_data['status']
-        self.updateApprover()
         updateStatusOrder(self.order, statusStr)
+        self.updateApprover()
         self.response["result"] = 'Update Completed.'
         return Response(self.response)
 
     def updateApprover(self):
         account: Account = self.request.user.account
         self.order.approver = account
-        self.order.save(update_fields=["approver"])
+        self.order.dateApproved = datetime.now()
+        self.order.save(update_fields=["approver", "dateApproved"])
 
 class CancelChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
@@ -154,28 +154,36 @@ class CancelChemicalSubstance(LabAPIView):
         return Response(self.response)
 
 class ConfirmWithdrawalApi(LabAPIView):
+    """
+        {
+            "orderList":[
+                { "id": 1, "quantity": 3 },
+                { "id": 2, "quantity": 1 }, 
+                { .... }
+            ]
+        }
+    """
     queryset            = Order.objects.all()
     serializer_class    = SlzConfirmWithdrawalInput
     permission_classes  = [ IsAuthenticated ]
 
-    def post(self, request, *args, **kwargs):
-        account     = request.user.account
+    def post(self, request: Request, *args, **kwargs):
+        self.account    = request.user.account
         serializerInput = SlzConfirmWithdrawalInput(data=request.data)
         if not serializerInput.is_valid():
             self.response["error"] = next(iter(serializerInput.errors.values()))[0]
-        self.response["result"] = serializerInput.data
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
+        self.orders: list       = serializerInput.validated_data['orderList']
+        self.response["result"] = SlzOrderOutput(self.createOrder()).data
         return Response(self.response)
-        # equipments  = EquipmentCart.objects.filter(user=account)
-        # if not equipments.exists():
-        #     return redirect(reverse('addScientificInstrumentPage'))
-        # order = Order.objects.create(user=account)
-        # for item in equipments:
-        #     equipment = Equipment.objects.get(id=item.equipment.id)
-        #     if equipment.quantity < item.quantity:
-        #         return redirect(reverse('addScientificInstrumentPage'))
-        #     equipment.quantity -= item.quantity
-        #     equipment.save()
-        #     borrowing = Borrowing.objects.create(user=account, equipment=item.equipment, quantity=item.quantity)
-        #     order.equipment.add(borrowing)
-        # equipments.delete()
-        # return redirect(reverse('notificationsEquipmentPage'))
+
+    def createOrder(self):
+        order = Order.objects.create(user=self.account)
+        for chemical in self.orders:
+            chemicalSubstance = ChemicalSubstance.objects.get(id=chemical['chemicalSubstance']['id'])
+            chemicalSubstance.remainingQuantity -= chemical['quantity']
+            chemicalSubstance.save(update_fields=["remainingQuantity"])
+            withdrawal = Withdrawal.objects.create(user=self.account, chemicalSubstance=chemicalSubstance, quantity=chemical['quantity'])
+            order.chemicalSubstance.add(withdrawal)
+        order.save()
+        return order

@@ -4,13 +4,13 @@ from rest_framework.exceptions import ValidationError
 #Project
 from chemicalSubstance.models import ChemicalSubstance, HazardCategory, Order
 
-class SlzChemicalSubstance(serializers.ModelSerializer):
+class SlzChemicalSubstanceOutput(serializers.ModelSerializer):
     class Meta:
         model = ChemicalSubstance
         fields = '__all__'
 
     def to_representation(self, instance: ChemicalSubstance):
-        response = super(SlzChemicalSubstance, self).to_representation(instance)
+        response = super(SlzChemicalSubstanceOutput, self).to_representation(instance)
         response['catalogNo']       = self.checkNone(instance.catalogNo)
         response['distributor']     = self.checkNone(instance.distributor)
         response['manufacturer']    = self.checkNone(instance.manufacturer)
@@ -84,5 +84,26 @@ class SlzConfirmWithdrawalInput(serializers.Serializer):
     orderList = serializers.ListField(child=serializers.JSONField())
 
     def validate_orderList(self, value):
+        self.orderValidate = []
         for order in value:
-            print(order)
+            if type(order) is not dict: continue
+            if not ('id' in order and 'quantity' in order): continue
+            self.idChemical = order['id']
+            self.quantity   = float(order['quantity'])
+            print(" ---------------------------------------- ")
+            print(self.idChemical)
+            print(self.quantity)
+            print(" ---------------------------------------- ")
+            try:
+                order['chemicalSubstance'] = SlzChemicalSubstanceOutput(ChemicalSubstance.objects.get(id=self.idChemical)).data
+                if order['chemicalSubstance']['remainingQuantity'] < self.quantity:
+                    raise ValidationError('ปริมาณสารเคมีที่เบิกมีไม่เพียงพอ')
+                self.orderValidate.append({ 'chemicalSubstance': order['chemicalSubstance'], 'quantity': self.quantity })
+            except ChemicalSubstance.DoesNotExist:
+                raise ValidationError('ไม่พบสารเคมี')
+        return self.orderValidate
+
+class SlzOrderOutput(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = '__all__'
