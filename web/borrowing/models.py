@@ -25,7 +25,7 @@ class Order(models.Model):
     class STATUS(models.TextChoices):
         WAITING     = 'waiting', 'Waiting'
         APPROVED    = 'approved', 'Approved'
-        CANCELED   = 'canceled', 'Canceled'
+        CANCELED    = 'canceled', 'Canceled'
         DISAPPROVED = 'disapproved', 'Disapproved'
         COMPLETED   = 'completed', 'Completed'
         OVERDUED    = 'overdued', 'Overdued'

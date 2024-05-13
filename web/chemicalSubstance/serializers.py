@@ -90,10 +90,6 @@ class SlzConfirmWithdrawalInput(serializers.Serializer):
             if not ('id' in order and 'quantity' in order): continue
             self.idChemical = order['id']
             self.quantity   = float(order['quantity'])
-            print(" ---------------------------------------- ")
-            print(self.idChemical)
-            print(self.quantity)
-            print(" ---------------------------------------- ")
             try:
                 order['chemicalSubstance'] = SlzChemicalSubstanceOutput(ChemicalSubstance.objects.get(id=self.idChemical)).data
                 if order['chemicalSubstance']['remainingQuantity'] < self.quantity:

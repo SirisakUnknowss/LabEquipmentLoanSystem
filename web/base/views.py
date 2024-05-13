@@ -146,7 +146,7 @@ class ContactView(MenuList):
         dataWeb = DataWeb.objects.all().first()
         self.context['menuDownList'][0]['active'] = True
         self.context['dataWeb'] = dataWeb
-        return render(request, 'pages/contact_page.html', self.context)
+        return render(request, 'pages/contactPage.html', self.context)
 
 class ProfileView(MenuList):
 
@@ -182,11 +182,12 @@ class EditProfileView(View):
 
 class UserManagementView(MenuList):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs):
         super(MenuList, self).get(request)
+        self.context['menuDownList'][1]['active'] = True
         if request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('homepage'))
-        return render(request, 'pages/user_management_page.html', self.context)
+        return render(request, 'pages/userManagementPage.html', self.context)
 
 class UserEditPageView(MenuList):
 
@@ -195,7 +196,7 @@ class UserEditPageView(MenuList):
         if request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('homepage'))
         self.context['accounts'] = Account.objects.all().order_by('id')
-        return render(request, 'pages/manage_user_page.html', self.context)
+        return render(request, 'pages/manageUserPage.html', self.context)
 
     def post(self, request, *args, **kwargs):
         super(MenuList, self).post(request)

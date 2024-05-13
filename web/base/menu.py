@@ -82,7 +82,7 @@ class AdminOnly(AdminWebView):
 
 class MenuList(LabWebView):
     def __init__(self) -> None:
-        self.nameNotiBorrowing = 'แจ้งเตือนการยืม-คืนอุปกรณ์'
+        self.nameNoticeBorrowing = 'แจ้งเตือนการยืม-คืนอุปกรณ์'
         self.nameScientificInstrument = 'แจ้งเตือนการจองเครื่องมือ'
         self.context = {}
         self.context['menuUpList'] = [
@@ -90,6 +90,7 @@ class MenuList(LabWebView):
         ]
         self.context['menuDownList'] = [
             { 'name': 'ติดต่อผู้ให้บริการ', 'link': '/contact', 'icon': 'help', 'active': False },
+            { 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False },
         ]
 
     def setMenuHome(self) -> list:
@@ -117,10 +118,12 @@ class MenuList(LabWebView):
         menuDownList.insert(0, { 'name': self.nameNotification, 'link': 'notifications', 'icon': 'notifications', 'active': False },)
         if active == -1:
             menuDownList[0]['active'] = True
+        if active == -2:
+            menuDownList[0]['active'] = True
 
     def setBorrowingMenu(self):
         menuUpList: list = self.context['menuUpList']
-        self.nameNotification = self.nameNotiBorrowing
+        self.nameNotification = self.nameNoticeBorrowing
         menuUpList.extend([
             { 'name': 'รายการอุปกรณ์', 'link': 'list', 'icon': 'description', 'active': False },
             { 'name': 'ตะกร้าของฉัน', 'link': 'borrowing', 'icon': 'shopping_basket', 'active': False },

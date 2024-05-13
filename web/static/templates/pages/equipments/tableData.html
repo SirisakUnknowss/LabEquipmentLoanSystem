@@ -1,0 +1,59 @@
+{% load humanReadable %}
+<table class="table align-items-center mb-0">
+    <thead class="bg-gray-200">
+        <tr>
+            <th class="text-center text-uppercase text-black text-s font-weight-bolder">รหัสนักศึกษา</th>
+            <th class="text-center text-uppercase text-black text-s font-weight-bolder">ผู้ใช้งาน</th>
+            <th class="text-center text-uppercase text-black text-s font-weight-bolder">ผู้อนุมัติ</th>
+            <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่ยืม</th>
+            <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่คืน</th>
+            <th class="text-center text-uppercase text-black text-s font-weight-bolder">สถานะ</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for order in orders %}
+    <tr>
+        <td class="align-middle text-center">
+            <span class="text-black text-s">{{ order.user.studentID }}</span>
+        </td>
+        <td class="align-middle text-center">
+            <span class="text-black text-s">
+                {% if order.user.firstname %} {{ order.user.firstname }} {% endif %} {% if order.user.lastname %} {{ order.user.lastname }} {% endif %}
+            </span>
+        </td>
+        <td class="align-middle text-center">
+            <span class="text-black text-s">
+                {% if order.approver.firstname %} {{ order.approver.firstname }} {% endif %} {% if order.approver.lastname %} {{ order.approver.lastname }} {% endif %}
+            </span>
+        </td>
+        <td class="align-middle text-center">
+            {% if order.dateBorrowing %}
+                <span class="text-black text-s">{% load tz %}{{ order.dateBorrowing|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
+            {% else %}
+                <span class="text-black text-s">-</span>
+            {% endif %}
+        </td>
+        <td class="align-middle text-center">
+            {% if order.dateReturn %}
+                <span class="text-black text-s">{% load tz %}{{ order.dateReturn|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
+            {% else %}
+                <span class="text-black text-s">-</span>
+            {% endif %}
+        </td>
+        <td class="align-middle text-center text-sm">
+            <form class="align-items-center text-center d-inline-block" id="confirm-equipment" method="post" action="{% url 'detailEquipmentPage' %}">
+                {% csrf_token %}
+                <input type="hidden" value="{{ order.id }}" name="EquipmentID" />
+                <input type="hidden" value="{{ order.status }}" name="StatusBorrowing" />
+                {% with statusMap|hash:order.status as button %}
+                    <button class="badge badge-sm bg-gradient-{{ button.style }} bagde-status-table" type="submit">{{ button.text }}</button>
+                {% endwith %}
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td class="align-middle text-center"></td>
+    </tr>
+    </tbody>
+</table>

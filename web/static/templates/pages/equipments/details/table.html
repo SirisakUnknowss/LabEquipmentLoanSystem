@@ -1,0 +1,119 @@
+{% load humanReadable %}
+<div class="table-responsive p-0 m-4">
+    <table class="table align-items-center mb-0">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder">รูปภาพ</th>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder">รายการ</th>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder">ขนาด</th>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder">จำนวน</th>
+                {% ifequal status "borrowing" %}
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-15">สถานะ</th>
+                {% endifequal %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in equipments %}
+            <tr>
+                <td class="align-middle text-center col-md-2">
+                    <div class="chart">
+                    {% if data.equipment.image %}
+                    <img src="{{ data.equipment.image }}" onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/equipment/PlaceHolder.png' ;" class="image-equipments img-fluid shadow border-radius-xl" />
+                    {% else %}
+                    <img src="{{ STATIC_URL }}/images/equipment/PlaceHolder.png" class="image-equipments border-radius-xl" />
+                    {% endif %}
+                    </div>
+                </td>
+                <td class="align-middle text-center">
+                    <span class="text-secondary text-s">{{ data.equipment.name }}</span>
+                </td>
+                <td class="align-middle text-center">                                        
+                    <span class="text-secondary text-s">
+                        {{ data.equipment.size }} 
+                        {% ifequal data.equipment.unit "NotSpecified" %}{% endifequal %}
+                        {% ifequal data.equipment.unit "Celsius" %}&#8451;{% endifequal %}
+                        {% ifequal data.equipment.unit "CubicCentimeter" %}cm³{% endifequal %}
+                        {% ifequal data.equipment.unit "Millimeter" %}mm{% endifequal %}
+                        {% ifequal data.equipment.unit "Milliliter" %}mL{% endifequal %}
+                        {% ifequal data.equipment.unit "Centimeter" %}cm{% endifequal %}
+                        {% ifequal data.equipment.unit "Liter" %}L{% endifequal %}
+                    </span>
+                </td>
+                <td class="align-middle text-center">
+                    <span class="text-secondary text-s">{{ data.quantity }}</span>
+                </td>
+                {% ifequal status "borrowing" %}
+                <td class="align-middle text-center text-sm">
+                    <form id="remove-equipmentCart" method="post" action="{% url 'removeItemForBorrowingApi' %}">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ equipmentCart.id }}" name="equipmentCart" />
+                        <button class="btn bg-gradient-danger shadow-none px-5" type="submit">ลบ</button>
+                    </form>
+                </td>
+                {% endifequal %}
+            </tr>
+            {% endfor %}
+            <tr>
+                <td class="align-middle text-center"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% comment %} 
+
+
+<div class="table-responsive p-0 m-4">
+    <table class="table align-items-center mb-0">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-15">รายการ</th>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-15">ขนาด</th>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-10">จำนวน</th>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-15">สถานะ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for equipmentCart in equipmentsCart %}
+            <tr>
+                <td class="align-middle text-center">
+                    <span class="text-black text-s">{{ equipmentCart.equipment.name }}</span>
+                </td>
+                <td class="align-middle text-center">
+                    <span class=" text-black text-s">
+                        {{ equipmentCart.equipment.size }} 
+                        {% ifequal equipmentCart.equipment.unit "NotSpecified" %}{% endifequal %}
+                        {% ifequal equipmentCart.equipment.unit "Celsius" %}&#8451;{% endifequal %}
+                        {% ifequal equipmentCart.equipment.unit "CubicCentimeter" %}cm³{% endifequal %}
+                        {% ifequal equipmentCart.equipment.unit "Millimeter" %}mm{% endifequal %}
+                        {% ifequal equipmentCart.equipment.unit "Milliliter" %}mL{% endifequal %}
+                        {% ifequal equipmentCart.equipment.unit "Centimeter" %}cm{% endifequal %}
+                        {% ifequal equipmentCart.equipment.unit "Liter" %}L{% endifequal %}
+                    </span>
+                </td>
+                <td class="align-middle text-center">
+                    <span class="text-black text-s">{{ equipmentCart.quantity }}</span>
+                </td>
+                <td class="align-middle text-center text-sm">
+                    <form id="remove-equipmentCart" method="post" action="{% url 'removeItemForBorrowingApi' %}">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ equipmentCart.id }}" name="equipmentCart" />
+                        <button class="btn bg-gradient-danger shadow-none px-5" type="submit">ลบ</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td class="align-middle text-center"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="d-flex flex-wrap justify-content-end text-center mt-4 mb-4">
+        <a href="{% url 'equipmentListPage' %}" class="btn-w-270 m-2">
+            <button class="btn border border-gray fs-6 w-100 h-100" type="submit">ย้อนกลับ</button>
+        </a>
+        <form id="confirm-equipment" class="btn-w-270 m-2" method="post" action="{% url 'confirmBorrowingApi' %}">
+            {% csrf_token %}
+            <button class="btn bg-gradient-info shadow-none fs-6 w-100 h-100" type="submit">ยืนยันการยืม</button>
+        </form>
+    </div>
+</div> {% endcomment %}
