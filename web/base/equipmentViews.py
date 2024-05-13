@@ -19,7 +19,8 @@ class NotificationsPageView(MenuList):
         if account.status == Account.STATUS.ADMIN:
             canceled    = Q(status=Order.STATUS.CANCELED)
             disapproved = Q(status=Order.STATUS.DISAPPROVED)
-            orders      = Order.objects.exclude(canceled | disapproved)
+            completed   = Q(status=Order.STATUS.COMPLETED)
+            orders      = Order.objects.exclude(canceled | disapproved | completed)
         return orders
 
 class BorrowingHistoryView(MenuList):
