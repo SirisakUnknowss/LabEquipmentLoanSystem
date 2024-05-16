@@ -1,0 +1,16 @@
+<div class="add-btn-middle">
+    <div class="card-body mb-n3 text-center">
+        <p>ไม่พบรายการ{{ nameCategory }}วิทยาศาสตร์</p>
+
+        {% if user.account.status == "admin" %}
+        <div class="flex-grow-1 text-center mb-n3">
+            <a class="px-3" href="add">
+                <button class="btn border border-info bg-gradient-info mx-2">
+                    <i class="material-icons opacity-10">add_circle_outline</i>
+                    เพิ่ม{{ nameCategory }}
+                </button>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>

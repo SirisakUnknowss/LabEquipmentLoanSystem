@@ -1,9 +1,13 @@
 # Django
+from django.db.models import Q
 from django.core import serializers
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from rest_framework.request import Request
 # Project
-from base.views import *
-
+from account.models import Account
+from base.menu import MenuList, AdminOnly
+from scientificInstrument.models import ScientificInstrument, Booking, Order
 
 class CalendarView(MenuList):
 
@@ -56,61 +60,50 @@ class CalendarView(MenuList):
             bookingList.append(jsonData)
         return (str(bookingList)).replace("\'", "\"")
 
-class SIListPageView(MenuList):
-    def process_request(self, request):
+class ListPageView(MenuList):
+
+    def get(self, request, *args, **kwargs):
+        super(MenuList, self).get(request)
         self.addMenuPage(1, 1)
-        scientificInstruments = ScientificInstrument.objects.all().order_by('number')
-
-        if request.method == 'POST':
-            nameScientificInstrument = request.POST.get('nameScientificInstrument', '')
-            name = Q(name__contains=nameScientificInstrument)
-            number = Q(number__contains=nameScientificInstrument)
-            scientificInstruments = ScientificInstrument.objects.filter(name | number).order_by('name')
-
-        scientificInstrumentsJson = serializers.serialize("json", scientificInstruments)
-        self.context['scientificInstruments'] = scientificInstruments
-        self.context['scientificInstrumentsJson'] = scientificInstrumentsJson
-
-    def get(self, request, *args, **kwargs):
-        super(MenuList, self).get(request)
-        self.process_request(request)
+        results                     = ScientificInstrument.objects.all().order_by('name')
+        resultsJson                 = serializers.serialize("json", results)
+        self.context['results']     = results
+        self.context['resultsJson'] = resultsJson
+        self.context['deleteUrl']   = '/api/scientificInstrument/remove'
         return render(request, 'pages/scientificInstruments/listPage.html', self.context)
 
     def post(self, request, *args, **kwargs):
         super(MenuList, self).post(request)
-        self.process_request(request)
+        self.addMenuPage(1, 1)
+        nameSearch                  = request.POST['nameSearch']
+        name                        = Q(name__contains=nameSearch)
+        results                     = ScientificInstrument.objects.filter(name).order_by('name')
+        resultsJson                 = serializers.serialize("json", results)
+        self.context['results']     = results
+        self.context['resultsJson'] = resultsJson
+        self.context['deleteUrl']   = '/api/scientificInstrument/remove'
         return render(request, 'pages/scientificInstruments/listPage.html', self.context)
 
-class AddPageView(MenuList):
+class AddPageView(AdminOnly):
 
-    def get(self, request, *args, **kwargs):
-        super(MenuList, self).get(request)
-        if request.user.account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('homepage'))
-        return render(request, 'pages/scientificInstruments/add_scientific_instruments.html')
+    def get(self, request: Request, *args, **kwargs):
+        super(AdminOnly, self).get(request)
+        self.context['titleBar']    = 'เพิ่มเครื่องมือวิทยาศาตร์'
+        self.context['confirmUrl']  = '/api/scientificInstrument/add'
+        return render(request, 'pages/scientificInstruments/addPage.html', self.context)
 
-    def post(self, request, *args, **kwargs):
-        super(MenuList, self).post(request)
-        if request.user.account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('homepage'))
-        if request.method == 'POST':
-            scientificInstrumentID = request.POST['ScientificInstrumentID']
-            scientificInstrument = ScientificInstrument.objects.filter(id=scientificInstrumentID)
-            if scientificInstrument.exists():
-                self.context['scientificInstrument'] = scientificInstrument.first()
-                return render(request, 'pages/scientificInstruments/add_scientific_instruments.html', self.context)
+class EditPageView(AdminOnly):
+
+    def post(self, request: Request, *args, **kwargs):
+        super(AdminOnly, self).post(request)
+        try:
+            result                      = ScientificInstrument.objects.get(id=request.POST['id'])
+            self.context['result']      = result
+            self.context['titleBar']    = 'แก้ไขเครื่องมือวิทยาศาตร์'
+            self.context['confirmUrl']  = '/api/scientificInstrument/edit'
+            return render(request, 'pages/scientificInstruments/addPage.html', self.context)
+        except ScientificInstrument.DoesNotExist:
             return redirect(reverse('scientificInstrumentsListPage'))
-
-# def informationBookingPage(request):
-#     if not(request.user.is_authenticated): return redirect(reverse('homepage'))
-#     waiting     = Q(status=Order.STATUS.WAITING)
-#     approved    = Q(status=Order.STATUS.APPROVED)
-#     bookings    = Booking.objects.filter(waiting | approved)
-#     if request.user.account.status == Account.STATUS.USER:
-#         bookings  = bookings.filter(user=request.user.account)
-#     context     = { 'bookings': bookings.order_by('-dateBooking', '-timeBooking') }
-#     return render(request, 'pages/scientificInstruments/informationPage.html', context)
-
 
 class DetailBookingView(MenuList):
 
@@ -136,7 +129,7 @@ class NotificationsBookingView(MenuList):
         self.addMenuPage(1, -1)
         account     = request.user.account
         bookings    = self.getBookings(account)
-        self.context['bookings'] = bookings.order_by('-dateBooking', '-timeBooking')
+        self.context['bookings'] = bookings
         return render(request, 'pages/scientificInstruments/notificationPage.html', self.context)
 
     def getBookings(self, account: Account):
@@ -146,7 +139,7 @@ class NotificationsBookingView(MenuList):
         if account.status == Account.STATUS.ADMIN:
             waiting     = Q(status=Order.STATUS.WAITING)
             bookings      = Booking.objects.filter(waiting)
-        return bookings
+        return bookings.order_by('-dateBooking', '-timeBooking')
 
 class AnalysisPageView(MenuList):
 

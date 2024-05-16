@@ -16,8 +16,7 @@ from base.menu import MenuList
 from base.models import DataWeb
 from base.functions import download_file, getDataFile
 from borrowing.admin import OrderModelResource
-from borrowing.models import EquipmentCart, Order
-from chemicalSubstance.models import ChemicalSubstance
+from borrowing.models import Order
 from equipment.admin import EquipmentModelResource
 from equipment.models import Equipment
 from scientificInstrument.models import ScientificInstrument, Booking
@@ -93,51 +92,6 @@ class SignupView(View):
         if request.user.is_authenticated and request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('homepage'))
         return render(request, 'base/signup.html', self.context)
-
-class AnalysisView(MenuList):
-
-    def get(self, request, *args, **kwargs):
-        super(MenuList, self).get(request)
-        self.addMenuPage(0, 4)
-        self.context['orders']      = self.orderAll()
-        self.context['accounts']    = self.accountAll()
-        self.context['equipments']  = self.topEquipment()
-        return render(request, 'pages/equipments/analysisPage.html', self.context)
-
-    def topEquipment(self):
-        equipments = Equipment.objects.all().order_by('-statistics').filter(statistics__gt=1)[:20]
-        return equipments
-        
-    def accountAll(self):
-        admin               = Q(status=Account.STATUS.ADMIN)
-        user                = Q(status=Account.STATUS.USER)
-        account             = dict()
-        accounts            = Account.objects.all()
-        account['all']      = accounts.count()
-        account['user']     = accounts.filter(user).count()
-        account['admin']    = accounts.filter(admin).count()
-        return account
-
-    def orderAll(self):
-        waiting     = Q(status=Order.STATUS.WAITING)
-        approved    = Q(status=Order.STATUS.APPROVED)
-        overDued    = Q(status=Order.STATUS.OVERDUED)
-        returned    = Q(status=Order.STATUS.RETURNED)
-        canceled    = Q(status=Order.STATUS.CANCELED)
-        completed   = Q(status=Order.STATUS.COMPLETED)
-        disapproved = Q(status=Order.STATUS.DISAPPROVED)
-        order       = dict()
-        orders      = Order.objects.all()
-
-        order['all']            = orders.count()
-        order['waiting']        = orders.filter(waiting).count()
-        order['canceled']       = orders.filter(canceled).count()
-        order['returned']       = orders.filter(returned).count()
-        order['approved']       = orders.filter(approved).count()
-        order['overdued']       = orders.filter(overDued).count()
-        order['completed']      = orders.filter(completed).count()
-        order['disapproved']    = orders.filter(disapproved).count()
-        return order
 
 class ContactView(MenuList):
 

@@ -22,7 +22,9 @@ class AddItemForBorrowingApi(LabAPIGetView):
     def post(self, request, *args, **kwargs):
         account                 = request.user.account
         serializerInput         = self.get_serializer(data=request.data)
-        serializerInput.is_valid(raise_exception=True)
+        if not serializerInput.is_valid():
+            self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+            return redirect(reverse('equipmentListPage'))
         equipment               = self.perform_create(serializerInput, account)
         serializerOutput        = SlzEquipmentCart(equipment)
         self.response["result"] = serializerOutput.data
@@ -51,7 +53,7 @@ class RemoveItemForBorrowingApi(LabAPIGetView):
         account     = request.user.account
         idCart      = request.data['equipmentCart']
         EquipmentCart.objects.filter(id=idCart, user=account).delete()
-        return redirect(reverse('addScientificInstrumentPage'))
+        return redirect(reverse('equipmentCartListPage'))
 
 class ConfirmBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()

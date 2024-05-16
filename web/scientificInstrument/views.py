@@ -4,8 +4,8 @@ from datetime import datetime, date, timedelta, time
 #Django
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
-from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import AllowAny
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
 #Project
 from account.models import Account
@@ -13,7 +13,7 @@ from base.functions import uploadImage
 from base.views import LabAPIGetView, LabAPIView, LabListView
 from borrowing.models import Order
 from scientificInstrument.models import ScientificInstrument, Booking, getClassPath
-from scientificInstrument.serializers import SlzScientificInstrumentInput, SlzScientificInstrument, SlzBookingInput, SlzBooking, SlzBookingOutput
+from scientificInstrument.serializers import SlzScientificInstrumentInput, SlzBookingInput, SlzBooking, SlzBookingOutput
 
 # Create your views here.        
 
@@ -25,18 +25,20 @@ class ListScientificInstrument(LabListView):
 class AddScientificInstrument(LabAPIGetView):
     queryset            = ScientificInstrument.objects.all()
     serializer_class    = SlzScientificInstrumentInput
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated, IsAdminUser ]
 
     def post(self, request, *args, **kwargs):
-        account = request.user.account
-        if account.status != "admin":
-            raise ValidationError('Please login with admin account.')
-        serializerInput         = self.get_serializer(data=request.data)
-        serializerInput.is_valid(raise_exception=True)
-        scientificInstrument    = self.perform_create(serializerInput)
-        serializerOutput        = SlzScientificInstrument(scientificInstrument)
-        self.response["result"] = serializerOutput.data
-        return redirect(reverse('scientificInstrumentsListPage'))
+        try:
+            serializerInput = self.get_serializer(data=request.data)
+            if not serializerInput.is_valid():
+                self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+                return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
+            self.perform_create(serializerInput)
+            self.response["result"] = '/scientificInstrument/list'
+            return Response(self.response)
+        except Exception as ex:
+            self.response["error"] = f"{ex}"
+            return Response(self.response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     def perform_create(self, serializer):
         validated               = serializer.validated_data
@@ -61,28 +63,22 @@ class AddScientificInstrument(LabAPIGetView):
         
 class RemoveScientificInstrument(LabAPIGetView):
     queryset            = ScientificInstrument.objects.all()
-    serializer_class    = SlzScientificInstrumentInput
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated, IsAdminUser ]
 
     def post(self, request, *args, **kwargs):
-        account = request.user.account
-        if account.status != "admin":
-            raise ValidationError('Please login with admin account.')
-        ScientificInstrument.objects.filter(id=request.POST["scientificInstrument"]).delete()
+        ScientificInstrument.objects.filter(id=request.POST["dataID"]).delete()
         return redirect(reverse('scientificInstrumentsListPage'))
 
 class EditScientificInstrument(LabAPIGetView):
     queryset            = ScientificInstrument.objects.all()
     serializer_class    = SlzScientificInstrumentInput
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated, IsAdminUser ]
 
     def post(self, request, *args, **kwargs):
-        account = request.user.account
-        if account.status != "admin":
-            raise ValidationError('Please login with admin account.')
         scientificInstrument = ScientificInstrument.objects.filter(id=request.POST["scientificInstrument"])
         if not scientificInstrument.exists():
-            return redirect(reverse('scientificInstrumentsListPage'))
+            self.response["result"] = '/chemicalSubstance/edit'
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
         scientificInstrument.update(
             name        = request.POST["name"],
             number      = request.POST["number"],
@@ -91,12 +87,14 @@ class EditScientificInstrument(LabAPIGetView):
             annotation  = request.POST["annotation"],
             )
         if not(request.FILES.get('upload', False)):
-            return redirect(reverse('scientificInstrumentsListPage'))
+            self.response["result"] = '/scientificInstrument/list'
+            return Response(self.response)
         scientificInstrument:ScientificInstrument = scientificInstrument[0]
         upload  = self.request.FILES['upload']
         name    = getClassPath(scientificInstrument, request.POST["name"])
         uploadImage(name, upload, scientificInstrument)
-        return redirect(reverse('scientificInstrumentsListPage'))
+        self.response["result"] = '/scientificInstrument/list'
+        return Response(self.response)
 
 class GetTimeStartCanBooking(LabAPIGetView):
     permission_classes = [ AllowAny ]

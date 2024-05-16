@@ -1,97 +1,76 @@
 {% extends 'base/base.html' %}
+{% load humanReadable %}
 {% block content %}
 {% include 'base/navside.html' %}
 <main class="main-content position-relative max-height-vh-100 h-100">
     {% include "base/navbar.html" %}
     <div class="container-fluid py-4 ">
         <div class="row">
-            <div class="col-lg-8 col-md-6 col-8 mt-3 mb-4 d-flex align-items-center mb-3">
-                
-                <img src="{{ STATIC_URL }}images/alert.png" class="imageModal" />
-                <h5>ประวัติการเบิกใช้สารเคมี</h5>
-            </div>
-        </div>
-
-        <div class="row mt-4">
-            <div class="card card-body mx-2 mx-md-1 mt-n4">
-                <div class="card-body px-0 pb-2">
-                    <div class="table-responsive p-0">
-                        {% if orders %}
-                        <table class="table align-items-center mb-0">
-                            <thead>
-                                <tr>
-                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่ยืม</th>
-                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">ชื่อ</th>
-                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่อนุมัติ</th>
-                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">ผู้อนุมัติ</th>
-                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder">สถานะ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% for order in orders %}
+            <div class="card card-body mx-3 px-4 pt-4">
+                <div class="d-flex align-items-center mx-3">
+                    <img src="{{ STATIC_URL }}/images/history_alert.png" class="image-alert" />
+                    <span class="text-black fs-4">ประวัติการ{{ actionCategory }}{{ nameCategory }}</span>
+                </div>
+                <div class="table-responsive p-0 m-4">
+                {% if orders %}
+                    {% comment %} <table class="table align-items-center mb-0">
+                        <thead>
                             <tr>
-                                <td class="align-middle text-center">
-                                    {% if order.dateWithdraw %}
-                                        <span class="text-secondary text-s">{% load tz %}{{ order.dateWithdraw|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
-                                    {% else %}
-                                        <span class="text-secondary text-s">-</span>
-                                    {% endif %}
-                                </td>
-                                <td class="align-middle text-center">
-                                    <span class="text-secondary text-s">
-                                        {% if order.user.firstname %} {{ order.user.firstname }} {% endif %} {% if order.user.lastname %} {{ order.user.lastname }} {% endif %}
-                                    </span>
-                                </td>
-                                <td class="align-middle text-center">
-                                    {% if order.dateApproved %}
-                                        <span class="text-secondary text-s">{% load tz %}{{ order.dateApproved|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
-                                    {% else %}
-                                        <span class="text-secondary text-s">-</span>
-                                    {% endif %}
-                                </td>
-                                <td class="align-middle text-center">
-                                    <span class="text-secondary text-s">
-                                        {% if order.approver.firstname %} {{ order.approver.firstname }} {% endif %} {% if order.approver.lastname %} {{ order.approver.lastname }} {% endif %}
-                                    </span>
-                                </td>
-                                <td class="align-middle text-center text-sm">
-                                    <form class="align-items-center text-center form-control" id="confirm-equipment" method="post" action="{% url 'detailEquipmentPage' %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" value="{{ order.id }}" name="orderID" />
-                                    {% ifequal order.status "approved" %}
-                                        <button class="btn badge badge-sm bg-gradient-info w-50" type="submit">อนุมัติแล้ว</button>
-                                    {% endifequal %}
-                                    {% ifequal order.status "canceled" %}
-                                        <button class="btn badge badge-sm bg-gradient-danger w-50" type="submit">ยกเลิก</button>
-                                    {% endifequal %}
-                                    {% ifequal order.status "disapproved" %}
-                                        <button class="btn badge badge-sm bg-gradient-danger w-50" type="submit">คำขอล้มเหลว</button>
-                                    {% endifequal %}
-                                    </form>
-                                </td>
+                                <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่ยืม</th>
+                                <th class="text-center text-uppercase text-black text-s font-weight-bolder">ชื่อ</th>
+                                <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่อนุมัติ</th>
+                                <th class="text-center text-uppercase text-black text-s font-weight-bolder">ผู้อนุมัติ</th>
+                                <th class="text-center text-uppercase text-black text-s font-weight-bolder">สถานะ</th>
                             </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                        {% else %}
-                            <div class="text-center mt-5 mb-5">
-                                <span class="text-secondary text-2xl d-block mb-3">ประวัติการเบิกใช้สารเคมี</span>
-                                <a href="{% url 'chemicalSubstanceNotificationPage' %}">
-                                    <button class="btn bg-gradient-info" type="submit">แจ้งเตือนการเบิกใช้สารเคมี</button>
-                                </a>
-                            </div>
-                        {% endif %}
-                    </div>
+                        </thead>
+                        <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td class="align-middle text-center">
+                                {% if order.dateWithdraw %}
+                                    <span class="text-secondary text-s">{% load tz %}{{ order.dateWithdraw|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
+                                {% else %}
+                                    <span class="text-secondary text-s">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle text-center">
+                                <span class="text-secondary text-s">
+                                    {% if order.user.firstname %} {{ order.user.firstname }} {% endif %} {% if order.user.lastname %} {{ order.user.lastname }} {% endif %}
+                                </span>
+                            </td>
+                            <td class="align-middle text-center">
+                                {% if order.dateApproved %}
+                                    <span class="text-secondary text-s">{% load tz %}{{ order.dateApproved|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
+                                {% else %}
+                                    <span class="text-secondary text-s">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle text-center">
+                                <span class="text-secondary text-s">
+                                    {% if order.approver.firstname %} {{ order.approver.firstname }} {% endif %} {% if order.approver.lastname %} {{ order.approver.lastname }} {% endif %}
+                                </span>
+                            </td>
+                            <td class="align-middle text-center text-sm">
+                                <form class="align-items-center text-center form-control" id="confirm-equipment" method="post" action="detail">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="{{ order.id }}" name="orderID" />
+                                    {% with statusMap|hash:order.status as button %}
+                                        <button class="badge badge-sm bg-gradient-{{ button.style }} bagde-status-table" type="submit">{{ button.text }}</button>
+                                    {% endwith %}
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table> {% endcomment %}
+
+                    {% include "pages/equipments/tableData.html" %}
+                {% else %}
+                    {% include "error/notFoundData.html" %}
+                {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </main>
-{% endblock %}
-
-{% block js %}
-{{ block.super }}
-    <script>
-        let name_page = "id_borrowing_history_page"
-    </script>
 {% endblock %}

@@ -1,38 +1,17 @@
 {% extends 'base/base.html' %}
-
+{% load humanReadable %}
 {% block content %}
 {% include 'base/navside.html' %}
 <main class="main-content position-relative max-height-vh-100 h-100">
-    {% include "base/navbar.html" %}
-  <div class="container-fluid py-4">
-    <div class="row mx-md-0">
+  {% include "base/navbar.html" %}
+  <div class="container-fluid py-4 ">
+    <div class="row">
       {% if results %}
-      <div class="card border-radius-sm mb-4">
-        <div class="card-body px-0 pb-2">
-          <div class="d-flex ms-3">
-            <form role="form" class="flex-grow-1 text-start d-inline-block" id="login-form"
-            method="post" action="{% url 'chemicalSubstanceListPage' %}">
-            {% csrf_token %}
-            <div class="input-group input-group-outline mb-2">
-                <label class="form-label">ชื่อสารเคมี</label>
-                <input type="text" class="form-control bg-gradient-faded-white"
-                id="id_name" name="id_name" onfocus="focused(this)" onfocusout="defocused(this)">
-            </div>
-            </form>
-            {% if user.account.status == "admin" %}
-            <div class="flex-grow-1 text-end mb-n3">
-              <a class="px-3" href="{% url 'chemicalSubstanceAddPage' %}">
-                <button class="btn border border-info bg-gradient-info mx-2">
-                  <i class="material-icons opacity-10">add_circle_outline</i>
-                  เพิ่มสารเคมี
-                </button>
-              </a>
-            </div>
-            {% endif %}
-          </div>
+      <div class="card card-body mx-3 px-4 pt-4">
+        {% include "pages/topListPage.html" %}
+        <div class="row">
           <div class="table-responsive p-0">
             <hr class="hr-3">
-
             <table class="table align-items-center justify-content-center mb-0">
               <thead>
                 <tr class="bg-gray-200">
@@ -66,9 +45,9 @@
                   <td class="row text-center">
                     {% if user.account.status == "admin" %}
                     <div class="col-12 col-md-12 col-xl-6 col-lg-6 text-end">
-                      <form action="{% url 'chemicalSubstanceEditPage' %}" method="post">
+                      <form action="edit" method="post">
                         {% csrf_token %}
-                        <input type="hidden" name="ChemicalSubstanceID" value="{{ result.pk }}" />
+                        <input type="hidden" name="id" value="{{ result.pk }}" />
                         <button class="btn bg-gradient-warning">
                           <i class="material-icons opacity-10">edit_note</i>
                           แก้ไขข้อมูล
@@ -83,63 +62,41 @@
                         </button>
                     </div>
                     {% else %}
-                    {% comment %} <div class="well">
-                      <label class="input-stepper">
-                        <div>
-                          <a href="#0" role="button" id="step-decrement" class="btn btn-default" aria-label="remove 1" aria-labelledby="step-decrement label-text">
-                            <i aria-hidden="true" class="fa fa-minus"></i>
-                          </a>
-                          <input disabled type="text" id="spinner" class="text-strong form-control input-number text-center" value="1" aria-live="polite" tabindex="-1" aria-labelledby="label-text">
-                          <a href="#0" role="button" id="step-increment" class="btn btn-default" aria-label="add 1" aria-labelledby="step-increment label-text">
-                            <i aria-hidden="true" class="fa-solid fa-plus"></i>
-                          </a>
-                        </div>
-                      </label>
-                    </div>
-                  </div> {% endcomment %}
-                  
-                  {% if result.remainingQuantity == 0 %}
-                  <label class="form-label">จำนวนที่ยืม : </label>
-                  <input type="number" class="text-center mb-3 border-radius-md" id="remainingQuantity" name="remainingQuantity" min="0" value="0" max="{{ result.remainingQuantity }}"></br>
-                  <button class="btn bg-gradient-secondary" type="submit">เพิ่มลงตะกร้า</button>
-                  {% else %}
-                  <form id="add-result" method="post" action="{% url 'addItemForBorrowingApi' %}">
-                    {% csrf_token %}
+                    {% comment %} {% if result.remainingQuantity == 0 %}
                     <label class="form-label">จำนวนที่ยืม : </label>
-                    <input type="number" class="text-center mb-3 border-radius-md" id="remainingQuantity" name="remainingQuantity" min="0" value="0" max="{{ result.remainingQuantity }}">
-                    <input type="hidden" value="{{ result.id }}" name="result" /></br>
-                    <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
-                  </form>
-                  {% endif %}
+                    <input type="number" class="text-center mb-3 border-radius-md" id="remainingQuantity" name="remainingQuantity" min="0" value="0" max="{{ result.remainingQuantity }}"></br>
+                    <button class="btn bg-gradient-secondary" type="submit">เพิ่มลงตะกร้า</button>
+                    {% else %}
+                    <form id="add-result" method="post" action="{% url 'addItemForBorrowingApi' %}">
+                      {% csrf_token %}
+                      <label class="form-label">จำนวนที่ยืม : </label>
+                      <input type="number" class="text-center mb-3 border-radius-md" id="remainingQuantity" name="remainingQuantity" min="0" value="0" max="{{ result.remainingQuantity }}">
+                      <input type="hidden" value="{{ result.id }}" name="result" /></br>
+                      <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
+                    </form>
+                    {% endif %} {% endcomment %}
                     {% endif %}
                   </td>
                 </tr>
               </tbody>
               {% endfor %}
+              <tbody>
+                <tr>
+                  <td class="align-middle text-center"></td>
+                </tr>
+              </tbody>
             </table>
           </div>
         </div>
-      {% else %}
-      <div class="add-btn-middle">
-        <div class="card-body mb-n3 text-center">
-          <p>ไม่พบรายการสารเคมี</p>
-  
-          {% if user.account.status == "admin" %}
-  
-          <a class="" href="{% url 'chemicalSubstanceAddPage' %}">
-            <button class="btn border border-info bg-gradient-info mx-2">
-              <i class="material-icons opacity-10">add_circle_outline</i>
-              เพิ่มสารเคมี
-            </button>
-          </a>
-          {% endif %}
-        </div>
       </div>
+
+      {% else %}
+      {% include 'pages/notFoundListData.html' %}
       {% endif %}
     </div>
   </div>
 
-  {% include 'pages/popUpConfirmDeleteData.html' %}
+  {% include 'modals/confirmDeleteData.html' %}
   {% include "modals/loading.html" %}
   {% include 'modals/deleteSuccess.html' %}
 </main>
@@ -152,11 +109,10 @@
     const deleteUrl = '{{ deleteUrl }}'
     function showConfirmDelete(id)
     {
-        const deleteID = document.querySelector("#deleteID")
-        deleteID.value = id
+        const dataID = document.querySelector("#dataID")
+        dataID.value = id
     }
   </script>
-  <script src="{{ STATIC_URL }}assets/js/list-chemicalSubstance.js"></script>
-  <script src="{{ STATIC_URL }}assets/js/delete-chemicalSubstance.js"></script>
+  <script src="{{ STATIC_URL }}js/deleteData.js"></script>
   {% endif %}
 {% endblock %}

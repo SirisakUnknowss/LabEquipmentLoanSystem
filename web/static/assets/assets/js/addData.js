@@ -1,8 +1,8 @@
-document.getElementById("successTitle").innerHTML = "เพิ่มรายการสารเคมีสำเร็จ"
+document.getElementById("successTitle").innerHTML = "บันทึกข้อมูลสำเร็จ"
 document.getElementById("loadingTitle").innerHTML = "กำลังบันทึกข้อมูล ..."
 
 
-document.getElementById("add-chemicalSubstance").addEventListener("submit", function(event) {
+document.getElementById("addData").addEventListener("submit", function(event) {
   event.preventDefault();
   $('#successModal').modal({backdrop: 'static', keyboard: false})
   var formData = new FormData(this);

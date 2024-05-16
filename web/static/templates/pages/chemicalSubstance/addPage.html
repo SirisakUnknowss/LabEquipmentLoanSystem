@@ -7,8 +7,7 @@
 <main class="main-content position-relative max-height-vh-100 h-100">
     {% include "base/navbar2.html" %}
     <div class="container-fluid py-4 px-md-5">
-        {% comment %} <form enctype="multipart/form-data" id="add-chemicalSubstance" method="post" action="{{ confirmUrl }}"> {% endcomment %}
-        <form enctype="multipart/form-data" id="add-chemicalSubstance">
+        <form enctype="multipart/form-data" id="addData">
             {% csrf_token %}
             <input type="hidden" value="{{ result.id }}" name="chemicalSubstanceID" />
             <div class="row mt-4">
@@ -209,16 +208,14 @@
             <div class="row text-center">
                 <div class="col-lg-6 col-12 text-lg-end">
                     <input class="btn border border-info bg-gradient-info my-2 w-100 w-lg-50" type="submit" id="confirmBtn" value="บันทึก" / >
-                    {% comment %} <a class="btn border border-info bg-gradient-info my-2 w-100 w-lg-50" data-bs-toggle="modal" href="#loadingModal" role="button">บันทึก</a> {% endcomment %}
                 </div>
                 <div class="col-lg-6 col-12 text-lg-start">
-                    <a class="" href="{% url 'chemicalSubstanceListPage' %}">
+                    <a class="" href="list">
                         <span class="btn border bg-white border-danger text-danger border-1 my-2 w-100 w-lg-50">ยกเลิก</span>
                     </a>
                 </div>
             </div>
         </form>
-
     </div>
 </main>
 {% include "modals/error.html" %}
@@ -232,5 +229,5 @@
 </script>
 
 <script src="{{ STATIC_URL }}assets/js/upload-file.js"></script>
-<script src="{{ STATIC_URL }}assets/js/add-chemicalSubstance.js"></script>
+<script src="{{ STATIC_URL }}assets/js/addData.js"></script>
 {% endblock %}

@@ -28,19 +28,6 @@ def checkOverdue(request: WSGIRequest):
         print(ex)
         print("----------------------------------------")
 
-# def checkChemicalOverdue(request: WSGIRequest):
-#     account: Account = request.user.account
-#     orders = getOrder(CSOrder, CSOrder.STATUS.WAITING, account)
-#     if orders == None: orders
-#     try:
-#         week    = DT.date.today() - DT.timedelta(days=7)
-#         orders  = orders.filter(dateWithdraw__lt=week)
-#         for order in orders:
-#             cancelOrder(order)
-#     except Exception as ex:
-#         print(ex)
-#         print("----------------------------------------")
-
 class AuthenticationMixin(View):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -50,12 +37,22 @@ class AuthenticationMixin(View):
 class LabWebView(AuthenticationMixin):
 
     def get(self, request, *args, **kwargs):
+        self.status = request.user.account.status
+        self.context['menuDownList'] = [
+            { 'name': 'ติดต่อผู้ให้บริการ', 'link': '/contact', 'icon': 'help', 'active': False },
+        ]
+        if self.status == Account.STATUS.ADMIN:
+            self.context['menuDownList'].append({ 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False },)
         checkOverdue(request)
-        # checkChemicalOverdue(request)
 
     def post(self, request, *args, **kwargs):
+        self.status = request.user.account.status
+        self.context['menuDownList'] = [
+            { 'name': 'ติดต่อผู้ให้บริการ', 'link': '/contact', 'icon': 'help', 'active': False },
+        ]
+        if self.status == Account.STATUS.ADMIN:
+            self.context['menuDownList'].append({ 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False },)
         checkOverdue(request)
-        # checkChemicalOverdue(request)
 
 class AdminMixin(View):
 
@@ -70,11 +67,11 @@ class AdminWebView(AdminMixin):
 
     def get(self, request, *args, **kwargs):
         checkOverdue(request)
-        # checkChemicalOverdue(request)
+        return redirect(reverse('homepage'))
 
     def post(self, request, *args, **kwargs):
         checkOverdue(request)
-        # checkChemicalOverdue(request)
+        return redirect(reverse('homepage'))
 
 class AdminOnly(AdminWebView):
     def __init__(self) -> None:
@@ -87,10 +84,6 @@ class MenuList(LabWebView):
         self.context = {}
         self.context['menuUpList'] = [
             { 'name': 'หน้าแรก', 'link': '/', 'icon': 'home', 'active': False },
-        ]
-        self.context['menuDownList'] = [
-            { 'name': 'ติดต่อผู้ให้บริการ', 'link': '/contact', 'icon': 'help', 'active': False },
-            { 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False },
         ]
 
     def setMenuHome(self) -> list:
@@ -122,6 +115,8 @@ class MenuList(LabWebView):
             menuDownList[0]['active'] = True
 
     def setBorrowingMenu(self):
+        self.context['actionCategory']  = "ยืม - คืน"
+        self.context['nameCategory']    = "อุปกรณ์"
         menuUpList: list = self.context['menuUpList']
         self.nameNotification = self.nameNoticeBorrowing
         menuUpList.extend([
@@ -132,6 +127,8 @@ class MenuList(LabWebView):
             ])
 
     def setBookingMenu(self):
+        self.context['actionCategory']  = "จอง"
+        self.context['nameCategory']    = "เครื่องมือ"
         menuUpList: list = self.context['menuUpList']
         self.nameNotification = self.nameScientificInstrument
         menuUpList.extend([
@@ -141,6 +138,8 @@ class MenuList(LabWebView):
             ])
 
     def setWithdrawMenu(self):
+        self.context['actionCategory']  = "เบิก"
+        self.context['nameCategory']    = "สารเคมี"
         menuUpList: list = self.context['menuUpList']
         self.nameNotification = self.nameScientificInstrument
         menuUpList.extend([

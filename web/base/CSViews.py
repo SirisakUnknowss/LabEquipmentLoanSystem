@@ -1,13 +1,16 @@
 # Django
+from django.db.models import Q
+from django.core import serializers
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from rest_framework.request import Request
 # Project
-from base.menu import AdminOnly
-from base.views import *
+from account.models import Account
+from base.menu import AdminOnly, MenuList
+from base.variables import STATUS_STYLE
 from chemicalSubstance.models import ChemicalSubstance, HazardCategory, Order
 from chemicalSubstance.serializers import SlzChemicalSubstanceOutput, SlzHazardCategory
-
 
 class ListPageView(MenuList):
 
@@ -15,16 +18,21 @@ class ListPageView(MenuList):
         super(MenuList, self).get(request)
         self.addMenuPage(2, 1)
         results                     = ChemicalSubstance.objects.all().order_by('name')
+        resultsJson                 = serializers.serialize("json", results)
         self.context['results']     = results
+        self.context['resultsJson'] = resultsJson
         self.context['deleteUrl']   = "/api/chemicalSubstance/remove"
         return render(request, 'pages/chemicalSubstance/listPage.html', self.context)
 
     def post(self, request: Request, *args, **kwargs):
         super(MenuList, self).post(request)
         self.addMenuPage(2, 1)
-        name                        = Q(name__contains=request.POST['id_name'])
+        nameSearch                  = request.POST['nameSearch']
+        name                        = Q(name__contains=nameSearch)
         results                     = ChemicalSubstance.objects.filter(name).order_by('name')
+        resultsJson                 = serializers.serialize("json", results)
         self.context['results']     = results
+        self.context['resultsJson'] = resultsJson
         self.context['deleteUrl']   = "/api/chemicalSubstance/remove"
         return render(request, 'pages/chemicalSubstance/listPage.html', self.context)
 
@@ -42,46 +50,50 @@ class AddPageView(AdminOnly):
 
 class EditPageView(AdminOnly):
 
-    def get(self, request: Request, *args, **kwargs):
-        super(AdminOnly, self).get(request)
-        return redirect(reverse('chemicalSubstanceListPage'))
-
     def post(self, request: Request, *args, **kwargs):
         super(AdminOnly, self).post(request)
         try:
             ghsList                     = HazardCategory.objects.filter(category=HazardCategory.CATEGORY.GHS)
             # unList                      = HazardCategory.objects.filter(category=HazardCategory.CATEGORY.UN)
-            id                          = request.POST['ChemicalSubstanceID']
-            instance                    = get_object_or_404(ChemicalSubstance, id=id)
+            instance                    = get_object_or_404(ChemicalSubstance, id=request.POST['id'])
             self.context['ghsList']     = SlzHazardCategory(ghsList, many=True).data
             # self.context['unList']      = SlzHazardCategory(unList, many=True).data
             self.context['result']      = SlzChemicalSubstanceOutput(instance).data
             self.context['confirmUrl']  = '/api/chemicalSubstance/edit'
-            self.context['titleBar']    = 'เพิ่มสารเคมี'
+            self.context['titleBar']    = 'แก้ไขสารเคมี'
             return render(request, 'pages/chemicalSubstance/addPage.html', self.context)
         except Http404:
             return redirect(reverse('chemicalSubstanceListPage'))
-
+        
+def getOrder(status: int, account: Account, context: dict):
+    waiting     = Q(status=Order.STATUS.WAITING)
+    canceled    = Q(status=Order.STATUS.CANCELED)
+    approved    = Q(status=Order.STATUS.APPROVED)
+    disapproved = Q(status=Order.STATUS.DISAPPROVED)
+    if status == 0:
+        orders = Order.objects.filter(waiting)
+    if status == 1:
+        orders = Order.objects.filter(disapproved | canceled | approved)
+    if account.status == Account.STATUS.USER:
+        orders = orders.filter(user=account)
+    context['orders']      = orders
+    context['statusMap']   = STATUS_STYLE
+    return context
 
 class NotificationsPageView(MenuList):
 
     def get(self, request: Request, *args, **kwargs):
         super(MenuList, self).get(request)
         self.addMenuPage(2, -1)
-        self.context['orders'] = []
+        self.context = getOrder(0, request.user.account, self.context)
         return render(request, 'pages/chemicalSubstance/notificationPage.html', self.context)
+
 class WithdrawHistoryView(MenuList):
 
     def get(self, request: Request, *args, **kwargs):
         super(MenuList, self).get(request)
         self.addMenuPage(2, 2)
-        canceled    = Q(status=Order.STATUS.CANCELED)
-        approved    = Q(status=Order.STATUS.APPROVED)
-        disapproved = Q(status=Order.STATUS.DISAPPROVED)
-        orders      = Order.objects.filter(disapproved | canceled | approved)
-        if request.user.account.status == Account.STATUS.USER:
-            orders  = orders.filter(user=request.user.account)
-        self.context['orders'] = orders
+        self.context = getOrder(1, request.user.account, self.context)
         return render(request, 'pages/chemicalSubstance/historyPage.html', self.context)
 
 class AnalysisView(MenuList):

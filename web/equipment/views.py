@@ -1,9 +1,8 @@
 #Django
-from rest_framework.permissions import AllowAny
-from django.urls import reverse
-from django.shortcuts import redirect
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from django.db.models import F
-from rest_framework.exceptions import ValidationError
+from rest_framework import status
+from rest_framework.response import Response
 #Project
 from base.functions import uploadImage
 from base.views import LabListView, LabAPIGetView
@@ -19,18 +18,20 @@ class ListEquipment(LabListView):
 class AddEquipment(LabAPIGetView):
     queryset            = Equipment.objects.all()
     serializer_class    = SlzEquipmentInput
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated, IsAdminUser ]
 
     def post(self, request, *args, **kwargs):
-        account = request.user.account
-        if account.status != "admin":
-            raise ValidationError('Please login with admin account.')
-        serializerInput         = self.get_serializer(data=request.data)
-        serializerInput.is_valid(raise_exception=True)
-        equipment               = self.perform_create(serializerInput)
-        serializerOutput        = SlzEquipment(equipment)
-        self.response["result"] = serializerOutput.data
-        return redirect(reverse('equipmentListPage'))
+        try:
+            serializerInput = self.get_serializer(data=request.data)
+            if not serializerInput.is_valid():
+                self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+                return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
+            self.perform_create(serializerInput)
+            self.response["result"] = '/equipment/add'
+            return Response(self.response)
+        except Exception as ex:
+            self.response["error"] = f"{ex}"
+            return Response(self.response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     def perform_create(self, serializer):
         validated = serializer.validated_data
@@ -55,31 +56,17 @@ class AddEquipment(LabAPIGetView):
             name    = getClassPath(equipment, validated.get("name"))
             uploadImage(name, upload, equipment)
             return equipment
-        
-class RemoveEquipment(LabAPIGetView):
-    queryset            = Equipment.objects.all()
-    serializer_class    = SlzEquipmentInput
-    permission_classes = [ AllowAny ]
-
-    def post(self, request, *args, **kwargs):
-        account = request.user.account
-        if account.status != "admin":
-            raise ValidationError('Please login with admin account.')
-        Equipment.objects.filter(id=request.POST["equipment"]).delete()
-        return redirect(reverse('equipmentListPage'))
 
 class EditEquipment(LabAPIGetView):
     queryset            = Equipment.objects.all()
     serializer_class    = SlzEquipmentInput
-    permission_classes = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated, IsAdminUser ]
 
     def post(self, request, *args, **kwargs):
-        account = request.user.account
-        if account.status != "admin":
-            raise ValidationError('Please login with admin account.')
         equipment = Equipment.objects.filter(id=request.POST["equipment"])
         if not equipment.exists():
-            return redirect(reverse('equipmentListPage'))
+            self.response["result"] = '/equipment/edit'
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
             
         unit = request.POST["unit"]
         if unit == 'Other_Other':
@@ -91,9 +78,24 @@ class EditEquipment(LabAPIGetView):
             unit=unit,
             )
         if not(request.FILES.get('upload', False)):
-            return redirect(reverse('equipmentListPage'))
+            self.response["result"] = '/equipment/list'
+            return Response(self.response)
         equipment   = equipment[0]
         upload      = self.request.FILES['upload']
         name        = getClassPath(equipment, request.POST["name"])
         uploadImage(name, upload, equipment)
-        return redirect(reverse('equipmentListPage'))
+        self.response["result"] = '/equipment/list'
+        return Response(self.response)
+
+class RemoveEquipment(LabAPIGetView):
+    queryset            = Equipment.objects.all()
+    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            Equipment.objects.get(id=request.POST["dataID"]).delete()
+            self.response["result"] = 'ลบข้อมูลเรียบร้อย'
+            return Response(self.response)
+        except Equipment.DoesNotExist:
+            self.response["error"] = 'ไม่พบข้อมูล'
+            return Response(self.response, status=status.HTTP_404_NOT_FOUND)

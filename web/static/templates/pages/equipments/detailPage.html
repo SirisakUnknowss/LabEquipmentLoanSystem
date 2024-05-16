@@ -21,7 +21,7 @@
     </div>
 
     <div class="row mt-4">
-      <div class="card card-body mx-3 mt-3 px-0 pb-2">
+      <div class="card card-body mx-3 px-4 pt-4">
         <div class="card-header p-3">
           <h5 class="mb-3">ข้อมูลการยืมอุปกรณ์วิทยาศาสตร์</h5>
           <div class="align-items-center col-6">
@@ -47,7 +47,7 @@
           <h6 class="mb-3 text-center">รายการอุปกรณ์วิทยาศาสตร์</h6>
           {% include 'pages/equipments/details/table.html' %}
           {% else %}
-          {% include "pages/equipments/notFoundData.html" %}
+          {% include "error/notFoundData.html" %}
           {% endif %}
           {% include 'pages/equipments/details/button.html' %}
         </div>

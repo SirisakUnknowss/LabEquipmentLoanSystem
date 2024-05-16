@@ -23,8 +23,10 @@ class SlzEquipmentCartInput(serializers.ModelSerializer):
         return equipment[0]
 
     def validate(self, instance):
-        equipment = instance['equipment']
-        quantity = instance['quantity']
-        if quantity > equipment.quantity :
+        equipment   = instance['equipment']
+        quantity    = instance['quantity']
+        if quantity <= 0:
+            raise ValidationError('quantity invalid.')
+        if quantity > equipment.quantity:
             raise ValidationError('Not Enough Equipment.')
         return instance

@@ -2,6 +2,8 @@
 from datetime import datetime
 # DJANGO
 from django import template
+# Project
+from base.variables import UNIT
 
 register = template.Library()
 
@@ -29,3 +31,10 @@ def hash(h, key):
         return h[key]
     except:
         return None
+
+@register.filter
+def Unit(value):
+	try:
+		return UNIT[value]
+	except:
+		return 0

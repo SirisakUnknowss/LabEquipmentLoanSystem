@@ -2751,6 +2751,7 @@ textarea.form-control-lg {
   color: #7b809a;
   border-color: #7b809a; }
   .btn-outline-secondary:hover {
+    box-shadow: 0 0 0 0.2rem rgba(123, 128, 154, 0.5);
     color: #000;
     background-color: #7b809a;
     border-color: #7b809a; }
@@ -4659,7 +4660,7 @@ textarea.form-control-lg {
 
 @media (min-width: 576px) {
   .modal-dialog {
-    max-width: 500px;
+    max-width: 300px;
     margin: 1.75rem auto; }
   .modal-dialog-scrollable {
     height: calc(100% - 3.5rem); }
@@ -18208,6 +18209,7 @@ label.input-stepper {
 .btn-w-270 {
   width: 17rem;
   height: 3rem;
+  font-size: 1rem !important;
 }
 
 @media (max-width: 800px) {
@@ -18255,4 +18257,26 @@ label.input-stepper {
 .btn-action-equipment {
   width: 17rem;
   height: 3rem;
+}
+.truncate .tooltiptext {
+  visibility: hidden;
+  width: 100%;
+  background-color: #fff;
+  color: #7b809a;
+  font-size: 0.75rem !important;
+  text-align: center;
+  border-radius: 6px;
+  top: 30px;
+  left: 27%;
+  text-align: center;
+  font-weight: 300;
+  margin-left: -60px;
+  position: absolute;
+  word-wrap: break-word;
+  white-space:pre-wrap;
+  z-index: 2;
+}
+
+.truncate:hover .tooltiptext {
+  visibility: visible;
 }

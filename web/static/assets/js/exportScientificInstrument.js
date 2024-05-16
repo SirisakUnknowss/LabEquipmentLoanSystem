@@ -20,9 +20,9 @@ async function loadContent(url="") {
 async function requestContent(url="") {
     loadContent(url)
 }
-const exportScientificInstrumentAllButton = document.querySelector("#exportScientificInstrumentAllButton")
+const exportAllButton = document.querySelector("#exportAllButton")
 
-exportScientificInstrumentAllButton.addEventListener('click', (event) => {
+exportAllButton.addEventListener('click', (event) => {
     nameFile = "scientificInstrumentAllData.xlsx"
     requestContent(urlExportData + "?getData=")
 })

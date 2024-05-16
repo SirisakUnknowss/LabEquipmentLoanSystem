@@ -1,0 +1,31 @@
+{% if user.account.status == "admin" %}
+<div class="row">
+    <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-2">
+        <button class="btn mb-n2 text-info fs-5 text-decoration-underline" id="exportAllButton" 
+        type="button" data-target="warningToast">ดาวโหลดข้อมูล</button>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-6 col-sm-12 text-start">
+        <form role="form" class="flex-grow-1 text-start d-inline-block w-100" id="login-form" method="post" action="list">
+            {% csrf_token %}
+            <div class="input-group input-group-outline mb-2">
+                <label class="form-label fs-6">ค้นหา</label>
+                <input type="text" class="form-control bg-gradient-faded-white fs-5" id="nameSearch" name="nameSearch"
+                onfocus="focused(this)" onfocusout="defocused(this)">
+            </div>
+        </form>
+    </div>
+    {% if user.account.status == "admin" %}
+    <div class="col-md-6 col-sm-12 text-end">
+        <a href="add">
+            <button class="btn border w-100 w-md-50 border-info bg-gradient-info fs-6 py-2 px-4">
+                <i class="material-icons opacity-10 mx-1 fs-4">add_circle_outline</i>
+                เพิ่มข้อมูล
+            </button>
+        </a>
+    </div>
+    {% endif %}
+</div>

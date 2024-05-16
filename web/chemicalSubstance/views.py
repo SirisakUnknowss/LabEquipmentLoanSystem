@@ -111,9 +111,13 @@ class RemoveChemicalSubstance(LabAPIView):
     permission_classes  = [ IsAuthenticated, IsAdminUser ]
 
     def post(self, request: Request, *args, **kwargs):
-        ChemicalSubstance.objects.filter(id=request.POST.get('deleteID')).delete()
-        self.response["result"] = '/chemicalSubstance/list'
-        return Response(self.response)
+        try:
+            ChemicalSubstance.objects.get(id=request.POST["dataID"]).delete()
+            self.response["result"] = 'ลบข้อมูลเรียบร้อย'
+            return Response(self.response)
+        except ChemicalSubstance.DoesNotExist:
+            self.response["error"] = 'ไม่พบข้อมูล'
+            return Response(self.response, status=status.HTTP_404_NOT_FOUND)
 
 class ApprovalChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()

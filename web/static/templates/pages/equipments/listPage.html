@@ -1,144 +1,100 @@
 {% extends 'base/base.html' %}
-
-{% block head_css_site %}
-{{ block.super }}
-<link id="pagestyle" href="{{ STATIC_URL }}css/list_equipment.css" rel="stylesheet" />
-{% endblock %}
+{% load humanReadable %}
 {% block content %}
 {% include 'base/navside.html' %}
 <main class="main-content position-relative max-height-vh-100 h-100">
   {% include "base/navbar.html" %}
   <div class="container-fluid py-4 ">
     <div class="row">
-      <div class="card card-body mx-3 mt-3 px-5">
-
-        {% if user.account.status == "admin" %}
+      {% if results %}
+      <div class="card card-body mx-3 px-4 pt-4">
+        {% include "pages/topListPage.html" %}
         <div class="row">
-          <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-3">
-            <button class="btn mb-n2 text-info fs-5 text-decoration-underline" id="exportEquipmentAllButton" type="button" data-target="warningToast">
-              ดาวโหลดข้อมูล
-            </button>
-          </div>
-        </div>
-        {% endif %}
-        
-        <div class="row ms-3">
-          <div class="col-md-6 col-sm-12 text-start">
-            <form role="form" class="flex-grow-1 text-start d-inline-block" id="login-form" method="post" action="list">
-            {% csrf_token %}
-            <div class="input-group input-group-outline mb-2">
-                <label class="form-label fs-6">ค้นหา</label>
-                <input type="text" class="form-control bg-gradient-faded-white fs-5" id="nameSearch" name="nameSearch" onfocus="focused(this)" onfocusout="defocused(this)">
-            </div>
-            </form>
-          </div>
-          {% if user.account.status == "admin" %}
-          <div class="col-md-6 col-sm-12 text-end">
-            <a class="px-3" href="add">
-              <button class="btn border border-info bg-gradient-info fs-6 py-2 px-4 mx-2">
-                <i class="material-icons opacity-10 mx-1 fs-4">add_circle_outline</i>
-                เพิ่มข้อมูล
-              </button>
-            </a>
-          </div>
-          {% endif %}
-        </div>
-        <div class="row mt-4">
-          {% if equipments %}
-            {% for equipment in equipments %}
-            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 col-12 mt-3 mb-4">
-              <div class="card border border-info shadow-info">
-                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-                  <div class="mt-5">
-                    <div class="chart-items">
-                      {% if equipment.image %}
-                        <img src="{{ equipment.image }}" onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png' ;"
-                        class="image-scientificInstruments border-radius-xl" />
-                      {% else %}
-                        <img src="{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png" 
-                        class="image-scientificInstruments border-radius-xl" />
-                      {% endif %}
-                    </div>
+          {% for result in results %}
+          <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 col-12 mt-3 mb-4">
+            <div class="card border border-info shadow-info">
+              <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+                <div class="mt-5">
+                  <h5 class="truncate mt-1">
+                    {{ result.name }}
+                    <span class="tooltiptext text-center">{{ result.name }}</span>
+                  </h5>
+                  <div class="chart-items">
+                    {% if result.image %}
+                      <img src="{{ result.image }}" onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/equipment/PlaceHolder.png' ;"
+                      class="image-scientificInstruments" />
+                    {% else %}
+                      <img src="{{ STATIC_URL }}images/equipment/PlaceHolder.png" 
+                      class="image-scientificInstruments" />
+                    {% endif %}
                   </div>
                 </div>
-                <div class="card-body mb-n3 text-center">
-                  <h5 class="mb-1">{{ equipment.name }}</h5>
-                  <span class="d-block">
-                    ขนาด : {{ equipment.size }} 
-                    {% ifequal equipment.unit "NotSpecified" %}{% endifequal %}
-                    {% ifequal equipment.unit "Celsius" %}&#8451;{% endifequal %}
-                    {% ifequal equipment.unit "CubicCentimeter" %}cm³{% endifequal %}
-                    {% ifequal equipment.unit "Millimeter" %}mm{% endifequal %}
-                    {% ifequal equipment.unit "Milliliter" %}mL{% endifequal %}
-                    {% ifequal equipment.unit "Centimeter" %}cm{% endifequal %}
-                    {% ifequal equipment.unit "Liter" %}L{% endifequal %}
-                  </span>
-                  <span class="d-block mb-3">จำนวนที่มี : {{ equipment.quantity }}</span>
-                    {% if user.account.status == "admin" %}
-                    <div class="row">
-                      <div class="col-12 col-md-12 col-xl-6 col-lg-6">
-                        <form id="add-equipment" method="post" action="add">
-                          {% csrf_token %}
-                          <input type="hidden" value="{{ equipment.id }}" name="EquipmentID" />
-                          <button class="btn bg-gradient-warning w-100 px-0" type="submit">แก้ไขข้อมูล</button>
-                        </form>
-                      </div>
-                      <div class="col-12 col-md-12 col-xl-6 col-lg-6">
-                          <button class="btn bg-gradient-danger w-100 px-0" onclick="showConfirmDelete({{ equipment.id }})">ลบข้อมูล</button>
-                      </div>
+              </div>
+              <div class="card-body mb-n3 text-center">
+                <span class="d-block">
+                  ขนาด : {{ result.size }} {{ result.unit|Unit }}
+                </span>
+                <span class="d-block mb-3">จำนวนที่มี : {{ result.quantity }}</span>
+                  {% if user.account.status == "admin" %}
+                  <div class="row">
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
+                      <form id="add-equipment" method="post" action="edit">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ result.id }}" name="id" />
+                        <button class="btn bg-gradient-warning w-100 px-0" type="submit">แก้ไขข้อมูล</button>
+                      </form>
                     </div>
-                    {% else %}
-                    {% if equipment.quantity == 0 %}
+                    <div class="col-12 col-md-12 col-xl-6 col-lg-6">
+                        <button class="btn bg-gradient-danger w-100 px-0" data-bs-toggle="modal" data-bs-target="#modalDelete" onclick="showConfirmDelete({{ result.id }})">ลบข้อมูล</button>
+                    </div>
+                  </div>
+                  {% else %}
+                  {% if result.quantity == 0 %}
+                  <label class="form-label">จำนวนที่ยืม : </label>
+                  <input type="number" class="text-center mb-3 border-radius-md" id="quantity" name="quantity" min="0" value="0" max="{{ result.quantity }}"></br>
+                  <button class="btn btn-add-cart disable" type="submit" disabled>เพิ่มลงตะกร้า</button>
+                  {% else %}
+                  <form id="add-equipment" method="post" action="{% url 'addItemForBorrowingApi' %}">
+                    {% csrf_token %}
                     <label class="form-label">จำนวนที่ยืม : </label>
-                    <input type="number" class="text-center mb-3 border-radius-md" id="quantity" name="quantity" min="0" value="0" max="{{ equipment.quantity }}"></br>
-                    <button class="btn btn-add-cart disable" type="submit" disabled>เพิ่มลงตะกร้า</button>
-                    {% else %}
-                    <form id="add-equipment" method="post" action="{% url 'addItemForBorrowingApi' %}">
-                      {% csrf_token %}
-                      <label class="form-label">จำนวนที่ยืม : </label>
-                      <input type="number" class="text-center mb-3 border-radius-md" id="quantity" name="quantity" min="0" value="0" max="{{ equipment.quantity }}">
-                      <input type="hidden" value="{{ equipment.id }}" name="equipment" /></br>
-                      <button class="btn btn-add-cart" type="submit">เพิ่มลงตะกร้า</button>
-                    </form>
-                    {% endif %}
-                    {% endif %}
-                </div>
+                    <input type="number" class="text-center mb-3 border-radius-md" id="quantity" name="quantity" min="0" value="0" max="{{ result.quantity }}">
+                    <input type="hidden" value="{{ result.id }}" name="equipment" /></br>
+                    <button class="btn btn-add-cart" type="submit">เพิ่มลงตะกร้า</button>
+                  </form>
+                  {% endif %}
+                  {% endif %}
               </div>
             </div>
-            {% endfor %}
-          {% else %}
-            <div class="col-lg-12 col-md-12 mt-3 mb-4">
-              <div class="card-body text-center">
-                <p class="py-7 fs-5">ไม่มีรายการอุปกรณ์วิทยาศาสตร์</p>
-              </div>
-            </div>
-          {% endif %}
+          </div>
+          {% endfor %}
         </div>
       </div>
+      {% else %}
+      {% include 'pages/notFoundListData.html' %}
+      {% endif %}
     </div>
   </div>
-  {% include 'pages/popUpconfirmDeleteEquipment.html' %}
-  
-  {% if user.account.status == "admin" %}
-  <div class="fixed-plugin ps">
-    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2" href="add">
-      <i class="material-icons py-2">add</i>
-    </a> 
-  </div>
-  {% endif %}
+  {% include 'modals/confirmDeleteData.html' %}
+  {% include "modals/loading.html" %}
+  {% include 'modals/deleteSuccess.html' %}
 </main>
 {% endblock %}
 
 {% block js %}
 {{ block.super }}
   <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-
+  {% if user.account.status == "admin" %}
   <script>
-    const equipmentsJson = JSON.parse('{{ equipmentsJson | safe }}')
+    const deleteUrl = '{{ deleteUrl }}'
+    function showConfirmDelete(id)
+    {
+        const dataID = document.querySelector("#dataID")
+        dataID.value = id
+    }
+    const equipmentsJson = JSON.parse('{{ resultsJson | safe }}')
       const urlExportData = "{% url 'ExportEquipments' %}"
   </script>
-  <script src="{{ STATIC_URL }}js/equipmentDetail.js"></script>
-  {% if user.account.status == "admin" %}
   <script src="{{ STATIC_URL }}js/exportEquipment.js"></script>
+  <script src="{{ STATIC_URL }}js/deleteData.js"></script>
   {% endif %}
 {% endblock %}

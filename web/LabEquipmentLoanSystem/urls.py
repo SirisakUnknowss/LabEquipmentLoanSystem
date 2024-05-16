@@ -50,6 +50,7 @@ urlpatterns = [
     #equipment
     path('api/equipment/', include('equipment.urls')),
     path('equipment/add', equipmentViews.AddPageView.as_view(), name='addEquipmentPage'),
+    path('equipment/edit', equipmentViews.EditPageView.as_view(), name='editEquipmentPage'),
     path('equipment/analysis', equipmentViews.AnalysisView.as_view(), name='analysisPage'),
     path('equipment/list', equipmentViews.ListPageView.as_view(), name='equipmentListPage'),
     path('equipment/detail', equipmentViews.DetailPageView.as_view(), name='detailEquipmentPage'),
@@ -63,8 +64,9 @@ urlpatterns = [
     #scientific instruments
     path('api/scientificInstrument/', include('scientificInstrument.urls')),
     path('scientificInstrument/calendar', SLViews.CalendarView.as_view(), name='scientificInstrumentsCalendarPage'),
-    path('scientificInstrument/list', SLViews.SIListPageView.as_view(), name='scientificInstrumentsListPage'),
+    path('scientificInstrument/list', SLViews.ListPageView.as_view(), name='scientificInstrumentsListPage'),
     path('scientificInstrument/add', SLViews.AddPageView.as_view(), name='addScientificInstrumentPage'),
+    path('scientificInstrument/edit', SLViews.EditPageView.as_view(), name='editScientificInstrumentPage'),
     # path('scientificInstrument/information', SLViews.informationBookingPage, name='informationBookingPage'),
     path('scientificInstrument/detail', SLViews.DetailBookingView.as_view(), name='detailScientificInstrumentPage'),
     path('scientificInstrument/notifications', SLViews.NotificationsBookingView.as_view(), name='notificationBookingPage'),
