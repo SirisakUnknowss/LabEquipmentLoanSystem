@@ -1,4 +1,3 @@
-var nameFile = ""
 async function loadContent(url="") {
     fetch(url)
     .then(response => response.blob())
@@ -9,7 +8,7 @@ async function loadContent(url="") {
       a.href = url;
       // the filename you want
       
-      a.download = nameFile;
+      a.download = nameFileExport;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -18,11 +17,5 @@ async function loadContent(url="") {
 }
 
 async function requestContent(url="") {
-    loadContent(url)
+    loadContent(urlExportData + "?getData=")
 }
-const exportAllButton = document.querySelector("#exportAllButton")
-
-exportAllButton.addEventListener('click', (event) => {
-    nameFile = "scientificInstrumentAllData.xlsx"
-    requestContent(urlExportData + "?getData=")
-})

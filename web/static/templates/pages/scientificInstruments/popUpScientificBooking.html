@@ -1,6 +1,6 @@
 <!-- Modal -->
 <div class="modal" id="modalScientificBooking" tabindex="-1" role="dialog" aria-labelledby="modalScientificBooking" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-booking modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title w-100" id="exampleModalLabel">จองเครื่องมือ</h5>
@@ -11,10 +11,10 @@
                 <div class="modal-body mt-3 mb-2 ms-5 me-5">
                     <div class="py-3 pe-1 me-10 ms-10 ms-sm-1 me-sm-1">
                         <div class="chart-items center-items">
-                            <img id="image_scientificInstruments" class="image-scientificInstruments border-radius-xl" />
+                            <img id="image_scientificInstruments" onerror="imgError(this);" class="image-scientificInstruments border-radius-xl" />
                         </div>
                     </div>
-                    <input type="hidden" id="id_pk_scientificInstruments" name="scientificInstrument" />
+                    <input type="hidden" id="id_scientificInstruments" name="scientificInstrument" />
                     <div class="row">
                         <div class="col-6 right">
                             <label class="text-bold text-black right">ชื่อเครื่องมือ</label>

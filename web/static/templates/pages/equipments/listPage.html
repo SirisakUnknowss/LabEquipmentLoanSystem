@@ -82,19 +82,14 @@
 
 {% block js %}
 {{ block.super }}
-  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   {% if user.account.status == "admin" %}
   <script>
     const deleteUrl = '{{ deleteUrl }}'
-    function showConfirmDelete(id)
-    {
-        const dataID = document.querySelector("#dataID")
-        dataID.value = id
-    }
-    const equipmentsJson = JSON.parse('{{ resultsJson | safe }}')
+    const resultsJson = JSON.parse('{{ resultsJson | safe }}')
       const urlExportData = "{% url 'ExportEquipments' %}"
+      const nameFileExport = "equipmentsAllData.xlsx"
   </script>
-  <script src="{{ STATIC_URL }}js/exportEquipment.js"></script>
+  <script src="{{ STATIC_URL }}js/exportDataAll.js"></script>
   <script src="{{ STATIC_URL }}js/deleteData.js"></script>
   {% endif %}
 {% endblock %}

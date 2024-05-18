@@ -1,3 +1,5 @@
+# Python
+import json
 # Django
 from django.db.models import Q
 from django.core import serializers
@@ -7,7 +9,9 @@ from rest_framework.request import Request
 # Project
 from account.models import Account
 from base.menu import MenuList, AdminOnly
+from base.variables import STATUS_STYLE
 from scientificInstrument.models import ScientificInstrument, Booking, Order
+from scientificInstrument.serializers import SlzScientificInstrument
 
 class CalendarView(MenuList):
 
@@ -66,7 +70,8 @@ class ListPageView(MenuList):
         super(MenuList, self).get(request)
         self.addMenuPage(1, 1)
         results                     = ScientificInstrument.objects.all().order_by('name')
-        resultsJson                 = serializers.serialize("json", results)
+        serializer                  = SlzScientificInstrument(results, many=True).data
+        resultsJson                 = json.dumps(serializer, ensure_ascii=False)
         self.context['results']     = results
         self.context['resultsJson'] = resultsJson
         self.context['deleteUrl']   = '/api/scientificInstrument/remove'
@@ -114,13 +119,15 @@ class DetailBookingView(MenuList):
 
     def post(self, request, *args, **kwargs):
         super(MenuList, self).post(request)
-        self.addMenuPage(1, -1)
-        bookingID = request.POST.get('bookingID')
-        booking = Booking.objects.filter(id=bookingID).first()
-        if booking is not None:
-            self.context['booking'] = booking
-            return render(request, 'pages/scientificInstruments/detail_page.html', self.context)
-        return redirect(reverse('notificationBookingPage'))
+        self.addMenuPage(1, None)
+        try:
+            order                       = Booking.objects.get(id=request.POST['id'])
+            self.context['order']       = order
+            # self.context['equipments']  = order.equipment.all()
+            self.context['statusMap']   = STATUS_STYLE
+            return render(request, 'pages/scientificInstruments/detailPage.html', self.context)
+        except Booking.DoesNotExist:
+            return redirect(reverse('notificationBookingPage'))
 
 class NotificationsBookingView(MenuList):
 
@@ -129,7 +136,8 @@ class NotificationsBookingView(MenuList):
         self.addMenuPage(1, -1)
         account     = request.user.account
         bookings    = self.getBookings(account)
-        self.context['bookings'] = bookings
+        self.context['orders']      = bookings
+        self.context['statusMap']   = STATUS_STYLE
         return render(request, 'pages/scientificInstruments/notificationPage.html', self.context)
 
     def getBookings(self, account: Account):

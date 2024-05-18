@@ -8,7 +8,7 @@ from django.views import View
 from rest_framework.generics import GenericAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 #Project
 from account.models import Account
 from account.admin import AccountResource
@@ -17,10 +17,12 @@ from base.models import DataWeb
 from base.functions import download_file, getDataFile
 from borrowing.admin import OrderModelResource
 from borrowing.models import Order
+from chemicalSubstance.admin import ChemicalSubstanceModelResource
+from chemicalSubstance.models import ChemicalSubstance
 from equipment.admin import EquipmentModelResource
 from equipment.models import Equipment
-from scientificInstrument.models import ScientificInstrument, Booking
 from scientificInstrument.admin import BookingModelResource, ScientificInstrumentModelResource
+from scientificInstrument.models import ScientificInstrument, Booking
 from settings.base import MEDIA_ROOT
     
 
@@ -106,14 +108,8 @@ class ProfileView(MenuList):
 
     def get(self, request, *args, **kwargs):
         super(MenuList, self).get(request)
-        approved    = Q(status=Order.STATUS.APPROVED)
-        overdue     = Q(status=Order.STATUS.OVERDUED)
-        returned    = Q(status=Order.STATUS.RETURNED)
-        if request.user.account.status == Account.STATUS.USER:
-            orders  = Order.objects.filter(approved | returned | overdue)
-            orders  = orders.filter(user=request.user.account)
-            self.context['orders'] = orders
-        return render(request, 'pages/user_profile.html', self.context)
+        self.context['titleBar'] = "ข้อมูลบัญชีผู้ใช้งาน"
+        return render(request, 'pages/userProfile.html', self.context)
 
 class EditProfileView(View):
     
@@ -176,7 +172,7 @@ class UserEditPageView(MenuList):
 # ==================================== EXPORT DATA ==================================== #
 
 class ExportUserData(LabAPIView):
-    permission_classes = [ AllowAny ]
+    permission_classes = [ IsAdminUser ]
 
     def get(self, request, *args, **kwargs):
         filePath, fileName = self.writeFile()
@@ -191,7 +187,7 @@ class ExportUserData(LabAPIView):
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportBorrowingData(LabAPIView):
-    permission_classes = [ AllowAny ]
+    permission_classes = [ IsAdminUser ]
 
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
@@ -211,7 +207,7 @@ class ExportBorrowingData(LabAPIView):
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportEquipments(LabAPIView):
-    permission_classes = [ AllowAny ]
+    permission_classes = [ IsAdminUser ]
 
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
@@ -230,7 +226,7 @@ class ExportEquipments(LabAPIView):
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportScientificInstruments(LabAPIView):
-    permission_classes = [ AllowAny ]
+    permission_classes = [ IsAdminUser ]
 
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
@@ -243,13 +239,32 @@ class ExportScientificInstruments(LabAPIView):
         queryset = ScientificInstrument.objects.all()
         if parameter_value != "":
             queryset = ScientificInstrument.objects.all().order_by('-statistics').filter(statistics__gt=1)
-        fileName = f"Equipments{parameter_value}Data"
+        fileName = f"ScientificInstruments{parameter_value}Data"
         
         xlsxFile = getDataFile(dirPath, fileName, ScientificInstrumentModelResource, queryset)
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
+class ExportChemicalSubstances(LabAPIView):
+    permission_classes = [ IsAdminUser ]
+
+    def get(self, request, *args, **kwargs):
+        parameter_value = request.GET['getData']
+        filePath, fileName = self.writeFile(parameter_value)
+        return download_file(filePath, fileName)
+
+    def writeFile(self, parameter_value):
+        userFileDir = "ChemicalSubstances"
+        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
+        queryset = ChemicalSubstance.objects.all()
+        if parameter_value != "":
+            queryset = ChemicalSubstance.objects.all().order_by('-statistics').filter(statistics__gt=1)
+        fileName = f"ChemicalSubstances{parameter_value}Data"
+        
+        xlsxFile = getDataFile(dirPath, fileName, ChemicalSubstanceModelResource, queryset)
+        return f"{dirPath}/{xlsxFile}", xlsxFile
+
 class ExportBookingData(LabAPIView):
-    permission_classes = [ AllowAny ]
+    permission_classes = [ IsAdminUser ]
 
     def get(self, request, *args, **kwargs):
         parameter_value     = request.GET['getData']

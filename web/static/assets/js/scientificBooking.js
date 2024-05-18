@@ -1,5 +1,5 @@
 
-const idScientificInstrument = document.querySelector("#id_pk_scientificInstruments")
+const idScientificInstrument = document.querySelector("#id_scientificInstruments")
 const imageScientificInstruments = document.querySelector("#image_scientificInstruments")
 const nameDisplay = document.querySelector("#id_name_scientificInstruments")
 const numberDisplay = document.querySelector("#id_number_scientificInstruments")
@@ -38,12 +38,16 @@ function getLastDateOfMonth(year, month) {
 
 function showBooking(id)
 {
-    var data = scientificInstrumentsJson.find(function(item) { return item.pk == id })
-    console.log(data)
-    idScientificInstrument.value = data.pk
-    nameDisplay.innerHTML = data.fields.name
-    numberDisplay.innerHTML = data.fields.number
-    imageScientificInstruments.src = data.fields.image
+    var data = resultsJson.find(function(item) { return item.pk == id })
+    idScientificInstrument.value = data.id
+    nameDisplay.innerHTML = data.name
+    numberDisplay.innerHTML = data.number
+    imageScientificInstruments.src = data.image
+}
+
+function imgError(image) {
+    image.src = urlPlaceHolder
+    return true;
 }
 
 async function loadContent(url="") {

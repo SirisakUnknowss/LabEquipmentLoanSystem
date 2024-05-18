@@ -1,18 +1,26 @@
 # Python
+import os
 from datetime import datetime, time
 from pythainlp.util import thai_strftime
 # Django
+from django.conf import settings
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 # Project
 from account.serializers import SlzAccountCreate
-from borrowing.models import Order
 from scientificInstrument.models import ScientificInstrument, Booking
 
 class SlzScientificInstrument(serializers.ModelSerializer):
     class Meta:
         model = ScientificInstrument
         fields = '__all__'
+
+    def to_representation(self, instance):
+        response            = super(SlzScientificInstrument, self).to_representation(instance)
+        fullPath = os.path.join(settings.MEDIA_URL, f"{instance.image}")
+        print(fullPath)
+        response["image"]   = fullPath
+        return response
 
 class SlzScientificInstrumentInput(serializers.ModelSerializer):
     class Meta:

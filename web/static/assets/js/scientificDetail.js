@@ -7,15 +7,21 @@ const annotationInput = document.querySelector("#id_annotation")
 const imageDisplay = document.querySelector("#imageDisplay")
 function showDetail(id)
 {
-    var data = scientificInstrumentsJson.find(function(item) { return item.pk == id })
-    nameInput.innerHTML = data.fields.name
-    numberInput.innerHTML = data.fields.number
-    placeInput.innerHTML = data.fields.place
-    detailInput.innerHTML = data.fields.detail
-    annotationInput.innerHTML = data.fields.annotation
-    imageDisplay.src = data.fields.image
-    if (data.fields.image == "")
-    {
+    var data = resultsJson.find(function(item) { return item.id === id })
+    nameInput.innerHTML = data.name
+    numberInput.innerHTML = data.number
+    placeInput.innerHTML = data.place
+    detailInput.innerHTML = data.detail
+    annotationInput.innerHTML = data.annotation
+    console.log(data.image)
+    try {
+        imageDisplay.src = data.image
+    }catch {
         imageDisplay.src = urlPlaceHolder
     }
+}
+
+function imgError(image) {
+    image.src = urlPlaceHolder
+    return true;
 }

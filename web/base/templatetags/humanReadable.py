@@ -3,7 +3,7 @@ from datetime import datetime
 # DJANGO
 from django import template
 # Project
-from base.variables import UNIT
+from base.variables import UNIT, DATE_TITLE
 
 register = template.Library()
 
@@ -38,3 +38,10 @@ def Unit(value):
 		return UNIT[value]
 	except:
 		return 0
+
+@register.filter
+def dateTitleNotice(value):
+	try:
+		return DATE_TITLE[value]
+	except:
+		return None

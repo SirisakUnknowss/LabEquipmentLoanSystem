@@ -107,12 +107,10 @@
   {% if user.account.status == "admin" %}
   <script>
     const deleteUrl = '{{ deleteUrl }}'
-    function showConfirmDelete(id)
-    {
-        const dataID = document.querySelector("#dataID")
-        dataID.value = id
-    }
+    const urlExportData = "{% url 'ExportChemicalSubstances' %}"
+    const nameFileExport = "chemicalSubstancesAllData.xlsx"
   </script>
+  <script src="{{ STATIC_URL }}js/exportDataAll.js"></script>
   <script src="{{ STATIC_URL }}js/deleteData.js"></script>
   {% endif %}
 {% endblock %}

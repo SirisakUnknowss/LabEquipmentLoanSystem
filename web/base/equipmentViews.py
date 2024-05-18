@@ -32,7 +32,7 @@ class NotificationsPageView(MenuList):
         super(MenuList, self).get(request)
         self.addMenuPage(0, -1)
         self.context = getOrder(0, request.user.account, self.context)
-        return render(request, 'pages/equipments/notificationsPage.html', self.context)
+        return render(request, 'pages/equipments/notificationPage.html', self.context)
 
 class BorrowingHistoryView(MenuList):
 
@@ -96,13 +96,10 @@ class DetailPageView(MenuList):
     def post(self, request: Request, *args, **kwargs):
         super(MenuList, self).post(request)
         self.addMenuPage(0, None)
-        status      = request.POST['StatusBorrowing']
-        equipmentID = request.POST['EquipmentID']
         try:
-            order                       = Order.objects.get(id=equipmentID, status=status)
+            order                       = Order.objects.get(id=request.POST['id'])
             self.context['order']       = order
             self.context['equipments']  = order.equipment.all()
-            self.context['status']      = status
             self.context['statusMap']   = STATUS_STYLE
             return render(request, 'pages/equipments/detailPage.html', self.context)
         except Order.DoesNotExist:

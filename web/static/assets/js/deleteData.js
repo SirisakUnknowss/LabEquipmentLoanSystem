@@ -26,3 +26,9 @@ document.getElementById("formDeleteData").addEventListener("submit", function(ev
     }
   })
 })
+
+function showConfirmDelete(id)
+{
+    const dataID = document.querySelector("#dataID")
+    dataID.value = id
+}

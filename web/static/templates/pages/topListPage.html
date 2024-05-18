@@ -1,8 +1,7 @@
 {% if user.account.status == "admin" %}
 <div class="row">
     <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-2">
-        <button class="btn mb-n2 text-info fs-5 text-decoration-underline" id="exportAllButton" 
-        type="button" data-target="warningToast">ดาวโหลดข้อมูล</button>
+        <span class="btn mb-n2 text-info fs-5 text-decoration-underline" onclick="requestContent()" type="button">ดาวโหลดข้อมูล</span>
     </div>
 </div>
 {% endif %}

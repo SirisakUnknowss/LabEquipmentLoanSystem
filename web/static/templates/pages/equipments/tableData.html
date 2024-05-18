@@ -4,12 +4,11 @@
         <tr>
             <th class="text-center text-uppercase text-black text-s font-weight-bolder">รหัสนักศึกษา</th>
             <th class="text-center text-uppercase text-black text-s font-weight-bolder">ผู้ใช้งาน</th>
-            <th class="text-center text-uppercase text-black text-s font-weight-bolder">ผู้อนุมัติ</th>
-            {% ifequal nameCategory "อุปกรณ์" %}
-            <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่ยืม</th>
-            {% else %}
-            <th class="text-center text-uppercase text-black text-s font-weight-bolder">วันที่เบิก</th>
+            {% ifequal nameCategory "เครื่องมือ" %}
+            <th class="text-center text-uppercase text-black text-s font-weight-bolder">เครื่องมือ</th>
             {% endifequal %}
+            <th class="text-center text-uppercase text-black text-s font-weight-bolder">ผู้อนุมัติ</th>
+            <th class="text-center text-uppercase text-black text-s font-weight-bolder">{{ nameCategory|dateTitleNotice }}</th>
             {% ifequal nameCategory "อุปกรณ์" %}
             <th class="text-center text-uppercase text-black text-s font-weight-bolder w-15">วันที่คืน</th>
             {% endifequal %}
@@ -27,6 +26,11 @@
                 {% if order.user.firstname %} {{ order.user.firstname }} {% endif %} {% if order.user.lastname %} {{ order.user.lastname }} {% endif %}
             </span>
         </td>
+        {% ifequal nameCategory "เครื่องมือ" %}
+        <td class="align-middle text-center">
+            <span class="text-secondary text-s">{{ order.scientificInstrument.name }}</span>
+        </td>
+        {% endifequal %}
         <td class="align-middle text-center">
             <span class="text-black text-s">
                 {% if order.approver.firstname %} {{ order.approver.firstname }} {% endif %} {% if order.approver.lastname %} {{ order.approver.lastname }} {% endif %}
@@ -40,7 +44,17 @@
                 <span class="text-black text-s">-</span>
             {% endif %}
         </td>
-        {% else %}
+        {% endifequal %}
+        {% ifequal nameCategory "เครื่องมือ" %}
+        <td class="align-middle text-center">
+            {% if order.dateBooking %}
+                <span class="text-black text-s">{% load tz %}{{ order.dateBooking|date:"d/m/Y" }}</span>
+            {% else %}
+                <span class="text-black text-s">-</span>
+            {% endif %}
+        </td>
+        {% endifequal %}
+        {% ifequal nameCategory "สารเคมี" %}
         <td class="align-middle text-center">
             {% if order.dateWithdraw %}
                 <span class="text-black text-s">{% load tz %}{{ order.dateWithdraw|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
@@ -61,8 +75,7 @@
         <td class="align-middle text-center text-sm">
             <form class="align-items-center text-center d-inline-block" id="confirm-equipment" method="post" action="detail">
                 {% csrf_token %}
-                <input type="hidden" value="{{ order.id }}" name="EquipmentID" />
-                <input type="hidden" value="{{ order.status }}" name="StatusBorrowing" />
+                <input type="hidden" value="{{ order.id }}" name="id" />
                 {% with statusMap|hash:order.status as button %}
                     <button class="badge badge-sm bg-gradient-{{ button.style }} bagde-status-table" type="submit">{{ button.text }}</button>
                 {% endwith %}

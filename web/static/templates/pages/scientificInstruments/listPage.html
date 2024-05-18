@@ -12,7 +12,7 @@
         <div class="row">
           {% for result in results %}
           <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 col-12 mt-3 mb-2">
-            <div class="card">
+            <div class="card border border-info shadow-info">
               <div class="card-header p-0 position-relative mt-n4 mx-3 bg-transparent">
                 <div class="mt-5">
                   <h5 class="truncate mt-1">
@@ -77,11 +77,11 @@
 
 {% block js %}
 {{ block.super }}
-  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <script>
     let urlPlaceHolder = "{{ STATIC_URL }}images/scientificInstrument/PlaceHolder.png"
     let urlGetTimeStartCanBooking = "{% url 'GetTimeStartCanBooking' %}"
     let urlGetTimeEndCanBooking = "{% url 'GetTimeEndCanBooking' %}"
+    const resultsJson = JSON.parse('{{ resultsJson | safe }}')
   </script>
   
   <script src="{{ STATIC_URL }}js/scientificDetail.js"></script>
@@ -89,15 +89,10 @@
   {% if user.account.status == "admin" %}
   <script>
     const deleteUrl = '{{ deleteUrl }}'
-    function showConfirmDelete(id)
-    {
-        const dataID = document.querySelector("#dataID")
-        dataID.value = id
-    }
     const urlExportData = "{% url 'ExportScientificInstruments' %}"
-    const scientificInstrumentsJson = JSON.parse('{{ resultsJson | safe }}')
+    const nameFileExport = "scientificInstrumentAllData.xlsx"
   </script>
-  <script src="{{ STATIC_URL }}js/exportScientificInstrument.js"></script>
+  <script src="{{ STATIC_URL }}js/exportDataAll.js"></script>
   <script src="{{ STATIC_URL }}js/deleteData.js"></script>
   {% endif %}
 {% endblock %}

@@ -4,15 +4,21 @@
 <main class="main-content position-relative max-height-vh-100 h-100">
     {% include "base/navbar.html" %}
     <div class="container-fluid py-4 ">
-        {% include 'pages/notifications/scientificInstrument.html' %}
-
+        <div class="row">
+            <div class="card card-body mx-3 px-4 pt-4">
+                <div class="d-flex align-items-center mx-3">
+                    <img src="{{ STATIC_URL }}/images/notice_alert.png" class="image-alert" />
+                    <span class="text-black fs-4">แจ้งเตือนการ{{ actionCategory }}{{ nameCategory }}</span>
+                </div>
+                <div class="table-responsive p-0 m-4">
+                {% if orders %}
+                    {% include "pages/equipments/tableData.html" %}
+                {% else %}
+                    {% include "error/notFoundData.html" %}
+                {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 </main>
-{% endblock %}
-
-{% block js %}
-{{ block.super }}
-    <script>
-        let name_page = "id_notification_page"
-    </script>
 {% endblock %}
