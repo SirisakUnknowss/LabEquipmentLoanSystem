@@ -63,15 +63,16 @@
                     </div>
                     {% else %}
                     {% comment %} {% if result.remainingQuantity == 0 %}
-                    <label class="form-label">จำนวนที่ยืม : </label>
-                    <input type="number" class="text-center mb-3 border-radius-md" id="remainingQuantity" name="remainingQuantity" min="0" value="0" max="{{ result.remainingQuantity }}"></br>
-                    <button class="btn bg-gradient-secondary" type="submit">เพิ่มลงตะกร้า</button>
+                    <label for="remainingQuantity">จำนวนที่เบิก : </label>
+                    <input type="number" class="text-center mb-3 border-radius-md" id="remainingQuantity" name="remainingQuantity" min="0" value="0" max="{{ result.remainingQuantity }}">
+                    <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
                     {% else %}
-                    <form id="add-result" method="post" action="{% url 'addItemForBorrowingApi' %}">
+
+
+                    <form method="post" action="{% url 'addItemForWithdrawApi' %}">
                       {% csrf_token %}
-                      <label class="form-label">จำนวนที่ยืม : </label>
+                      <label for="remainingQuantity">จำนวนที่เบิก : </label>
                       <input type="number" class="text-center mb-3 border-radius-md" id="remainingQuantity" name="remainingQuantity" min="0" value="0" max="{{ result.remainingQuantity }}">
-                      <input type="hidden" value="{{ result.id }}" name="result" /></br>
                       <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
                     </form>
                     {% endif %} {% endcomment %}
@@ -96,9 +97,11 @@
     </div>
   </div>
 
+  {% if user.account.status == "admin" %}
   {% include 'modals/confirmDeleteData.html' %}
   {% include "modals/loading.html" %}
   {% include 'modals/deleteSuccess.html' %}
+  {% endif %}
 </main>
 {% endblock %}
 

@@ -49,7 +49,7 @@
                   <div class="row">
                     <div class="col-12 col-md-12 col-xl-6 col-lg-6">
                         <input type="hidden" value="{{ result.id }}" name="ScientificInstrumentID" />
-                        <button class="btn bg-gradient-info w-100 px-0" onclick="showBooking({{ scientificInstrument.id }})" data-bs-toggle="modal" data-bs-target="#modalScientificBooking">จอง</button>
+                        <button class="btn bg-gradient-info w-100 px-0" onclick="showBooking({{ result.id }})" data-bs-toggle="modal" data-bs-target="#modalScientificBooking">จอง</button>
                     </div>
                     <div class="col-12 col-md-12 col-xl-6 col-lg-6">
                       <button id="scientificInstrumentDetail" class="btn bg-gradient-warning w-100 px-0" onclick="showDetail({{ result.id }})" data-bs-toggle="modal" data-bs-target="#modalScientificDetail">รายละเอียด</button>
@@ -67,11 +67,14 @@
       {% endif %}
     </div>
   </div>
-  {% include 'pages/scientificInstruments/popUpScientificDetail.html' %}
-  {% include 'pages/scientificInstruments/popUpScientificBooking.html' %}
+  {% if user.account.status == "admin" %}
   {% include 'modals/confirmDeleteData.html' %}
   {% include "modals/loading.html" %}
   {% include 'modals/deleteSuccess.html' %}
+  {% else %}
+  {% include 'pages/scientificInstruments/popUpScientificDetail.html' %}
+  {% include 'pages/scientificInstruments/popUpScientificBooking.html' %}
+  {% endif %}
 </main>
 {% endblock %}
 

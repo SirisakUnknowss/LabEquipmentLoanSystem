@@ -13,7 +13,6 @@ function showDetail(id)
     placeInput.innerHTML = data.place
     detailInput.innerHTML = data.detail
     annotationInput.innerHTML = data.annotation
-    console.log(data.image)
     try {
         imageDisplay.src = data.image
     }catch {

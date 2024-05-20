@@ -52,7 +52,6 @@ class Booking(models.Model):
     user                    = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.CASCADE, related_name='accountBooking')
     scientificInstrument    = models.ForeignKey(ScientificInstrument, null=True, blank=True, on_delete=models.CASCADE, related_name='scientificInstrumentBooking')
     dateBooking             = models.DateField(null=True, blank=True, default=None)
-    timeBooking             = models.CharField(max_length=20, choices=Time.choices, null=True, blank=True)
     startBooking            = models.TimeField(blank=True, null=True, default=None)
     endBooking              = models.TimeField(blank=True, null=True, default=None)
     amountOfTime            = models.IntegerField(default=1)
@@ -63,5 +62,5 @@ class Booking(models.Model):
 
     def __str__(self):
         if self.scientificInstrument:
-            return str(self.scientificInstrument.name) + str(self.scientificInstrument.number) + str(self.dateBooking) + str(self.timeBooking)
+            return f"{self.scientificInstrument.name} {self.scientificInstrument.number} {self.dateBooking}"
         return ""

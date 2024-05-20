@@ -74,9 +74,11 @@
       {% endif %}
     </div>
   </div>
+  {% if user.account.status == "admin" %}
   {% include 'modals/confirmDeleteData.html' %}
   {% include "modals/loading.html" %}
   {% include 'modals/deleteSuccess.html' %}
+  {% endif %}
 </main>
 {% endblock %}
 

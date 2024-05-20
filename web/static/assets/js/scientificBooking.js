@@ -38,7 +38,7 @@ function getLastDateOfMonth(year, month) {
 
 function showBooking(id)
 {
-    var data = resultsJson.find(function(item) { return item.pk == id })
+    var data = resultsJson.find(function(item){ return item.id == id })
     idScientificInstrument.value = data.id
     nameDisplay.innerHTML = data.name
     numberDisplay.innerHTML = data.number

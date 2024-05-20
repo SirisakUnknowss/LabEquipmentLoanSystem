@@ -42,9 +42,9 @@ class CalendarView(MenuList):
         try:
             id = self.context['scientificInstrumentID']
             scientificInstrument    = ScientificInstrument.objects.get(pk=int(id))
-            bookingsAll             = Booking.objects.filter(scientificInstrument=scientificInstrument).order_by('-dateBooking', '-timeBooking')
+            bookingsAll             = Booking.objects.filter(scientificInstrument=scientificInstrument).order_by('-dateBooking', '-startBooking')
         except:
-            bookingsAll = Booking.objects.all().order_by('-dateBooking', '-timeBooking')
+            bookingsAll = Booking.objects.all().order_by('-dateBooking', '-startBooking')
         booking         = dict()
         booking['all']  = bookingsAll.count()
         booking['data'] = self.getBookingList(bookingsAll)
@@ -147,7 +147,7 @@ class NotificationsBookingView(MenuList):
         if account.status == Account.STATUS.ADMIN:
             waiting     = Q(status=Order.STATUS.WAITING)
             bookings      = Booking.objects.filter(waiting)
-        return bookings.order_by('-dateBooking', '-timeBooking')
+        return bookings.order_by('-dateBooking', '-startBooking')
 
 class AnalysisPageView(MenuList):
 

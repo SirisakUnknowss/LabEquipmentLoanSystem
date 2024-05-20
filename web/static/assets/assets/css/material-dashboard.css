@@ -12600,7 +12600,7 @@ textarea.form-control-lg {
   text-transform: uppercase; }
 
 .btn {
-  margin-bottom: 1rem;
+  margin-bottom: 0.25rem;
   letter-spacing: 0;
   text-transform: uppercase;
   background-size: 150%;
@@ -18298,4 +18298,12 @@ label.input-stepper {
 
 .truncate:hover .tooltiptext {
   visibility: visible;
+}
+
+.vertical-center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
 }

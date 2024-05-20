@@ -4,7 +4,7 @@ const numberScientificInstrument    = document.querySelector("#numberScientificI
 const usernameBooking               = document.querySelector("#usernameBooking")
 const userIdBooking                 = document.querySelector("#userIdBooking")
 const placeScientificInstrument     = document.querySelector("#placeScientificInstrument")
-const datetimeBooking               = document.querySelector("#datetimeBooking")
+const dateTimeBooking               = document.querySelector("#dateTimeBooking")
 const createAtBooking               = document.querySelector("#createAtBooking")
 const statusBooking                 = document.querySelector("#statusBooking")
 const imageDisplay                  = document.querySelector("#imageDisplay")
@@ -63,15 +63,20 @@ function display(jsonObject)
     usernameBooking.innerHTML = data.user.firstname + " " + data.user.lastname
     userIdBooking.innerHTML = data.user.studentID
     placeScientificInstrument.innerHTML = data.scientificInstrument.place
-    datetimeBooking.innerHTML = data.dateBooking + " " + data.timeBooking
+    dateTimeBooking.innerHTML = data.dateBooking + " " + data.startBooking
     createAtBooking.innerHTML = formatDateTime(data.createAt)
     setStatusBooking(data.status)
 
-    imageDisplay.src = (data.scientificInstrument.image).replace("media/", "")
-    if (data.scientificInstrument.image == "")
-    {
+    try {
+        imageDisplay.src = data.scientificInstrument.image
+    }catch {
         imageDisplay.src = urlPlaceHolder
     }
+}
+
+function imgError(image) {
+    image.src = urlPlaceHolder
+    return true;
 }
 
 function formatDateTime(dateString)
@@ -178,37 +183,37 @@ function setStatusBooking(status)
 {
     if (status == "waiting")
     {
-        statusBooking.className = "btn badge badge-sm bg-gradient-warning w-100"
+        statusBooking.className = "border-radius-sm badge badge-sm bg-gradient-warning w-100"
         statusBooking.innerHTML = "รออนุมัติ"
     }
     else if (status == "approved")
     {
-        statusBooking.className = "btn badge badge-sm bg-gradient-info w-100"
+        statusBooking.className = "border-radius-sm badge badge-sm bg-gradient-info w-100"
         statusBooking.innerHTML = "อนุมัติแล้ว"
     }
     else if (status == "canceled")
     {
-        statusBooking.className = "btn badge badge-sm bg-gradient-danger w-100"
+        statusBooking.className = "border-radius-sm badge badge-sm bg-gradient-danger w-100"
         statusBooking.innerHTML = "ยกเลิก"
     }
     else if (status == "disapproved")
     {
-        statusBooking.className = "btn badge badge-sm bg-gradient-danger w-100"
+        statusBooking.className = "border-radius-sm badge badge-sm bg-gradient-danger w-100"
         statusBooking.innerHTML = "คำขอล้มเหลว"
     }
     else if (status == "completed")
     {
-        statusBooking.className = "btn badge badge-sm bg-gradient-success w-100"
+        statusBooking.className = "border-radius-sm badge badge-sm bg-gradient-success w-100"
         statusBooking.innerHTML = "คืนเรียบร้อยแล้ว"
     }
     else if (status == "overdued")
     {
-        statusBooking.className = "btn badge badge-sm bg-gradient-danger w-100"
+        statusBooking.className = "border-radius-sm badge badge-sm bg-gradient-danger w-100"
         statusBooking.innerHTML = "เกินกำหนดคืน"
     }
     else if (status == "returned")
     {
-        statusBooking.className = "btn badge badge-sm bg-gradient-warning w-100"
+        statusBooking.className = "border-radius-sm badge badge-sm bg-gradient-warning w-100"
         statusBooking.innerHTML = "คืนอุปกรณ์"
     }
 }

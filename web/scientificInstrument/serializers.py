@@ -106,7 +106,7 @@ class SlzBookingOutput(serializers.ModelSerializer):
     def to_representation(self, instance):
         response                = super(SlzBookingOutput, self).to_representation(instance)
         response["dateBooking"] = self.convertToThaiDate(instance.dateBooking)
-        response["timeBooking"] = f"เวลา {instance.timeBooking} น."
+        response["startBooking"] = f"เวลา {instance.startBooking.strftime('%H:%M')} น."
         response["status"]      = instance.status
         return response
 
