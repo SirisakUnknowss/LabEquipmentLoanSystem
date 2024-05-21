@@ -1,46 +1,46 @@
 <div class="d-flex justify-content-end text-center m-4">
     {% if user.account.status == "admin" %}
-    {% if status == "waiting" %}
-    <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'approvedBorrowingApi' %}">
-        {% csrf_token %}
-        <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-success shadow-none fs-6 w-100 h-100" type="submit">อนุมัติ</button>
-    </form>
+    {% if order.status == "waiting" %}
     <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'disapprovedBorrowingApi' %}">
         {% csrf_token %}
         <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-danger shadow-none fs-6 w-100 h-100" type="submit">ไม่อนุมัติ</button>
+        <button class="btn bg-gradient-danger fs-6 w-100 h-100" type="submit">ไม่อนุมัติ</button>
     </form>
-    {% elif status == "returned" %}
+    <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'approvedBorrowingApi' %}">
+        {% csrf_token %}
+        <input type="hidden" value="{{ order.id }}" name="orderID" />
+        <button class="btn bg-gradient-info fs-6 w-100 h-100" type="submit">อนุมัติ</button>
+    </form>
+    {% elif order.status == "returned" %}
     <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'confirmreturnApi' %}">
         {% csrf_token %}
         <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-success shadow-none fs-6 w-100 h-100" type="submit">ยืนยันการคืนอุปกรณ์</button>
+        <button class="btn bg-gradient-info fs-6 w-100 h-100" type="submit">ยืนยันการคืนอุปกรณ์</button>
     </form>
-    {% elif status == "overdued" %}
+    {% elif order.status == "overdued" %}
     <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'returningApi' %}">
         {% csrf_token %}
         <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-danger shadow-none fs-6 w-100 h-100" type="submit">คืนอุปกรณ์</button>
+        <button class="btn bg-gradient-danger fs-6 w-100 h-100" type="submit">คืนอุปกรณ์</button>
     </form>
     {% endif %}
     {% elif user.account.status == "user" %}
-    {% if status == "waiting" %}
+    {% if order.status == "waiting" %}
     <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'cancelBorrowingApi' %}">
         {% csrf_token %}
         <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-danger shadow-none fs-6 w-100 h-100" type="submit">ยกเลิก</button>
+        <button class="btn bg-gradient-danger fs-6 w-100 h-100" type="submit">ยกเลิก</button>
     </form>
-    {% elif status == "approved" %}
+    {% elif order.status == "approved" %}
     <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'returningApi' %}">
         {% csrf_token %}
         <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-danger shadow-none fs-6 w-100 h-100" type="submit">คืนอุปกรณ์</button>
+        <button class="btn bg-gradient-info fs-6 w-100 h-100" type="submit">คืนอุปกรณ์</button>
     </form>
     <form id="confirm-equipment" class="btn-w-270 m-2" method="post" action="{% url 'borrowAgainApi' %}">
         {% csrf_token %}
         <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-warning shadow-none fs-6 w-100 h-100" type="submit">ยืมอุปกรณ์ต่อ</button>
+        <button class="btn bg-gradient-warning fs-6 w-100 h-100" type="submit">ยืมอุปกรณ์ต่อ</button>
     </form>
         {% endif %}
     {% endif %}

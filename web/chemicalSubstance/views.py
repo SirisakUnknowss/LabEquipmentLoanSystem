@@ -191,3 +191,33 @@ class ConfirmWithdrawalApi(LabAPIView):
             order.chemicalSubstance.add(withdrawal)
         order.save()
         return order
+
+# class AddItemForBorrowingApi(LabAPIGetView):
+#     queryset            = EquipmentCart.objects.all()
+#     serializer_class    = SlzEquipmentCartInput
+#     permission_classes  = [ AllowAny ]
+
+#     def post(self, request, *args, **kwargs):
+#         account                 = request.user.account
+#         serializerInput         = self.get_serializer(data=request.data)
+#         if not serializerInput.is_valid():
+#             self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+#             return redirect(reverse('equipmentListPage'))
+#         equipment               = self.perform_create(serializerInput, account)
+#         serializerOutput        = SlzEquipmentCart(equipment)
+#         self.response["result"] = serializerOutput.data
+#         return redirect(reverse('equipmentListPage'))
+    
+#     def perform_create(self, serializer, account):
+#         validated = serializer.validated_data
+#         equipmentCart = EquipmentCart.objects.filter(user=account, equipment=validated.get("equipment"))
+#         if equipmentCart.exists():
+#             equipmentCart.update(quantity=F('quantity') + validated.get("quantity"))
+#             return equipmentCart
+#         equipmentCart = EquipmentCart(
+#             user        = account,
+#             equipment   = validated.get("equipment"),
+#             quantity    = validated.get("quantity"),
+#             )
+#         equipmentCart.save()
+#         return equipmentCart

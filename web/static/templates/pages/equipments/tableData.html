@@ -77,7 +77,7 @@
                 {% csrf_token %}
                 <input type="hidden" value="{{ order.id }}" name="id" />
                 {% with statusMap|hash:order.status as button %}
-                    <button class="badge badge-sm bg-gradient-{{ button.style }} bagde-status-table" type="submit">{{ button.text }}</button>
+                    <button class="btn badge badge-sm bg-gradient-{{ button.style }} bagde-status-table" type="submit">{{ button.text }}</button>
                 {% endwith %}
             </form>
         </td>
