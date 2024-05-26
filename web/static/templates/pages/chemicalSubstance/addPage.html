@@ -6,10 +6,10 @@
 {% block content %}
 <main class="main-content position-relative max-height-vh-100 h-100">
     {% include "base/navbar2.html" %}
-    <div class="container-fluid py-4 px-md-5">
+    <div class="container-fluid px-md-5">
         <form enctype="multipart/form-data" id="addData">
             {% csrf_token %}
-            <input type="hidden" value="{{ result.id }}" name="chemicalSubstanceID" />
+            <input type="hidden" value="{{ result.id }}" name="dataID" />
             <div class="row mt-4">
                 <div class="col-md-12 col-lg-6 my-2">
                     <div class="card card-body rounded-0">
@@ -206,10 +206,10 @@
             </div>
 
             <div class="row text-center">
-                <div class="col-lg-6 col-12 text-lg-end">
+                <div class="col-lg-12 col-12 text-lg-center">
                     <input class="btn border border-info bg-gradient-info my-2 w-100 w-lg-50" type="submit" id="confirmBtn" value="บันทึก" / >
                 </div>
-                <div class="col-lg-6 col-12 text-lg-start">
+                <div class="col-lg-12 col-12 text-lg-center">
                     <a class="" href="list">
                         <span class="btn border bg-white border-danger text-danger border-1 my-2 w-100 w-lg-50">ยกเลิก</span>
                     </a>

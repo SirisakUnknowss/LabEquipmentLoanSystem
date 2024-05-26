@@ -26,10 +26,13 @@
     {% endif %}
     {% elif user.account.status == "user" %}
     {% if order.status == "waiting" %}
+    <a href="notifications" class="btn-w-270 m-2">
+        <button class="btn border border-gray fs-6 w-100 h-100" type="submit">ย้อนกลับ</button>
+    </a>
     <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'cancelBorrowingApi' %}">
         {% csrf_token %}
         <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-danger fs-6 w-100 h-100" type="submit">ยกเลิก</button>
+        <button class="btn bg-gradient-danger fs-6 w-100 h-100" type="submit">ยกเลิกการยืม</button>
     </form>
     {% elif order.status == "approved" %}
     <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'returningApi' %}">

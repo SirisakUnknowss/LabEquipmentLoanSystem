@@ -2,7 +2,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 #Project
-from chemicalSubstance.models import ChemicalSubstance, HazardCategory, Order
+from chemicalSubstance.models import ChemicalSubstance, HazardCategory, Order, ChemicalSubstanceCart
 
 class SlzChemicalSubstanceOutput(serializers.ModelSerializer):
     class Meta:
@@ -80,26 +80,31 @@ class SlzCancelInput(serializers.Serializer):
         except Order.DoesNotExist:
             raise ValidationError('ไม่พบรายการเบิกสารเคมี')
 
-class SlzConfirmWithdrawalInput(serializers.Serializer):
-    orderList = serializers.ListField(child=serializers.JSONField())
-
-    def validate_orderList(self, value):
-        self.orderValidate = []
-        for order in value:
-            if type(order) is not dict: continue
-            if not ('id' in order and 'quantity' in order): continue
-            self.idChemical = order['id']
-            self.quantity   = float(order['quantity'])
-            try:
-                order['chemicalSubstance'] = SlzChemicalSubstanceOutput(ChemicalSubstance.objects.get(id=self.idChemical)).data
-                if order['chemicalSubstance']['remainingQuantity'] < self.quantity:
-                    raise ValidationError('ปริมาณสารเคมีที่เบิกมีไม่เพียงพอ')
-                self.orderValidate.append({ 'chemicalSubstance': order['chemicalSubstance'], 'quantity': self.quantity })
-            except ChemicalSubstance.DoesNotExist:
-                raise ValidationError('ไม่พบสารเคมี')
-        return self.orderValidate
-
 class SlzOrderOutput(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+
+class SlzChemicalSubstanceCart(serializers.ModelSerializer):
+    class Meta:
+        model = ChemicalSubstanceCart
+        fields = '__all__'
+
+class SlzChemicalSubstanceCartInput(serializers.Serializer):
+    id          = serializers.CharField()
+    quantity    = serializers.FloatField()
+
+    def validate_id(self, value):
+        try:
+            self.chemicalSubstance = ChemicalSubstance.objects.get(pk=value)
+            return self.chemicalSubstance
+        except ChemicalSubstance.DoesNotExist:
+            raise ValidationError('ไม่พบสารเคมี')
+
+    def validate(self, instance):
+        quantity = instance['quantity']
+        if quantity <= 0:
+            raise ValidationError('quantity invalid.')
+        if quantity > self.chemicalSubstance.remainingQuantity:
+            raise ValidationError('สารเคมีไม่เพียงพอ')
+        return instance

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin, ExportMixin
 from import_export import resources
-from .models import ChemicalSubstance, HazardCategory, Withdrawal, Order
+from .models import ChemicalSubstance, HazardCategory, Withdrawal, Order, ChemicalSubstanceCart
 
 @admin.register(HazardCategory)
 class HazardCategoryCartAdmin(ImportExportModelAdmin):
@@ -21,7 +21,9 @@ class HazardCategoryCartAdmin(ImportExportModelAdmin):
 @admin.register(ChemicalSubstance)
 class ChemicalSubstanceAdmin(ImportExportModelAdmin):
 
-    list_display = [ 'id', 'name', 'serialNumber', 'catalogNo' ]
+    list_display    = [ 'id', 'name', 'serialNumber', 'catalogNo' ]
+    list_filter     = ['name', 'serialNumber', 'hazardCategory', 'ghs']
+    search_fields   = ['name', 'serialNumber', 'hazardCategory', 'ghs']
 
     def get_list_display(self, request):
         return self.list_display + ["thumbnail_preview"]
@@ -64,21 +66,32 @@ class ChemicalSubstanceModelResource(resources.ModelResource):
 
 class WithdrawalResource(resources.ModelResource): 
     class Meta:
-        model = Withdrawal
+        model   = Withdrawal
         exclude = ('id', 'user' )
 
 @admin.register(Withdrawal)
 class WithdrawalAdmin(admin.ModelAdmin):
 
-    list_display = ['id', 'user', 'quantity' ]
+    list_display    = ['id', 'user', 'quantity' ]
+    list_filter     = ['user__studentID']
+    search_fields   = ['user__studentID']
 
 class OrderResource(resources.ModelResource): 
     class Meta:
-        model = Order
-        exclude = ('id', 'user', 'approver' )
-        export_order = ('id', 'user', 'dateWithdraw', 'dateApproved', 'status',)
+        model           = Order
+        exclude         = ('id', 'user', 'approver' )
+        export_order    = ('id', 'user', 'dateWithdraw', 'dateApproved', 'status',)
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
 
-    list_display = ['id', 'user', 'dateWithdraw', 'dateApproved', 'approver', 'status', ]
+    list_display    = ['id', 'user', 'dateWithdraw', 'dateApproved', 'approver', 'status', ]
+    list_filter     = ['user__studentID', 'status']
+    search_fields   = ['user__studentID']
+
+@admin.register(ChemicalSubstanceCart)
+class ChemicalSubstanceCartAdmin(ImportExportModelAdmin):
+
+    list_display    = [ 'id', 'user', 'quantity', 'chemicalSubstance' ]
+    list_filter     = ['user__studentID']
+    search_fields   = ['user__studentID']

@@ -16,7 +16,7 @@ document.getElementById("delete-chemicalSubstance").addEventListener("submit", f
       console.log('Success:', response);
       $('#deleteSuccessModal').modal('show');
       setTimeout(function() {
-        window.location.href = response.result; // Replace with your URL
+        window.location.reload()
       }, 2000);
     },
     error: function(xhr, status, error) {

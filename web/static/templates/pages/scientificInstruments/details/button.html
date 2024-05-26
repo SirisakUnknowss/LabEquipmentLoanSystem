@@ -1,0 +1,21 @@
+<div class="d-flex justify-content-end text-center m-4">
+    {% csrf_token %}
+    <input type="hidden" id="dataID" value="{{ order.id }}">
+    {% if user.account.status == "admin" %}
+    {% if order.status == "waiting" %}
+    <button class="btn bg-gradient-danger fs-6 btn-w-270 m-2" onclick="approvalWithdraw('disapproved')">ไม่อนุมัติ</button>
+    <button class="btn bg-gradient-info fs-6 btn-w-270 m-2" onclick="approvalWithdraw('approved')">อนุมัติ</button>
+    {% else %}
+    <a href="javascript:history.back()" class="btn-w-270 m-2">
+        <button class="btn border border-gray fs-6 w-100 h-100" type="submit">ย้อนกลับ</button>
+    </a>
+    {% endif %}
+    {% elif user.account.status == "user" %}
+    <a href="javascript:history.back()" class="btn-w-270 m-2">
+        <button class="btn border border-gray fs-6 w-100 h-100" type="submit">ย้อนกลับ</button>
+    </a>
+    {% if order.status == "waiting" %}
+        <button class="btn bg-gradient-danger fs-6 btn-w-270 m-2" onclick="showConfirmDelete()">ยกเลิกการเบิก</button>
+    {% endif %}
+    {% endif %}
+</div>

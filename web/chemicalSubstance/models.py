@@ -4,6 +4,7 @@ import re
 from django.db import models
 from django.utils import timezone
 from django.utils.html import mark_safe
+from django.core.validators import MinValueValidator
 
 def getClassPath(instance, filename):
     className = instance.__class__.__name__
@@ -38,8 +39,8 @@ class ChemicalSubstance(models.Model):
     serialNumber        = models.CharField(max_length=100)
     casNo               = models.CharField(max_length=100)
     place               = models.CharField(max_length=100)
-    initialQuantity     = models.FloatField(default=0)
-    remainingQuantity   = models.FloatField(default=0)
+    initialQuantity     = models.FloatField(default=0, validators=[MinValueValidator(0)])
+    remainingQuantity   = models.FloatField(default=0, validators=[MinValueValidator(0)])
     unit                = models.CharField(max_length=100)
     catalogNo           = models.CharField(max_length=100, null=True, blank=True)
     manufacturer        = models.CharField(max_length=100, null=True, blank=True)
@@ -86,3 +87,13 @@ class Order(models.Model):
     dateApproved        = models.DateTimeField(blank=True, null=True, default=None)
     approver            = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.SET_NULL, related_name='approverWithdraw')
     status              = models.CharField(null=True, blank=True, choices=STATUS.choices, default=STATUS.WAITING, max_length=20)
+
+class ChemicalSubstanceCart(models.Model):
+    user                = models.ForeignKey(to='account.Account', null=True, blank=True, on_delete=models.CASCADE, related_name='accountChemicalSubstanceCart')
+    chemicalSubstance   = models.ForeignKey(ChemicalSubstance, on_delete=models.CASCADE, related_name='chemicalSubstanceInCart')
+    quantity            = models.FloatField(default=0, validators=[MinValueValidator(0)])
+
+    def __str__(self):
+        if self.chemicalSubstance:
+            return f"{self.chemicalSubstance.name} ({self.chemicalSubstance.serialNumber})"
+        return ""

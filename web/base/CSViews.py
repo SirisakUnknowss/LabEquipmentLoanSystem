@@ -9,7 +9,7 @@ from rest_framework.request import Request
 from account.models import Account
 from base.menu import AdminOnly, MenuList
 from base.variables import STATUS_STYLE
-from chemicalSubstance.models import ChemicalSubstance, HazardCategory, Order
+from chemicalSubstance.models import ChemicalSubstance, HazardCategory, Order, ChemicalSubstanceCart
 from chemicalSubstance.serializers import SlzChemicalSubstanceOutput, SlzHazardCategory
 
 class ListPageView(MenuList):
@@ -35,6 +35,42 @@ class ListPageView(MenuList):
         self.context['resultsJson'] = resultsJson
         self.context['deleteUrl']   = "/api/chemicalSubstance/remove"
         return render(request, 'pages/chemicalSubstance/listPage.html', self.context)
+
+class DetailPageView(MenuList):
+
+    def get(self, request: Request, *args, **kwargs):
+        super(MenuList, self).get(request)
+        return redirect(reverse('chemicalSubstanceListPage'))
+
+    def post(self, request: Request, *args, **kwargs):
+        super(MenuList, self).post(request)
+        self.addMenuPage(0, None)
+        try:
+            order                       = Order.objects.get(id=request.POST['id'])
+            self.context['order']       = order
+            self.context['orders']      = order.chemicalSubstance.all()
+            self.context['statusMap']   = STATUS_STYLE
+            return render(request, 'pages/chemicalSubstance/detailPage.html', self.context)
+        except Order.DoesNotExist:
+            return redirect(reverse('chemicalSubstanceListPage'))
+
+class CartPageView(MenuList):
+
+    def get(self, request: Request, *args, **kwargs):
+        super(MenuList, self).get(request)
+        self.addMenuPage(2, 2)
+        self.context['carts']       = ChemicalSubstanceCart.objects.filter(user=request.user.account)
+        self.context['status']      = "carts"
+        self.context['deleteUrl']   = "/api/chemicalSubstance/cart/remove"
+        return render(request, 'pages/chemicalSubstance/cartPage.html', self.context)
+
+class WithdrawHistoryView(MenuList):
+
+    def get(self, request: Request, *args, **kwargs):
+        super(MenuList, self).get(request)
+        self.addMenuPage(2, 3)
+        self.context = getOrder(1, request.user.account, self.context)
+        return render(request, 'pages/chemicalSubstance/historyPage.html', self.context)
 
 class AddPageView(AdminOnly):
 
@@ -87,14 +123,6 @@ class NotificationsPageView(MenuList):
         self.addMenuPage(2, -1)
         self.context = getOrder(0, request.user.account, self.context)
         return render(request, 'pages/chemicalSubstance/notificationPage.html', self.context)
-
-class WithdrawHistoryView(MenuList):
-
-    def get(self, request: Request, *args, **kwargs):
-        super(MenuList, self).get(request)
-        self.addMenuPage(2, 2)
-        self.context = getOrder(1, request.user.account, self.context)
-        return render(request, 'pages/chemicalSubstance/historyPage.html', self.context)
 
 class AnalysisView(MenuList):
 

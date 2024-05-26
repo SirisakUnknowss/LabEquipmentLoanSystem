@@ -44,6 +44,7 @@ class LabWebView(AuthenticationMixin):
         if self.status == Account.STATUS.ADMIN:
             self.context['menuDownList'].append({ 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False },)
         checkOverdue(request)
+        return redirect(reverse('notFoundPage'))
 
     def post(self, request, *args, **kwargs):
         self.status = request.user.account.status
@@ -53,6 +54,7 @@ class LabWebView(AuthenticationMixin):
         if self.status == Account.STATUS.ADMIN:
             self.context['menuDownList'].append({ 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False },)
         checkOverdue(request)
+        return redirect(reverse('notFoundPage'))
 
 class AdminMixin(View):
 
@@ -87,6 +89,7 @@ class MenuList(LabWebView):
         ]
 
     def setMenuHome(self) -> list:
+        self.context['actionCategory'] = 'ใช้งานศูนย์'
         self.context['menuList'] = [
         { 'name': 'ยืม-คืนอุปกรณ์วิทยาศาสตร์', 'link': 'equipment/list', 'image': 'static/images/landing/1.png' },
         { 'name': 'จองใช้งานเครื่องมือวิทยาศาสตร์', 'link': 'scientificInstrument/list', 'image': 'static/images/landing/2.png' },
@@ -121,7 +124,7 @@ class MenuList(LabWebView):
         self.nameNotification = self.nameNoticeBorrowing
         menuUpList.extend([
             { 'name': 'รายการอุปกรณ์', 'link': 'list', 'icon': 'description', 'active': False },
-            { 'name': 'ตะกร้าของฉัน', 'link': 'borrowing', 'icon': 'shopping_basket', 'active': False },
+            { 'name': 'ตะกร้าของฉัน', 'link': 'cart', 'icon': 'shopping_basket', 'active': False },
             { 'name': 'ประวัติการยืม-คืนอุปกรณ์', 'link': 'history', 'icon': 'history', 'active': False },
             { 'name': 'วิเคราะห์ข้อมูล', 'link': 'analysis', 'icon': 'assessment', 'active': False },
             ])
@@ -144,6 +147,7 @@ class MenuList(LabWebView):
         self.nameNotification = self.nameScientificInstrument
         menuUpList.extend([
             { 'name': 'รายการสารเคมี', 'link': 'list', 'icon': 'description', 'active': False },
+            { 'name': 'ตะกร้าของฉัน', 'link': 'cart', 'icon': 'shopping_basket', 'active': False },
             { 'name': 'ประวัติการเบิกใช้สารเคมี', 'link': 'history', 'icon': 'history', 'active': False },
             { 'name': 'วิเคราะห์ข้อมูล', 'link': 'analysis', 'icon': 'assessment', 'active': False },
             ])

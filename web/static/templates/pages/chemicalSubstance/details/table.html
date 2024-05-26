@@ -1,0 +1,48 @@
+{% load humanReadable %}
+<div class="table-responsive p-0 m-4">
+    <table class="table align-items-center mb-0">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-20">รายการ</th>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-20">ตู้จัดเก็บ</th>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-20">จำนวน</th>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-40">วันที่เบิก</th>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-40">วันที่อนุมัติ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in orders %}
+            <tr>
+                <td class="align-middle text-center">
+                    <span class="text-secondary text-s">{{ data.chemicalSubstance.name }}</span>
+                </td>
+                <td class="align-middle text-center">
+                    <span class="text-secondary text-s">{{ data.chemicalSubstance.place }}</span>
+                </td>
+                <td class="align-middle text-center">                                        
+                    <span class="text-secondary text-s">
+                        {{ data.quantity }} {{ data.chemicalSubstance.unit }}
+                    </span>
+                </td>
+                <td class="align-middle text-center">
+                    {% if order.dateWithdraw %}
+                        <span class="text-black text-s">{% load tz %}{{ order.dateWithdraw|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
+                    {% else %}
+                        <span class="text-black text-s">-</span>
+                    {% endif %}
+                </td>
+                <td class="align-middle text-center">
+                    {% if order.dateApproved %}
+                        <span class="text-black text-s">{% load tz %}{{ order.dateApproved|timezone:'Asia/Bangkok'|date:"d/m/Y" }}</span>
+                    {% else %}
+                        <span class="text-black text-s">-</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td class="align-middle text-center"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

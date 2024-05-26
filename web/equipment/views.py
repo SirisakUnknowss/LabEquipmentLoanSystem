@@ -63,29 +63,31 @@ class EditEquipment(LabAPIGetView):
     permission_classes  = [ IsAuthenticated, IsAdminUser ]
 
     def post(self, request, *args, **kwargs):
-        equipment = Equipment.objects.filter(id=request.POST["equipment"])
-        if not equipment.exists():
-            self.response["result"] = '/equipment/edit'
-            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
-            
-        unit = request.POST["unit"]
-        if unit == 'Other_Other':
-            unit = self.request.POST['unitOther']
-        equipment.update(
-            name=request.POST["name"],
-            size=request.POST["size"],
-            quantity=request.POST["quantity"],
-            unit=unit,
-            )
-        if not(request.FILES.get('upload', False)):
+        try:
+            equipment = Equipment.objects.get(id=request.POST["dataID"])
+            self.update(equipment)
             self.response["result"] = '/equipment/list'
             return Response(self.response)
-        equipment   = equipment[0]
-        upload      = self.request.FILES['upload']
-        name        = getClassPath(equipment, request.POST["name"])
+        except Equipment.DoesNotExist:
+                self.response["result"] = '/equipment/edit'
+                return Response(self.response, status=status.HTTP_404_NOT_FOUND)
+
+    def update(self, equipment: Equipment) -> Equipment:
+        data = self.request.POST
+        unit = data.get("unit")
+        if unit == 'Other_Other':
+            unit = data.get('unitOther')
+        equipment.name      = data.get("name")
+        equipment.size      = data.get("size")
+        equipment.quantity  = data.get("quantity")
+        equipment.unit      = unit
+        equipment.save()
+        if not(self.request.FILES.get('upload', False)):
+            return equipment
+        upload  = self.request.FILES['upload']
+        name    = getClassPath(equipment, data.get("name"))
         uploadImage(name, upload, equipment)
-        self.response["result"] = '/equipment/list'
-        return Response(self.response)
+        return equipment
 
 class RemoveEquipment(LabAPIGetView):
     queryset            = Equipment.objects.all()

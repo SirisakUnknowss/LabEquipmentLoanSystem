@@ -105,14 +105,14 @@ class DetailPageView(MenuList):
         except Order.DoesNotExist:
             return redirect(reverse('equipmentListPage'))
 
-class CartListPageView(MenuList):
+class CartPageView(MenuList):
     def get(self, request: Request, *args, **kwargs):
         super(MenuList, self).get(request)
         equipmentsCart = EquipmentCart.objects.filter(user=request.user.account)
         self.addMenuPage(0, 2)
         self.context['equipments']  = equipmentsCart
         self.context['status']      = "borrowing"
-        return render(request, 'pages/equipments/cartEquipmentPage.html', self.context)
+        return render(request, 'pages/equipments/cartPage.html', self.context)
 
 class AnalysisView(MenuList):
 

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from django.db.models import F
 from django.shortcuts import redirect
 from django.urls import reverse
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 #Project
 from base.views import LabAPIGetView, LabAPIView
 from equipment.models import Equipment
@@ -17,7 +17,7 @@ from .serializers import SlzEquipmentCartInput, SlzEquipmentCart
 class AddItemForBorrowingApi(LabAPIGetView):
     queryset            = EquipmentCart.objects.all()
     serializer_class    = SlzEquipmentCartInput
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated ]
 
     def post(self, request, *args, **kwargs):
         account                 = request.user.account
@@ -47,28 +47,28 @@ class AddItemForBorrowingApi(LabAPIGetView):
 class RemoveItemForBorrowingApi(LabAPIGetView):
     queryset            = EquipmentCart.objects.all()
     serializer_class    = SlzEquipmentCart
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated ]
 
     def post(self, request, *args, **kwargs):
         account     = request.user.account
         idCart      = request.data['equipmentCart']
         EquipmentCart.objects.filter(id=idCart, user=account).delete()
-        return redirect(reverse('equipmentCartListPage'))
+        return redirect(reverse('equipmentCartPage'))
 
 class ConfirmBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated ]
 
     def post(self, request, *args, **kwargs):
         account     = request.user.account
         equipments  = EquipmentCart.objects.filter(user=account)
         if not equipments.exists():
-            return redirect(reverse('addScientificInstrumentPage'))
+            return redirect(reverse('equipmentCartPage'))
         order = Order.objects.create(user=account)
         for item in equipments:
             equipment = Equipment.objects.get(id=item.equipment.id)
             if equipment.quantity < item.quantity:
-                return redirect(reverse('addScientificInstrumentPage'))
+                return redirect(reverse('equipmentCartPage'))
             equipment.quantity -= item.quantity
             equipment.save()
             borrowing = Borrowing.objects.create(user=account, equipment=item.equipment, quantity=item.quantity)
@@ -78,7 +78,7 @@ class ConfirmBorrowingApi(LabAPIView):
 
 class DisapprovedBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated, IsAdminUser ]
 
     def post(self, request, *args, **kwargs):
         account     = request.user.account
@@ -93,13 +93,11 @@ class DisapprovedBorrowingApi(LabAPIView):
 
 class ApprovedBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated, IsAdminUser ]
 
     def post(self, request, *args, **kwargs):
         account     = request.user.account
         orderID     = self.request.data.get("orderID")
-        if account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('notificationsEquipmentPage'))
         order       = Order.objects.filter(id=orderID)
         if not order.exists():
             return redirect(reverse('notificationsEquipmentPage'))
@@ -117,7 +115,7 @@ class ApprovedBorrowingApi(LabAPIView):
 
 class CancelBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated ]
 
     def post(self, request, *args, **kwargs):
         account     = request.user.account
@@ -130,7 +128,7 @@ class CancelBorrowingApi(LabAPIView):
 
 class RemoveBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated ]
 
     def post(self, request, *args, **kwargs):
         account     = request.user.account
@@ -143,7 +141,7 @@ class RemoveBorrowingApi(LabAPIView):
 
 class ReturningApi(LabAPIView):
     queryset            = Order.objects.all()
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated ]
 
     def post(self, request, *args, **kwargs):
         account     = request.user.account
@@ -160,7 +158,7 @@ class ReturningApi(LabAPIView):
     
 class BorrowAgainApi(LabAPIView):
     queryset            = Order.objects.all()
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated ]
 
     def post(self, request, *args, **kwargs):
         account     = request.user.account
@@ -177,7 +175,7 @@ class BorrowAgainApi(LabAPIView):
 
 class ConfirmreturnApi(LabAPIView):
     queryset            = Order.objects.all()
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated ]
 
     def post(self, request, *args, **kwargs):
         account     = request.user.account

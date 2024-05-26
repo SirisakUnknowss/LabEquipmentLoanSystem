@@ -82,10 +82,10 @@ class LandingView(MenuList):
 class NotFoundPageView(View):
     
     def get(self, request, *args, **kwargs):
-        return render(request, 'base/notFound.html')
+        return render(request, 'error/404.html')
 
     def post(self, request, *args, **kwargs):
-        return render(request, 'base/notFound.html')
+        return render(request, 'error/404.html')
 
 class SignupView(View):
 

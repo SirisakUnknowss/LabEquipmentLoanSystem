@@ -36,6 +36,7 @@
                 {% endif %}
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="material-icons opacity-10">{{ menu.icon }}</i>
+                        {% comment %} <span class="badge badge-danger badge-counter">3+</span> {% endcomment %}
                     </div>
                     <span class="nav-link-text ms-1">{{ menu.name }}</span>
                 </a>
@@ -56,6 +57,8 @@
                 <div class="avatar">
                     {% if user.account.image %}
                     <img src="{{ user.account.image }}" onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/account/PlaceHolder.png' ;" class="avatar img-fluid shadow" />
+                    {% else %}
+                    <img src="{{ STATIC_URL }}/images/account/PlaceHolder.png" class="avatar img-fluid shadow" />
                     {% endif %}
                 </div>
                 <div class="text-account-info">

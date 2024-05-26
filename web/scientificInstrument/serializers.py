@@ -8,7 +8,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 # Project
 from account.serializers import SlzAccountCreate
-from scientificInstrument.models import ScientificInstrument, Booking
+from scientificInstrument.models import ScientificInstrument, Booking, Order
 
 class SlzScientificInstrument(serializers.ModelSerializer):
     class Meta:
@@ -116,3 +116,29 @@ class SlzBookingOutput(serializers.ModelSerializer):
             return thai_date_str
         except:
             return ""
+
+class SlzCancelInput(serializers.Serializer):
+    orderID = serializers.CharField()
+
+    def validate_orderID(self, value):
+        try:
+            order = Booking.objects.get(id=value, status=Order.STATUS.WAITING)
+            return order
+        except Booking.DoesNotExist:
+            raise ValidationError('ไม่พบรายการจองเครื่องมือ')
+
+class SlzApprovalInput(serializers.Serializer):
+    orderID = serializers.CharField()
+    status  = serializers.CharField()
+
+    def validate_orderID(self, value):
+        try:
+            order = Booking.objects.get(id=value, status=Order.STATUS.WAITING, approver=None)
+            return order
+        except Booking.DoesNotExist:
+            raise ValidationError('ไม่พบรายการจองเครื่องมือ')
+
+    def validate_status(self, value):
+        if not value in [ Order.STATUS.APPROVED, Order.STATUS.DISAPPROVED ]:
+            raise ValidationError('สถานะการยืนยันไม่ถูกต้อง')
+        return value

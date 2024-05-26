@@ -112,18 +112,12 @@ class EditPageView(AdminOnly):
 
 class DetailBookingView(MenuList):
 
-    def get(self, request, *args, **kwargs):
-        super(MenuList, self).get(request)
-        self.addMenuPage(1, -1)
-        return redirect(reverse('notificationBookingPage'))
-
     def post(self, request, *args, **kwargs):
         super(MenuList, self).post(request)
         self.addMenuPage(1, None)
         try:
             order                       = Booking.objects.get(id=request.POST['id'])
             self.context['order']       = order
-            # self.context['equipments']  = order.equipment.all()
             self.context['statusMap']   = STATUS_STYLE
             return render(request, 'pages/scientificInstruments/detailPage.html', self.context)
         except Booking.DoesNotExist:

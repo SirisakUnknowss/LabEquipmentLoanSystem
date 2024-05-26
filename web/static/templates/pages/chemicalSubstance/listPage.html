@@ -7,6 +7,7 @@
   <div class="container-fluid py-4 ">
     <div class="row">
       {% if results %}
+      {% csrf_token %}
       <div class="card card-body mx-3 px-4 pt-4">
         {% include "pages/topListPage.html" %}
         <div class="row">
@@ -21,7 +22,6 @@
                   <th class="text-uppercase font-weight-bolder text-center text-dark">ตู้จัดเก็บ</th>
                   <th class="text-uppercase font-weight-bolder text-center text-dark">ปริมาณคงเหลือ</th>
                   <th class="text-uppercase font-weight-bolder text-center text-dark">สถานะ</th>
-                  <th></th>
                 </tr>
               </thead>
               {% for result in results %}
@@ -42,40 +42,38 @@
                   <td class="text-center">
                     <span class="text-sm text-dark mb-0">{{ result.remainingQuantity }}</span>
                   </td>
-                  <td class="row text-center">
+                  <td class="align-middle text-center text-sm">
                     {% if user.account.status == "admin" %}
-                    <div class="col-12 col-md-12 col-xl-6 col-lg-6 text-end">
-                      <form action="edit" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="id" value="{{ result.pk }}" />
-                        <button class="btn bg-gradient-warning">
-                          <i class="material-icons opacity-10">edit_note</i>
-                          แก้ไขข้อมูล
-                        </button>
-                      </form>
-                    </div>
-                    <div class="col-12 col-md-12 col-xl-6 col-lg-6 text-start">
+                    <div class="d-flex justify-content-center">
+                      <div class="text-center">
+                        <form action="edit" method="post">
+                          {% csrf_token %}
+                          <input type="hidden" name="id" value="{{ result.pk }}" />
+                          <button class="btn bg-gradient-warning">
+                            แก้ไขข้อมูล
+                          </button>
+                        </form>
+                      </div>
+                      <div class="text-center">
                         <button class="btn border bg-white border-danger text-danger mx-2" 
                         data-bs-toggle="modal" data-bs-target="#modalDelete" onclick="showConfirmDelete({{ result.id }})">
-                          <i class="material-icons opacity-10">delete</i>
                           ลบข้อมูล
                         </button>
+                      </div>
                     </div>
                     {% else %}
-                    {% comment %} {% if result.remainingQuantity == 0 %}
-                    <label for="remainingQuantity">จำนวนที่เบิก : </label>
-                    <input type="number" class="text-center mb-3 border-radius-md" id="remainingQuantity" name="remainingQuantity" min="0" value="0" max="{{ result.remainingQuantity }}">
-                    <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
-                    {% else %}
-
-
-                    <form method="post" action="{% url 'addItemForWithdrawApi' %}">
-                      {% csrf_token %}
-                      <label for="remainingQuantity">จำนวนที่เบิก : </label>
-                      <input type="number" class="text-center mb-3 border-radius-md" id="remainingQuantity" name="remainingQuantity" min="0" value="0" max="{{ result.remainingQuantity }}">
+                    <div class="text-center">
+                    {% if result.remainingQuantity == 0 %}
+                      <label for="quantity">จำนวนที่เบิก : </label>
+                      <input type="number" class="text-center w-15" id="quantity" name="quantity" min="0" value="0" max="{{ result.remainingQuantity }}">
                       <button class="btn bg-gradient-info" type="submit">เพิ่มลงตะกร้า</button>
-                    </form>
-                    {% endif %} {% endcomment %}
+                    {% else %}
+                      <label for="quantity">จำนวนที่เบิก : </label>
+                      <input type="number" class="text-center w-15" id="quantity{{ result.id }}" name="quantity" min="0" value="0" max="{{ result.remainingQuantity }}">
+
+                      <button class="btn bg-gradient-info px-3" onclick="addToCart({{ result.id }})">เพิ่มลงตะกร้า</button>
+                    {% endif %}
+                    </div>
                     {% endif %}
                   </td>
                 </tr>
@@ -97,10 +95,13 @@
     </div>
   </div>
 
+  {% include "modals/loading.html" %}
   {% if user.account.status == "admin" %}
   {% include 'modals/confirmDeleteData.html' %}
-  {% include "modals/loading.html" %}
   {% include 'modals/deleteSuccess.html' %}
+  {% else %}
+  {% include "modals/error.html" %}
+  {% include "modals/success.html" %}
   {% endif %}
 </main>
 {% endblock %}
@@ -115,5 +116,10 @@
   </script>
   <script src="{{ STATIC_URL }}js/exportDataAll.js"></script>
   <script src="{{ STATIC_URL }}js/deleteData.js"></script>
+  {% else %}
+  <script>
+      const confirmUrl = "{% url 'addToCartAPI' %}"
+  </script>
+  <script src="{{ STATIC_URL }}assets/js/list-chemicalSubstance.js"></script>
   {% endif %}
 {% endblock %}

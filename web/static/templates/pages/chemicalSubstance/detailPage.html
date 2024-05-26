@@ -21,12 +21,12 @@
             <span class="text-secondary text-xs mx-3"> อนุมัติภายใน 24 ชั่วโมง ณ วันทำการ</span>
           </div>
         </div>
-          {% if order %}
-          {% include 'pages/scientificInstruments/details/table.html' %}
+          {% if orders %}
+          {% include 'pages/chemicalSubstance/details/table.html' %}
           {% else %}
           {% include "error/notFoundData.html" %}
           {% endif %}
-          {% include 'pages/scientificInstruments/details/button.html' %}
+          {% include 'pages/chemicalSubstance/details/button.html' %}
         </div>
       </div>
     </div>
@@ -41,8 +41,8 @@
 {% block js %}
 {{ block.super }}
 <script>
-  const cancelUrl = "{% url 'cancelBookingApi' %}"
-  const approvalUrl = "{% url 'approvalBookingApi' %}"
+  const cancelUrl = "{% url 'cancelChemicalSubstance' %}"
+  const approvalUrl = "{% url 'approvalChemicalSubstanceApi' %}"
 </script>
 {% if user.account.status == "admin" %}
 <script src="{{ STATIC_URL }}js/approveWithdraw.js"></script>

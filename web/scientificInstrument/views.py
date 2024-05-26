@@ -6,14 +6,16 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework.request import Request
 from rest_framework.response import Response
 #Project
 from account.models import Account
 from base.functions import uploadImage
 from base.views import LabAPIGetView, LabAPIView, LabListView
 from borrowing.models import Order
+from scientificInstrument.functions import updateStatusOrder
 from scientificInstrument.models import ScientificInstrument, Booking, getClassPath
-from scientificInstrument.serializers import SlzScientificInstrumentInput, SlzBookingInput, SlzBooking, SlzBookingOutput
+from scientificInstrument.serializers import SlzScientificInstrumentInput, SlzBookingInput, SlzBooking, SlzBookingOutput, SlzCancelInput, SlzApprovalInput
 
 # Create your views here.        
 
@@ -214,56 +216,80 @@ class BookingScientificInstrumentApi(LabAPIGetView):
         booking.save()
         return booking
 
-class DisapprovedBookingApi(LabAPIView):
-    queryset            = Booking.objects.all()
-    permission_classes  = [ AllowAny ]
+# class DisapprovedBookingApi(LabAPIView):
+#     queryset            = Booking.objects.all()
+#     permission_classes  = [ AllowAny ]
 
-    def post(self, request, *args, **kwargs):
-        account     = request.user.account
-        bookingID   = self.request.data.get("bookingID")
-        if account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('notificationBookingPage'))
-        booking = Booking.objects.filter(id=bookingID)
-        if not booking.exists():
-            return redirect(reverse('notificationBookingPage'))
-        booking.update(status=Order.STATUS.DISAPPROVED)
-        return redirect(reverse('notificationBookingPage'))
+#     def post(self, request, *args, **kwargs):
+#         account     = request.user.account
+#         bookingID   = self.request.data.get("bookingID")
+#         if account.status != Account.STATUS.ADMIN:
+#             return redirect(reverse('notificationBookingPage'))
+#         booking = Booking.objects.filter(id=bookingID)
+#         if not booking.exists():
+#             return redirect(reverse('notificationBookingPage'))
+#         booking.update(status=Order.STATUS.DISAPPROVED)
+#         return redirect(reverse('notificationBookingPage'))
 
-class ApprovedBookingApi(LabAPIView):
-    queryset            = Booking.objects.all()
-    permission_classes  = [ AllowAny ]
+# class ApprovedBookingApi(LabAPIView):
+#     queryset            = Booking.objects.all()
+#     permission_classes  = [ AllowAny ]
 
-    def post(self, request, *args, **kwargs):
-        account     = request.user.account
-        bookingID   = self.request.data.get("bookingID")
-        if account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('notificationBookingPage'))
-        booking = Booking.objects.filter(id=bookingID)
-        if not booking.exists():
-            return redirect(reverse('notificationBookingPage'))
-        booking.update(
-            status=Order.STATUS.APPROVED,
-            approver=account,
-            dateApproved=datetime.now()
-        )
-        scientificInstrument = booking.first().scientificInstrument
-        scientificInstrument.statistics += 1
-        scientificInstrument.save(update_fields=['statistics'])
+#     def post(self, request, *args, **kwargs):
+#         account     = request.user.account
+#         bookingID   = self.request.data.get("bookingID")
+#         if account.status != Account.STATUS.ADMIN:
+#             return redirect(reverse('notificationBookingPage'))
+#         booking = Booking.objects.filter(id=bookingID)
+#         if not booking.exists():
+#             return redirect(reverse('notificationBookingPage'))
+#         booking.update(
+#             status=Order.STATUS.APPROVED,
+#             approver=account,
+#             dateApproved=datetime.now()
+#         )
+#         scientificInstrument = booking.first().scientificInstrument
+#         scientificInstrument.statistics += 1
+#         scientificInstrument.save(update_fields=['statistics'])
         
-        return redirect(reverse('notificationBookingPage'))
+#         return redirect(reverse('notificationBookingPage'))
+
+class ApprovalBookingApi(LabAPIView):
+    queryset            = Booking.objects.all()
+    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+
+    def post(self, request: Request, *args, **kwargs):
+        serializerInput = SlzApprovalInput(data=request.data)
+        if not serializerInput.is_valid():
+            self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
+        self.order: Booking = serializerInput.validated_data['orderID']
+        statusStr: str      = serializerInput.validated_data['status']
+        updateStatusOrder(self.order, statusStr)
+        self.updateApprover()
+        self.response["result"] = 'Update Completed.'
+        return Response(self.response)
+
+    def updateApprover(self):
+        account: Account = self.request.user.account
+        self.order.approver = account
+        self.order.dateApproved = datetime.now()
+        self.order.save(update_fields=["approver", "dateApproved"])
 
 class CancelBookingApi(LabAPIView):
     queryset            = Booking.objects.all()
-    permission_classes  = [ AllowAny ]
+    permission_classes  = [ IsAuthenticated ]
 
-    def post(self, request, *args, **kwargs):
-        account     = request.user.account
-        bookingID   = self.request.data.get("bookingID")
-        booking     = Booking.objects.filter(id=bookingID, user=account)
-        if not booking.exists():
-            return redirect(reverse('notificationBookingPage'))
-        booking.update( status=Order.STATUS.CANCELED)
-        return redirect(reverse('notificationBookingPage'))
+    def post(self, request: Request, *args, **kwargs):
+        serializerInput = SlzCancelInput(data=request.data)
+        if not serializerInput.is_valid():
+            self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
+        self.order: Booking = serializerInput.validated_data['orderID']
+        self.order.status   = Order.STATUS.CANCELED
+        self.order.save(update_fields=["status"])
+        self.response["result"] = 'Update Completed.'
+        return Response(self.response)
 
 class GetBookingByID(LabAPIGetView):
     queryset            = Booking.objects.all()

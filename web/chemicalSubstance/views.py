@@ -1,7 +1,9 @@
 # Python
 from datetime import datetime
 # Django
+from django.db.models import F
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -10,8 +12,9 @@ from base.functions import convertToFloat, checkTextBlank
 from account.models import Account
 from base.views import LabAPIView
 from chemicalSubstance.functions import updateHazard, updateImage, updateStatusOrder, cancelOrder
-from chemicalSubstance.models import ChemicalSubstance, Order, Withdrawal
-from chemicalSubstance.serializers import SlzChemicalSubstanceInput, SlzChemicalSubstanceOutput, SlzOrderOutput, SlzApprovalInput, SlzCancelInput, SlzConfirmWithdrawalInput
+from chemicalSubstance.models import ChemicalSubstance, Order, Withdrawal, ChemicalSubstanceCart
+from chemicalSubstance.serializers import (SlzChemicalSubstanceInput, SlzChemicalSubstanceOutput, SlzOrderOutput, 
+                                           SlzApprovalInput, SlzCancelInput, SlzChemicalSubstanceCartInput)
 
 class AddChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
@@ -63,7 +66,7 @@ class EditChemicalSubstance(LabAPIView):
     permission_classes  = [ IsAuthenticated, IsAdminUser ]
 
     def post(self, request: Request, *args, **kwargs):
-        self.chemicalSubstances = ChemicalSubstance.objects.filter(id=request.POST["chemicalSubstanceID"])
+        self.chemicalSubstances = ChemicalSubstance.objects.filter(id=request.POST["dataID"])
         if not self.chemicalSubstances.exists():
             self.response["result"] = '/chemicalSubstance/edit'
             return Response(self.response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -105,20 +108,6 @@ class EditChemicalSubstance(LabAPIView):
         cs = updateImage(cs, name, self.request.FILES)
         return cs
 
-class RemoveChemicalSubstance(LabAPIView):
-    queryset            = ChemicalSubstance.objects.all()
-    serializer_class    = SlzChemicalSubstanceOutput
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
-
-    def post(self, request: Request, *args, **kwargs):
-        try:
-            ChemicalSubstance.objects.get(id=request.POST["dataID"]).delete()
-            self.response["result"] = 'ลบข้อมูลเรียบร้อย'
-            return Response(self.response)
-        except ChemicalSubstance.DoesNotExist:
-            self.response["error"] = 'ไม่พบข้อมูล'
-            return Response(self.response, status=status.HTTP_404_NOT_FOUND)
-
 class ApprovalChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
     serializer_class    = SlzApprovalInput
@@ -152,72 +141,92 @@ class CancelChemicalSubstance(LabAPIView):
         if not serializerInput.is_valid():
             self.response["error"] = next(iter(serializerInput.errors.values()))[0]
             return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
-        self.order: Order   = serializerInput.validated_data['orderID']
+        self.order: Order   = serializerInput.validated_data['dataID']
         cancelOrder(self.order)
         self.response["result"] = 'Update Completed.'
         return Response(self.response)
 
 class ConfirmWithdrawalApi(LabAPIView):
-    """
-        {
-            "orderList":[
-                { "id": 1, "quantity": 3 },
-                { "id": 2, "quantity": 1 }, 
-                { .... }
-            ]
-        }
-    """
     queryset            = Order.objects.all()
-    serializer_class    = SlzConfirmWithdrawalInput
+    serializer_class    = SlzOrderOutput
     permission_classes  = [ IsAuthenticated ]
 
     def post(self, request: Request, *args, **kwargs):
         self.account    = request.user.account
-        serializerInput = SlzConfirmWithdrawalInput(data=request.data)
-        if not serializerInput.is_valid():
-            self.response["error"] = next(iter(serializerInput.errors.values()))[0]
-            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
-        self.orders: list       = serializerInput.validated_data['orderList']
-        self.response["result"] = SlzOrderOutput(self.createOrder()).data
+        self.orders     = ChemicalSubstanceCart.objects.all()
+        self.orders     = self.validate()
+        self.createOrder()
+        self.response["result"] = "Save Complete!"
         return Response(self.response)
+
+    def validate(self):
+        self.orderValidate = []
+        for order in self.orders:
+            try:
+                chemicalSubstance = ChemicalSubstance.objects.get(id=order.chemicalSubstance.pk)
+                if chemicalSubstance.remainingQuantity < order.quantity:
+                    raise ValidationError('ปริมาณสารเคมีที่เบิกมีไม่เพียงพอ')
+                self.orderValidate.append(order)
+            except ChemicalSubstance.DoesNotExist:
+                raise ValidationError('ไม่พบสารเคมี')
+        return self.orderValidate
 
     def createOrder(self):
         order = Order.objects.create(user=self.account)
         for chemical in self.orders:
-            chemicalSubstance = ChemicalSubstance.objects.get(id=chemical['chemicalSubstance']['id'])
-            chemicalSubstance.remainingQuantity -= chemical['quantity']
+            chemicalSubstance = ChemicalSubstance.objects.get(id=chemical.chemicalSubstance.pk)
+            chemicalSubstance.remainingQuantity -= chemical.quantity
             chemicalSubstance.save(update_fields=["remainingQuantity"])
-            withdrawal = Withdrawal.objects.create(user=self.account, chemicalSubstance=chemicalSubstance, quantity=chemical['quantity'])
+            withdrawal = Withdrawal.objects.create(user=self.account, chemicalSubstance=chemicalSubstance, quantity=chemical.quantity)
             order.chemicalSubstance.add(withdrawal)
+            chemical.delete()
         order.save()
         return order
 
-# class AddItemForBorrowingApi(LabAPIGetView):
-#     queryset            = EquipmentCart.objects.all()
-#     serializer_class    = SlzEquipmentCartInput
-#     permission_classes  = [ AllowAny ]
+class AddToCartView(LabAPIView):
+    queryset            = ChemicalSubstanceCart.objects.all()
+    serializer_class    = SlzChemicalSubstanceCartInput
+    permission_classes  = [ IsAuthenticated ]
 
-#     def post(self, request, *args, **kwargs):
-#         account                 = request.user.account
-#         serializerInput         = self.get_serializer(data=request.data)
-#         if not serializerInput.is_valid():
-#             self.response["error"] = next(iter(serializerInput.errors.values()))[0]
-#             return redirect(reverse('equipmentListPage'))
-#         equipment               = self.perform_create(serializerInput, account)
-#         serializerOutput        = SlzEquipmentCart(equipment)
-#         self.response["result"] = serializerOutput.data
-#         return redirect(reverse('equipmentListPage'))
+    def post(self, request, *args, **kwargs):
+        try:
+            account                 = request.user.account
+            serializerInput         = SlzChemicalSubstanceCartInput(data=request.data)
+            serializerInput.is_valid(raise_exception=True)
+            if not serializerInput.is_valid():
+                self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+                return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
+            self.perform_create(serializerInput.validated_data, account)
+            self.response["result"] = 'Add Completed.'
+            return Response(self.response)
+        except Exception as ex:
+            print("=============================")
+            print(str(ex))
+            print("=============================")
+            self.response["error"] = "something went wrong."
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
     
-#     def perform_create(self, serializer, account):
-#         validated = serializer.validated_data
-#         equipmentCart = EquipmentCart.objects.filter(user=account, equipment=validated.get("equipment"))
-#         if equipmentCart.exists():
-#             equipmentCart.update(quantity=F('quantity') + validated.get("quantity"))
-#             return equipmentCart
-#         equipmentCart = EquipmentCart(
-#             user        = account,
-#             equipment   = validated.get("equipment"),
-#             quantity    = validated.get("quantity"),
-#             )
-#         equipmentCart.save()
-#         return equipmentCart
+    def perform_create(self, validated: dict, account: Account):
+        print(validated.get("id"))
+        cart = ChemicalSubstanceCart.objects.filter(user=account, chemicalSubstance=validated.get("id"))
+        if cart.exists():
+            cart.update(quantity=F('quantity') + validated.get("quantity"))
+            return cart
+        cart = ChemicalSubstanceCart(
+            user                = account,
+            chemicalSubstance   = validated.get("id"),
+            quantity            = validated.get("quantity"),
+            )
+        cart.save()
+        return cart
+
+class RemoveFromCartView(LabAPIView):
+    queryset            = ChemicalSubstanceCart.objects.all()
+    permission_classes  = [ IsAuthenticated ]
+
+    def post(self, request, *args, **kwargs):
+        account = request.user.account
+        idCart  = request.data['cartID']
+        ChemicalSubstanceCart.objects.filter(id=idCart, user=account).delete()
+        self.response["result"] = 'Delete Completed.'
+        return Response(self.response)

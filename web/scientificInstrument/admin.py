@@ -36,6 +36,10 @@ class BookingModelResource(resources.ModelResource):
 class BookingAdmin(ImportExportModelAdmin):
     resource_class = BookingModelResource
 
+    list_display    = [ 'id', 'scientificInstrument', 'status' ]
+    list_filter     = ['user__studentID', 'status']
+    search_fields   = ['user__studentID']
+
 class ScientificInstrumentModelResource(resources.ModelResource):
 
     class Meta:

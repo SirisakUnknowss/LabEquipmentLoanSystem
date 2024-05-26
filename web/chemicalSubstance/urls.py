@@ -6,9 +6,9 @@ from . import views
 urlpatterns = [
     path('edit', views.EditChemicalSubstance.as_view(), name='editChemicalSubstanceApi'),
     path('add', views.AddChemicalSubstance.as_view(), name='addChemicalSubstanceApi'),
-    path('remove', views.RemoveChemicalSubstance.as_view(), name='removeChemicalSubstanceApi'),
     path('approval', views.ApprovalChemicalSubstance.as_view(), name='approvalChemicalSubstanceApi'),
     path('cancel', views.CancelChemicalSubstance.as_view(), name='cancelChemicalSubstance'),
     path('withdrawal', views.ConfirmWithdrawalApi.as_view(), name='confirmWithdrawalApi'),
-    # path('add', views.AddItemForWithdrawApi.as_view(), name='addItemForWithdrawApi'),
+    path('cart/add', views.AddToCartView.as_view(), name='addToCartAPI'),
+    path('cart/remove', views.RemoveFromCartView.as_view(), name='removeFromCartAPI'),
 ]

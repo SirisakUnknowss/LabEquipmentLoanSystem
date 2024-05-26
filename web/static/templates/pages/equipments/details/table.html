@@ -3,7 +3,9 @@
     <table class="table align-items-center mb-0">
         <thead class="bg-gray-200">
             <tr>
+                {% if status != "borrowing" %}
                 <th class="text-center text-uppercase text-black text-s font-weight-bolder">รูปภาพ</th>
+                {% endif %}
                 <th class="text-center text-uppercase text-black text-s font-weight-bolder">รายการ</th>
                 <th class="text-center text-uppercase text-black text-s font-weight-bolder">ขนาด</th>
                 <th class="text-center text-uppercase text-black text-s font-weight-bolder">จำนวน</th>
@@ -15,6 +17,7 @@
         <tbody>
             {% for data in equipments %}
             <tr>
+                {% if status != "borrowing" %}
                 <td class="align-middle text-center col-md-2">
                     <div class="chart">
                     {% if data.equipment.image %}
@@ -24,6 +27,7 @@
                     {% endif %}
                     </div>
                 </td>
+                {% endif %}
                 <td class="align-middle text-center">
                     <span class="text-secondary text-s">{{ data.equipment.name }}</span>
                 </td>
