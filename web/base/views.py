@@ -133,7 +133,8 @@ class EditProfileView(View):
 class UserManagementView(AdminOnly):
 
     def get(self, request: Request, *args, **kwargs):
-        super(MenuList, self).get(request)
+        super(AdminOnly, self).get(request)
+        self.addMenuPage()
         self.context['menuDownList'][1]['active'] = True
         if request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('homepage'))

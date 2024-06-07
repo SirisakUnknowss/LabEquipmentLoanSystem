@@ -79,6 +79,12 @@ class AdminOnly(AdminWebView):
     def __init__(self) -> None:
         self.context = {}
 
+    def addMenuPage(self) -> list:
+        self.context['menuDownList'] = [
+            { 'name': 'ติดต่อผู้ให้บริการ', 'link': '/contact', 'icon': 'help', 'active': False },
+            { 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False },
+        ]
+
 class MenuList(LabWebView):
     def __init__(self) -> None:
         self.nameNoticeBorrowing = 'แจ้งเตือนการยืม-คืนอุปกรณ์'
