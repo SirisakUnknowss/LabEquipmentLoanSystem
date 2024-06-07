@@ -165,7 +165,7 @@ class UserEditPageView(MenuList):
             self.context['status'] = 'view'
             if status == 'edit':
                 self.context['status'] = 'edit'
-        return render(request, 'pages/manage_user_page.html', self.context)
+        return render(request, 'pages/manageUserPage.html', self.context)
 
 # ==================================== MAIN PAGE ==================================== #
 
