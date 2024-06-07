@@ -1,34 +1,13 @@
 document.getElementById("successTitle").innerHTML = "บันทึกข้อมูลสำเร็จ"
 document.getElementById("loadingTitle").innerHTML = "กำลังบันทึกข้อมูล ..."
-var csrfTokenInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
-var csrfToken = null
-if (csrfTokenInput) {
-    csrfToken = csrfTokenInput.value;
-    console.log('CSRF Token:', csrfToken);
-} else {
-    console.error('CSRF Token input field not found');
-}
 
-function showAddCartBtn(id, obj) {
-  var btn = document.getElementById("addCart" + id)
-  if (obj.value > 0)
-  {
-    btn.disabled = false
-  }
-  else
-  {
-    btn.disabled = true
-  }
-}
-
-function addToCart(id) {
-  var formData = new FormData();
-  var quantity = document.getElementById('quantity'+id).value
-  formData.append('csrfmiddlewaretoken', csrfToken)
-  formData.append('id', id)
-  formData.append('quantity', quantity)
+document.getElementById("confirmForm").addEventListener("submit", function(event) {
+  event.preventDefault()
+  $('#modalDelete').modal('hide')
+  $('#loadingModal').modal('show')
+  var formData = new FormData(this)
   sendData(formData)
-}
+})
 
 function sendData(formData){
   $.ajax({

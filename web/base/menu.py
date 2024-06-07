@@ -83,6 +83,7 @@ class MenuList(LabWebView):
     def __init__(self) -> None:
         self.nameNoticeBorrowing = 'แจ้งเตือนการยืม-คืนอุปกรณ์'
         self.nameScientificInstrument = 'แจ้งเตือนการจองเครื่องมือ'
+        self.nameChemicalSubstance = 'แจ้งเตือนการเบิกใช้สารเคมี'
         self.context = {}
         self.context['menuUpList'] = [
             { 'name': 'หน้าแรก', 'link': '/', 'icon': 'home', 'active': False },
@@ -106,6 +107,8 @@ class MenuList(LabWebView):
             self.setWithdrawMenu()
         menuUpList: list = self.context['menuUpList']
         if active != None and active >= 0 and len(menuUpList) > active:
+            if self.status == Account.STATUS.ADMIN and active > 1:
+                active -= 1
             menuUpList[active]['active'] = True
         self.setMenuDown(active)
 
@@ -128,6 +131,8 @@ class MenuList(LabWebView):
             { 'name': 'ประวัติการยืม-คืนอุปกรณ์', 'link': 'history', 'icon': 'history', 'active': False },
             { 'name': 'วิเคราะห์ข้อมูล', 'link': 'analysis', 'icon': 'assessment', 'active': False },
             ])
+        if self.status == Account.STATUS.ADMIN:
+            self.context['menuUpList'] = [item for item in self.context['menuUpList'] if item['name'] != "ตะกร้าของฉัน"]
 
     def setBookingMenu(self):
         self.context['actionCategory']  = "จอง"
@@ -144,10 +149,13 @@ class MenuList(LabWebView):
         self.context['actionCategory']  = "เบิก"
         self.context['nameCategory']    = "สารเคมี"
         menuUpList: list = self.context['menuUpList']
-        self.nameNotification = self.nameScientificInstrument
+        self.nameNotification = self.nameChemicalSubstance
         menuUpList.extend([
             { 'name': 'รายการสารเคมี', 'link': 'list', 'icon': 'description', 'active': False },
             { 'name': 'ตะกร้าของฉัน', 'link': 'cart', 'icon': 'shopping_basket', 'active': False },
             { 'name': 'ประวัติการเบิกใช้สารเคมี', 'link': 'history', 'icon': 'history', 'active': False },
             { 'name': 'วิเคราะห์ข้อมูล', 'link': 'analysis', 'icon': 'assessment', 'active': False },
             ])
+        if self.status == Account.STATUS.ADMIN:
+            self.context['menuUpList'] = [item for item in self.context['menuUpList'] if item['name'] != "ตะกร้าของฉัน"]
+            

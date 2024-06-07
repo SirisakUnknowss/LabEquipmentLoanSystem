@@ -12,7 +12,7 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 #Project
 from account.models import Account
 from account.admin import AccountResource
-from base.menu import MenuList
+from base.menu import MenuList, AdminOnly
 from base.models import DataWeb
 from base.functions import download_file, getDataFile
 from borrowing.admin import OrderModelResource
@@ -130,7 +130,7 @@ class EditProfileView(View):
             self.context['titlePage']   = 'แก้ไขข้อมูลส่วนตัว'
         return render(request, 'base/signup.html', self.context)
 
-class UserManagementView(MenuList):
+class UserManagementView(AdminOnly):
 
     def get(self, request: Request, *args, **kwargs):
         super(MenuList, self).get(request)
