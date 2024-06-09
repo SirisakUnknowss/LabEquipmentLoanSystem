@@ -34,11 +34,7 @@
                 {% endif %}
                 {% ifequal status "borrowing" %}
                 <td class="align-middle text-center text-sm">
-                    <form id="remove-equipmentCart" method="post" action="{% url 'removeItemForBorrowingApi' %}">
-                        {% csrf_token %}
-                        <input type="hidden" value="{{ data.id }}" name="equipmentCart" />
-                        <button class="btn bg-gradient-danger shadow-none px-5" type="submit">ลบ</button>
-                    </form>
+                    <button class="btn bg-gradient-danger shadow-none px-5" onclick="removeItem({{ data.id }})">ลบ</button>
                 </td>
                 {% else %}
                 <td class="align-middle text-center">

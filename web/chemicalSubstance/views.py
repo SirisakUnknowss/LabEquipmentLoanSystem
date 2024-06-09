@@ -4,12 +4,13 @@ from datetime import datetime
 from django.db.models import F
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 # Project
-from base.functions import convertToFloat, checkTextBlank
 from account.models import Account
+from base.functions import convertToFloat, checkTextBlank
+from base.permissions import IsAdminAccount
 from base.views import LabAPIView
 from chemicalSubstance.functions import updateHazard, updateImage, updateStatusOrder, cancelOrder
 from chemicalSubstance.models import ChemicalSubstance, Order, Withdrawal, ChemicalSubstanceCart
@@ -19,7 +20,7 @@ from chemicalSubstance.serializers import (SlzChemicalSubstanceInput, SlzChemica
 class AddChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
     serializer_class    = SlzChemicalSubstanceInput
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
     def post(self, request: Request, *args, **kwargs):
         try:
@@ -63,7 +64,7 @@ class AddChemicalSubstance(LabAPIView):
 class EditChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
     serializer_class    = SlzChemicalSubstanceOutput
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
     def post(self, request: Request, *args, **kwargs):
         self.chemicalSubstances = ChemicalSubstance.objects.filter(id=request.POST["dataID"])
@@ -111,7 +112,7 @@ class EditChemicalSubstance(LabAPIView):
 class ApprovalChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
     serializer_class    = SlzApprovalInput
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
     def post(self, request: Request, *args, **kwargs):
         serializerInput = SlzApprovalInput(data=request.data)
@@ -141,7 +142,7 @@ class CancelChemicalSubstance(LabAPIView):
         if not serializerInput.is_valid():
             self.response["error"] = next(iter(serializerInput.errors.values()))[0]
             return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
-        self.order: Order   = serializerInput.validated_data['dataID']
+        self.order: Order   = serializerInput.validated_data['orderID']
         cancelOrder(self.order)
         self.response["result"] = 'Update Completed.'
         return Response(self.response)

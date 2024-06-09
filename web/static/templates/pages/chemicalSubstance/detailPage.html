@@ -44,6 +44,7 @@
   const cancelUrl = "{% url 'cancelChemicalSubstance' %}"
   const approvalUrl = "{% url 'approvalChemicalSubstanceApi' %}"
 </script>
+<script src="{{ STATIC_URL }}js/callAPI.js"></script>
 {% if user.account.status == "admin" %}
 <script src="{{ STATIC_URL }}js/approveWithdraw.js"></script>
 {% else %}

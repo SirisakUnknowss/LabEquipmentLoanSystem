@@ -18,10 +18,8 @@
                     <a href="{% url 'equipmentListPage' %}" class="btn-w-270 m-2">
                         <button class="btn border border-gray fs-6 w-100 h-100" type="submit">ย้อนกลับ</button>
                     </a>
-                    <form id="confirm-equipment" class="btn-w-270 m-2" method="post" action="{% url 'confirmBorrowingApi' %}">
-                        {% csrf_token %}
-                        <button class="btn bg-gradient-info shadow-none fs-6 w-100 h-100" type="submit">ยืนยันการยืม</button>
-                    </form>
+                    {% csrf_token %}
+                    <button class="btn bg-gradient-info fs-6 btn-w-270 m-2" onclick="confirmBorrowing()">ยืนยันการยืม</button>
                 </div>
                 {% else %}
                     {% include "error/notFoundData.html" %}
@@ -30,4 +28,17 @@
         </div>
     </div>
 </main>
+{% include "modals/error.html" %}
+{% include "modals/loading.html" %}
+{% include "modals/success.html" %}
 {% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script>
+  const confirmBorrowingUrl = "{% url 'confirmBorrowingApi' %}"
+  const removeItemUrl = "{% url 'removeItemForBorrowingApi' %}"
+</script>
+<script src="{{ STATIC_URL }}js/borrowingEquipment.js"></script>
+<script src="{{ STATIC_URL }}js/callAPI.js"></script>
+{% endblock js %}

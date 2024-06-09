@@ -5,12 +5,13 @@ from datetime import datetime, date, timedelta, time
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 #Project
 from account.models import Account
 from base.functions import uploadImage
+from base.permissions import IsAdminAccount
 from base.views import LabAPIGetView, LabAPIView, LabListView
 from borrowing.models import Order
 from scientificInstrument.functions import updateStatusOrder
@@ -27,7 +28,7 @@ class ListScientificInstrument(LabListView):
 class AddScientificInstrument(LabAPIGetView):
     queryset            = ScientificInstrument.objects.all()
     serializer_class    = SlzScientificInstrumentInput
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
     def post(self, request, *args, **kwargs):
         try:
@@ -65,7 +66,7 @@ class AddScientificInstrument(LabAPIGetView):
         
 class RemoveScientificInstrument(LabAPIGetView):
     queryset            = ScientificInstrument.objects.all()
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
     def post(self, request, *args, **kwargs):
         ScientificInstrument.objects.filter(id=request.POST["dataID"]).delete()
@@ -74,7 +75,7 @@ class RemoveScientificInstrument(LabAPIGetView):
 class EditScientificInstrument(LabAPIGetView):
     queryset            = ScientificInstrument.objects.all()
     serializer_class    = SlzScientificInstrumentInput
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
     def post(self, request, *args, **kwargs):
         scientificInstrument = ScientificInstrument.objects.filter(id=request.POST["scientificInstrument"])
@@ -256,7 +257,7 @@ class BookingScientificInstrumentApi(LabAPIGetView):
 
 class ApprovalBookingApi(LabAPIView):
     queryset            = Booking.objects.all()
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
     def post(self, request: Request, *args, **kwargs):
         serializerInput = SlzApprovalInput(data=request.data)

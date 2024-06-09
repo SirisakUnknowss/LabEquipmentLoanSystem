@@ -8,13 +8,13 @@ from django.views import View
 from rest_framework.generics import GenericAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAdminUser
 #Project
-from account.models import Account
 from account.admin import AccountResource
+from account.models import Account
+from base.functions import download_file, getDataFile
 from base.menu import MenuList, AdminOnly
 from base.models import DataWeb
-from base.functions import download_file, getDataFile
+from base.permissions import IsAdminAccount
 from borrowing.admin import OrderModelResource
 from borrowing.models import Order
 from chemicalSubstance.admin import ChemicalSubstanceModelResource
@@ -173,7 +173,7 @@ class UserEditPageView(MenuList):
 # ==================================== EXPORT DATA ==================================== #
 
 class ExportUserData(LabAPIView):
-    permission_classes = [ IsAdminUser ]
+    permission_classes = [ IsAdminAccount ]
 
     def get(self, request, *args, **kwargs):
         filePath, fileName = self.writeFile()
@@ -188,7 +188,7 @@ class ExportUserData(LabAPIView):
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportBorrowingData(LabAPIView):
-    permission_classes = [ IsAdminUser ]
+    permission_classes = [ IsAdminAccount ]
 
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
@@ -208,7 +208,7 @@ class ExportBorrowingData(LabAPIView):
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportEquipments(LabAPIView):
-    permission_classes = [ IsAdminUser ]
+    permission_classes = [ IsAdminAccount ]
 
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
@@ -227,7 +227,7 @@ class ExportEquipments(LabAPIView):
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportScientificInstruments(LabAPIView):
-    permission_classes = [ IsAdminUser ]
+    permission_classes = [ IsAdminAccount ]
 
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
@@ -246,7 +246,7 @@ class ExportScientificInstruments(LabAPIView):
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportChemicalSubstances(LabAPIView):
-    permission_classes = [ IsAdminUser ]
+    permission_classes = [ IsAdminAccount ]
 
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
@@ -265,7 +265,7 @@ class ExportChemicalSubstances(LabAPIView):
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportBookingData(LabAPIView):
-    permission_classes = [ IsAdminUser ]
+    permission_classes = [ IsAdminAccount ]
 
     def get(self, request, *args, **kwargs):
         parameter_value     = request.GET['getData']

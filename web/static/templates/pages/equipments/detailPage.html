@@ -30,7 +30,30 @@
         </div>
       </div>
     </div>
-    
   </div>
 </main>
+{% include "modals/error.html" %}
+{% include "modals/loading.html" %}
+{% include "modals/success.html" %}
 {% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script>
+  const cancelUrl         = "{% url 'cancelBorrowingApi' %}"
+  const approvalUrl       = "{% url 'approvalBorrowingApi' %}"
+  const returnUrl         = "{% url 'returnEquipmentsApi' %}"
+  const borrowingAgainUrl = "{% url 'borrowingAgainApi' %}"
+</script>
+<script src="{{ STATIC_URL }}js/borrowingEquipment.js"></script>
+<script src="{{ STATIC_URL }}js/callAPI.js"></script>
+{% if user.account.status == "admin" %}
+<script>
+  const confirmReturnUrl  = "{% url 'confirmReturnApi' %}"
+</script>
+<script src="{{ STATIC_URL }}js/approveWithdraw.js"></script>
+<script src="{{ STATIC_URL }}js/confirmReturn.js"></script>
+{% else %}
+<script src="{{ STATIC_URL }}js/cancelWithdraw.js"></script>
+{% endif %}
+{% endblock js %}
