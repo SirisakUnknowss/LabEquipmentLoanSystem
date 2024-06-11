@@ -13,14 +13,14 @@ class BorrowingAdmin(ImportExportModelAdmin):
 
     list_display = [ 'id', 'user', 'quantity', 'equipment' ]
     list_filter     = ['user__studentID']
-    search_fields   = ['id', 'user__studentID']
+    search_fields   = ['id']
 
 @admin.register(Order)
 class OrderAdmin(ImportExportModelAdmin):
 
     list_display = [ 'id', 'user', 'quantity', 'dateBorrowing', 'dateReturn', 'approver', 'status' ]
     list_filter     = ['user__studentID', 'approver', 'status']
-    search_fields   = ['id', 'user__studentID', 'approver']
+    search_fields   = ['id']
 
 class OrderModelResource(resources.ModelResource):
 
