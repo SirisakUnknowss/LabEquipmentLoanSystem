@@ -137,7 +137,7 @@ def user_edit(request):
         editProfile(data)
     if str(request.user.account.id) == str(request.POST['accountID']):
         return redirect(reverse('profilePage'))
-    return redirect(reverse('userEditPage'))
+    return redirect(reverse('userListPage'))
 
 def setData(request):
     form = UpdateForm(request.POST)
@@ -195,4 +195,4 @@ def delete_account(request):
         return redirect(reverse('homepage'))
     if request.POST['accountID']:
         Account.objects.filter(id=request.POST['accountID']).delete()
-    return redirect(reverse('userEditPage'))
+    return redirect(reverse('userListPage'))

@@ -100,6 +100,8 @@ class ContactView(MenuList):
     def get(self, request, *args, **kwargs):
         super(MenuList, self).get(request)
         dataWeb = DataWeb.objects.all().first()
+        if self.status == Account.STATUS.ADMIN:
+            self.context['menuDownList'].append({ 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False })
         self.context['menuDownList'][0]['active'] = True
         self.context['dataWeb'] = dataWeb
         return render(request, 'pages/contactPage.html', self.context)
@@ -140,7 +142,7 @@ class UserManagementView(AdminOnly):
             return redirect(reverse('homepage'))
         return render(request, 'pages/userManagementPage.html', self.context)
 
-class UserEditPageView(MenuList):
+class UserListPageView(MenuList):
 
     def get(self, request, *args, **kwargs):
         super(MenuList, self).get(request)
@@ -181,10 +183,10 @@ class ExportUserData(LabAPIView):
 
     def writeFile(self):
         userFileDir = "UserData"
-        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
-        fileName = "userData"
-        
-        xlsxFile = getDataFile(dirPath, fileName, AccountResource)
+        dirPath     = f"{MEDIA_ROOT}/files/{userFileDir}"
+        fileName    = "userData"
+        queryset    = Account.objects.all()
+        xlsxFile    = getDataFile(dirPath, fileName, AccountResource, queryset)
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportBorrowingData(LabAPIView):

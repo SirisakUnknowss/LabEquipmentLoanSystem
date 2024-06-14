@@ -42,7 +42,7 @@ urlpatterns = [
     path('export/api/user', baseViews.ExportUserData.as_view(), name='ExportUserData'),
     path('export/api/borrowing', baseViews.ExportBorrowingData.as_view(), name='ExportBorrowingData'),
     path('user/management', baseViews.UserManagementView.as_view(), name='userManagementPage'),
-    path('user/edit', baseViews.UserEditPageView.as_view(), name='userEditPage'),
+    path('user/edit', baseViews.UserListPageView.as_view(), name='userListPage'),
     path('contact', baseViews.ContactView.as_view(), name='contactPage'),
     path('account/profile', baseViews.ProfileView.as_view(), name='profilePage'),
     path('account/edit', baseViews.EditProfileView.as_view(), name='editProfilePage'),
@@ -70,7 +70,7 @@ urlpatterns = [
     # path('scientificInstrument/information', SLViews.informationBookingPage, name='informationBookingPage'),
     path('scientificInstrument/detail', SLViews.DetailBookingView.as_view(), name='detailScientificInstrumentPage'),
     path('scientificInstrument/notifications', SLViews.NotificationsBookingView.as_view(), name='notificationBookingPage'),
-    path('scientificInstrument/analysis', SLViews.AnalysisPageView.as_view(), name='analysisScientificInstrumentPage'),
+    path('scientificInstrument/analysis', SLViews.AnalysisView.as_view(), name='analysisScientificInstrumentPage'),
     path('export/api/scientificInstrument', baseViews.ExportScientificInstruments.as_view(), name='ExportScientificInstruments'),
     path('export/api/booking', baseViews.ExportBookingData.as_view(), name='ExportBookingData'),
     #chemical Substance

@@ -304,8 +304,8 @@
 {{ block.super }}
     <script>
         let name_page = ""
-        const urlExportDataUser = 'export/api/user'
-        const urlExportDataBorrowing = 'export/api/borrowing'
+        const urlExportDataUser = "{% url 'ExportUserData' %}"
+        const urlExportDataBorrowing = "{% url 'ExportBorrowingData' %}"
         const urlExportData = "{% url 'ExportEquipments' %}"
     </script>
     <script src="{{ STATIC_URL }}js/exportData.js"></script>
