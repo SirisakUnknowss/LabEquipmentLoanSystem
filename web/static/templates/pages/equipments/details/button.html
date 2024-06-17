@@ -1,50 +1,25 @@
 <div class="d-flex justify-content-end text-center m-4">
-    {% if user.account.status == "admin" %}
-    {% if order.status == "waiting" %}
-    <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'disapprovedBorrowingApi' %}">
-        {% csrf_token %}
-        <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-danger fs-6 w-100 h-100" type="submit">ไม่อนุมัติ</button>
-    </form>
-    <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'approvedBorrowingApi' %}">
-        {% csrf_token %}
-        <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-info fs-6 w-100 h-100" type="submit">อนุมัติ</button>
-    </form>
-    {% elif order.status == "returned" %}
-    <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'confirmreturnApi' %}">
-        {% csrf_token %}
-        <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-info fs-6 w-100 h-100" type="submit">ยืนยันการคืนอุปกรณ์</button>
-    </form>
-    {% elif order.status == "overdued" %}
-    <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'returningApi' %}">
-        {% csrf_token %}
-        <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-danger fs-6 w-100 h-100" type="submit">คืนอุปกรณ์</button>
-    </form>
-    {% endif %}
-    {% elif user.account.status == "user" %}
-    {% if order.status == "waiting" %}
+    {% csrf_token %}
     <a href="notifications" class="btn-w-270 m-2">
         <button class="btn border border-gray fs-6 w-100 h-100" type="submit">ย้อนกลับ</button>
     </a>
-    <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'cancelBorrowingApi' %}">
-        {% csrf_token %}
-        <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-danger fs-6 w-100 h-100" type="submit">ยกเลิกการยืม</button>
-    </form>
-    {% elif order.status == "approved" %}
-    <form class="btn-w-270 m-2" id="confirm-equipment" method="post" action="{% url 'returningApi' %}">
-        {% csrf_token %}
-        <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-info fs-6 w-100 h-100" type="submit">คืนอุปกรณ์</button>
-    </form>
-    <form id="confirm-equipment" class="btn-w-270 m-2" method="post" action="{% url 'borrowAgainApi' %}">
-        {% csrf_token %}
-        <input type="hidden" value="{{ order.id }}" name="orderID" />
-        <button class="btn bg-gradient-warning fs-6 w-100 h-100" type="submit">ยืมอุปกรณ์ต่อ</button>
-    </form>
+    <input type="hidden" id="orderID" value="{{ order.id }}">
+    {% if user.account.status == "admin" %}
+        {% if order.status == "waiting" %}
+        <button class="btn bg-gradient-danger fs-6 btn-w-270 m-2" onclick="approvalWithdraw('disapproved')">ไม่อนุมัติ</button>
+        <button class="btn bg-gradient-info fs-6 btn-w-270 m-2" onclick="approvalWithdraw('approved')">อนุมัติ</button>
+        {% elif order.status == "returned" %}
+        <button class="btn bg-gradient-info fs-6 btn-w-270 m-2" onclick="confirmReturn()">ยืนยันการคืนอุปกรณ์</button>
+        {% elif order.status == "overdued" %}
+        <button class="btn bg-gradient-danger fs-6 btn-w-270 m-2" onclick="returnEquipments()">คืนอุปกรณ์</button>
+        {% endif %}
+    {% elif user.account.status == "user" %}
+        {% if order.status == "waiting" %}
+        <input type="hidden" id="orderID" value="{{ order.id }}">
+        <button class="btn bg-gradient-danger fs-6 btn-w-270 m-2" onclick="showConfirmDelete()">ยกเลิกการเบิก</button>
+        {% elif order.status == "approved" %}
+        <button class="btn bg-gradient-danger fs-6 btn-w-270 m-2" onclick="returnEquipments()">คืนอุปกรณ์</button>
+        <button class="btn bg-gradient-warning fs-6 btn-w-270 m-2" onclick="borrowingAgain()">ยืมอุปกรณ์ต่อ</button>
         {% endif %}
     {% endif %}
 </div>

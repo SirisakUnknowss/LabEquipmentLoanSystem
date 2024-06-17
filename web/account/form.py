@@ -6,7 +6,7 @@ from django import forms
 from .models import Account
 
 class AuthenForm(forms.Form):
-    username = forms.CharField(max_length=50)
+    username = forms.CharField(max_length=10)
     password = forms.CharField(max_length=50)
 
     def clean(self):

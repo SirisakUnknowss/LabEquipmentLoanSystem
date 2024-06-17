@@ -8,13 +8,13 @@ from django.views import View
 from rest_framework.generics import GenericAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAdminUser
 #Project
-from account.models import Account
 from account.admin import AccountResource
-from base.menu import MenuList
-from base.models import DataWeb
+from account.models import Account
 from base.functions import download_file, getDataFile
+from base.menu import MenuList, AdminOnly
+from base.models import DataWeb
+from base.permissions import IsAdminAccount
 from borrowing.admin import OrderModelResource
 from borrowing.models import Order
 from chemicalSubstance.admin import ChemicalSubstanceModelResource
@@ -100,6 +100,8 @@ class ContactView(MenuList):
     def get(self, request, *args, **kwargs):
         super(MenuList, self).get(request)
         dataWeb = DataWeb.objects.all().first()
+        if self.status == Account.STATUS.ADMIN:
+            self.context['menuDownList'].append({ 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False })
         self.context['menuDownList'][0]['active'] = True
         self.context['dataWeb'] = dataWeb
         return render(request, 'pages/contactPage.html', self.context)
@@ -130,16 +132,17 @@ class EditProfileView(View):
             self.context['titlePage']   = 'แก้ไขข้อมูลส่วนตัว'
         return render(request, 'base/signup.html', self.context)
 
-class UserManagementView(MenuList):
+class UserManagementView(AdminOnly):
 
     def get(self, request: Request, *args, **kwargs):
-        super(MenuList, self).get(request)
+        super(AdminOnly, self).get(request)
+        self.addMenuPage()
         self.context['menuDownList'][1]['active'] = True
         if request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('homepage'))
         return render(request, 'pages/userManagementPage.html', self.context)
 
-class UserEditPageView(MenuList):
+class UserListPageView(MenuList):
 
     def get(self, request, *args, **kwargs):
         super(MenuList, self).get(request)
@@ -164,7 +167,7 @@ class UserEditPageView(MenuList):
             self.context['status'] = 'view'
             if status == 'edit':
                 self.context['status'] = 'edit'
-        return render(request, 'pages/manage_user_page.html', self.context)
+        return render(request, 'pages/manageUserPage.html', self.context)
 
 # ==================================== MAIN PAGE ==================================== #
 
@@ -172,7 +175,7 @@ class UserEditPageView(MenuList):
 # ==================================== EXPORT DATA ==================================== #
 
 class ExportUserData(LabAPIView):
-    permission_classes = [ IsAdminUser ]
+    permission_classes = [ IsAdminAccount ]
 
     def get(self, request, *args, **kwargs):
         filePath, fileName = self.writeFile()
@@ -180,14 +183,14 @@ class ExportUserData(LabAPIView):
 
     def writeFile(self):
         userFileDir = "UserData"
-        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
-        fileName = "userData"
-        
-        xlsxFile = getDataFile(dirPath, fileName, AccountResource)
+        dirPath     = f"{MEDIA_ROOT}/files/{userFileDir}"
+        fileName    = "userData"
+        queryset    = Account.objects.all()
+        xlsxFile    = getDataFile(dirPath, fileName, AccountResource, queryset)
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportBorrowingData(LabAPIView):
-    permission_classes = [ IsAdminUser ]
+    permission_classes = [ IsAdminAccount ]
 
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
@@ -207,7 +210,7 @@ class ExportBorrowingData(LabAPIView):
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportEquipments(LabAPIView):
-    permission_classes = [ IsAdminUser ]
+    permission_classes = [ IsAdminAccount ]
 
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
@@ -226,7 +229,7 @@ class ExportEquipments(LabAPIView):
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportScientificInstruments(LabAPIView):
-    permission_classes = [ IsAdminUser ]
+    permission_classes = [ IsAdminAccount ]
 
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
@@ -245,7 +248,7 @@ class ExportScientificInstruments(LabAPIView):
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportChemicalSubstances(LabAPIView):
-    permission_classes = [ IsAdminUser ]
+    permission_classes = [ IsAdminAccount ]
 
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
@@ -264,7 +267,7 @@ class ExportChemicalSubstances(LabAPIView):
         return f"{dirPath}/{xlsxFile}", xlsxFile
 
 class ExportBookingData(LabAPIView):
-    permission_classes = [ IsAdminUser ]
+    permission_classes = [ IsAdminAccount ]
 
     def get(self, request, *args, **kwargs):
         parameter_value     = request.GET['getData']

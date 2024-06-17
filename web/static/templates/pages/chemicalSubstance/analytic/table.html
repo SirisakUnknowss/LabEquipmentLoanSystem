@@ -1,0 +1,34 @@
+{% load humanReadable %}
+<div class="table-responsive">
+    <table class="table text-black align-items-center mb-0">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-20">รหัสสาร</th>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-20">ชื่อ</th>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-20">จำนวนครั้ง</th>
+                <th class="text-center text-uppercase text-black text-s font-weight-bolder w-40">สถานะ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td class="align-middle text-center">
+                    {{ item.serialNumber }}
+                </td>
+                <td class="align-middle text-center">
+                    {{ item.name }}
+                </td>
+                <td class="align-middle text-center">
+                    {{ item.statistics }}
+                </td>
+                <td class="align-middle text-center">
+                    <a href="" onclick="downloadDataUses(event, {{ item.serialNumber }}, {{ item.name }})" class="text-sm text-info text-end text-decoration-underline w-50">ดาวน์โหลดข้อมูล</a>
+                </td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td class="align-middle text-center"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

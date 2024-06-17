@@ -11,4 +11,7 @@ urlpatterns = [
     path('withdrawal', views.ConfirmWithdrawalApi.as_view(), name='confirmWithdrawalApi'),
     path('cart/add', views.AddToCartView.as_view(), name='addToCartAPI'),
     path('cart/remove', views.RemoveFromCartView.as_view(), name='removeFromCartAPI'),
+    path('export/user', views.ExportUserChemicalSubstances.as_view(), name='ExportUserChemicalSubstances'),
+    path('export/order', views.ExportOrderChemicalSubstances.as_view(), name='ExportOrderChemicalSubstances'),
+    path('export/chemicalSubstances', views.ExportUsesChemicalSubstances.as_view(), name='ExportUsesChemicalSubstances'),
 ]

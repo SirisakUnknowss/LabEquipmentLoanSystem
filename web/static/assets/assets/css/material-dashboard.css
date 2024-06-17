@@ -12771,7 +12771,19 @@ textarea.form-control-lg {
   .btn.bg-gradient-info:hover {
     background-color: #488EE0;
     border-color: #488EE0;
-    box-shadow: 0 14px 26px -12px rgba(26, 115, 232, 0.4), 0 4px 23px 0 rgba(26, 115, 232, 0.15), 0 8px 10px -5px rgba(26, 115, 232, 0.2); }
+    box-shadow: 0 14px 26px -12px rgba(26, 115, 232, 0.4), 0 4px 23px 0 rgba(26, 115, 232, 0.15), 0 8px 10px -5px rgba(26, 115, 232, 0.2); 
+  
+    &.disabled,
+    &:disabled,
+    &[disabled] {
+      color: #212529 !important;
+      background: #adb5bd !important;
+      border-color: #adb5bd !important;
+      pointer-events: inherit;
+      opacity: .5;
+      box-shadow: none;
+    }
+  }
   .btn-info .btn.bg-outline-info,
   .btn.bg-gradient-info .btn.bg-outline-info {
     border: 1px solid #488EE0; }
@@ -18184,6 +18196,7 @@ body {
     border-color: #adb5bd !important;
     pointer-events: inherit;
     opacity: .5;
+    box-shadow: none;
   }
 }
 
@@ -18286,7 +18299,9 @@ label.input-stepper {
   text-align: center;
   border-radius: 6px;
   top: 30px;
-  left: 27%;
+  left: 20%;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  padding: 0.25rem !important;
   text-align: center;
   font-weight: 300;
   margin-left: -60px;
@@ -18306,4 +18321,8 @@ label.input-stepper {
   top: 50%;
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
+}
+.vertical-text {
+  margin: auto;
+  padding: 10px;
 }

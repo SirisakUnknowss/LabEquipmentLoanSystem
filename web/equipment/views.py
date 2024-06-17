@@ -1,10 +1,11 @@
 #Django
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.db.models import F
 from rest_framework import status
 from rest_framework.response import Response
 #Project
 from base.functions import uploadImage
+from base.permissions import IsAdminAccount
 from base.views import LabListView, LabAPIGetView
 from .serializers import SlzEquipmentInput, SlzEquipment
 from .models import Equipment, getClassPath
@@ -18,7 +19,7 @@ class ListEquipment(LabListView):
 class AddEquipment(LabAPIGetView):
     queryset            = Equipment.objects.all()
     serializer_class    = SlzEquipmentInput
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
     def post(self, request, *args, **kwargs):
         try:
@@ -60,7 +61,7 @@ class AddEquipment(LabAPIGetView):
 class EditEquipment(LabAPIGetView):
     queryset            = Equipment.objects.all()
     serializer_class    = SlzEquipmentInput
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
     def post(self, request, *args, **kwargs):
         try:
@@ -91,7 +92,7 @@ class EditEquipment(LabAPIGetView):
 
 class RemoveEquipment(LabAPIGetView):
     queryset            = Equipment.objects.all()
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
     def post(self, request, *args, **kwargs):
         try:

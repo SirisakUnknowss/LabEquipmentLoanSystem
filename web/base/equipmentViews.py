@@ -116,8 +116,10 @@ class CartPageView(MenuList):
 
 class AnalysisView(MenuList):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs):
         super(MenuList, self).get(request)
+        if request.user.account.status != Account.STATUS.ADMIN:
+            return redirect(reverse('notFoundPage'))
         self.addMenuPage(0, 4)
         self.context['orders']      = self.orderAll()
         self.context['accounts']    = self.accountAll()

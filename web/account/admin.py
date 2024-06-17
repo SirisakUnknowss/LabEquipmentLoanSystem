@@ -9,7 +9,7 @@ from .models import Account
 class AccountResource(resources.ModelResource): 
     class Meta:
         model = Account
-        exclude = ('id', 'user', 'password', 'nameprefix', 'levelclass', 'branch', 'faculty')
+        exclude = ('id', 'user', 'password', 'nameprefix', 'levelclass', 'branch', 'faculty', 'image')
         export_order = ('studentID', 'email', 'firstname', 'lastname', 'phone', 'category', 'categoryOther', 'status')
 
 @admin.register(Account)

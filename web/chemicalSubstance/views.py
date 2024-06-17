@@ -1,25 +1,31 @@
 # Python
+from csv import DictWriter
 from datetime import datetime
+import pandas, os
 # Django
 from django.db.models import F
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 # Project
-from base.functions import convertToFloat, checkTextBlank
+from account.admin import AccountResource
 from account.models import Account
+from base.functions import convertToFloat, checkTextBlank, download_file, getDataFile, convertCSVToXLSX
+from base.permissions import IsAdminAccount
 from base.views import LabAPIView
+from chemicalSubstance.admin import OrderResource
 from chemicalSubstance.functions import updateHazard, updateImage, updateStatusOrder, cancelOrder
 from chemicalSubstance.models import ChemicalSubstance, Order, Withdrawal, ChemicalSubstanceCart
 from chemicalSubstance.serializers import (SlzChemicalSubstanceInput, SlzChemicalSubstanceOutput, SlzOrderOutput, 
                                            SlzApprovalInput, SlzCancelInput, SlzChemicalSubstanceCartInput)
+from settings.base import MEDIA_ROOT
 
 class AddChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
     serializer_class    = SlzChemicalSubstanceInput
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
     def post(self, request: Request, *args, **kwargs):
         try:
@@ -63,7 +69,7 @@ class AddChemicalSubstance(LabAPIView):
 class EditChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
     serializer_class    = SlzChemicalSubstanceOutput
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
     def post(self, request: Request, *args, **kwargs):
         self.chemicalSubstances = ChemicalSubstance.objects.filter(id=request.POST["dataID"])
@@ -111,7 +117,7 @@ class EditChemicalSubstance(LabAPIView):
 class ApprovalChemicalSubstance(LabAPIView):
     queryset            = ChemicalSubstance.objects.all()
     serializer_class    = SlzApprovalInput
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
     def post(self, request: Request, *args, **kwargs):
         serializerInput = SlzApprovalInput(data=request.data)
@@ -141,7 +147,7 @@ class CancelChemicalSubstance(LabAPIView):
         if not serializerInput.is_valid():
             self.response["error"] = next(iter(serializerInput.errors.values()))[0]
             return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
-        self.order: Order   = serializerInput.validated_data['dataID']
+        self.order: Order   = serializerInput.validated_data['orderID']
         cancelOrder(self.order)
         self.response["result"] = 'Update Completed.'
         return Response(self.response)
@@ -188,7 +194,7 @@ class AddToCartView(LabAPIView):
     serializer_class    = SlzChemicalSubstanceCartInput
     permission_classes  = [ IsAuthenticated ]
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args, **kwargs):
         try:
             account                 = request.user.account
             serializerInput         = SlzChemicalSubstanceCartInput(data=request.data)
@@ -224,9 +230,110 @@ class RemoveFromCartView(LabAPIView):
     queryset            = ChemicalSubstanceCart.objects.all()
     permission_classes  = [ IsAuthenticated ]
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args, **kwargs):
         account = request.user.account
         idCart  = request.data['cartID']
         ChemicalSubstanceCart.objects.filter(id=idCart, user=account).delete()
         self.response["result"] = 'Delete Completed.'
         return Response(self.response)
+
+class ExportUserChemicalSubstances(LabAPIView):
+    permission_classes = [ IsAdminAccount ]
+
+    def get(self, request: Request, *args, **kwargs):
+        filePath, fileName = self.writeFile()
+        return download_file(filePath, fileName)
+
+    def writeFile(self):
+        userFileDir = "UserChemicalSubstancesData"
+        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
+        queryset = Account.objects.filter(userOrderWithdraw__isnull=False).distinct()
+        fileName = f"UserChemicalSubstancesData"
+        
+        xlsxFile = getDataFile(dirPath, fileName, AccountResource, queryset)
+        return f"{dirPath}/{xlsxFile}", xlsxFile
+
+class ExportOrderChemicalSubstances(LabAPIView):
+    permission_classes = [ IsAdminAccount ]
+
+    def get(self, request: Request, *args, **kwargs):
+        filePath, fileName = self.writeFile()
+        return download_file(filePath, fileName)
+
+    def writeFile(self):
+        userFileDir = "OrderChemicalSubstancesData"
+        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
+        queryset = Order.objects.all()
+        fileName = f"OrderChemicalSubstancesData"
+        
+        xlsxFile = getDataFile(dirPath, fileName, OrderResource, queryset)
+        return f"{dirPath}/{xlsxFile}", xlsxFile
+
+class ExportUsesChemicalSubstances(LabAPIView):
+    permission_classes = [ IsAdminAccount ]
+
+    def get(self, request: Request, *args, **kwargs):
+        if bool(request.GET and request.GET['serialNumber']):
+            serialNumber = request.GET['serialNumber']
+            return self.getWithSerialNumber(serialNumber)
+        return self.getAllItems()
+
+    def getWithSerialNumber(self, serialNumber: str):
+        queryset = ChemicalSubstance.objects.filter(serialNumber=serialNumber)
+        if not queryset.exists(): return
+        chemicalSubstance = queryset[0]
+        fileName    = f'Uses_{chemicalSubstance.name}'
+        header      = { 'date': 'วันที่เบิก', 'studentID': 'รหัสนักศึกษา', 'name': 'ชื่อ', 'quantity': 'ปริมาณที่เบิกใช้' }
+        orders = Order.objects.filter(status=Order.STATUS.APPROVED)
+        chemicalList = []
+        for order in orders:
+            for withdraw in order.chemicalSubstance.all():
+                key     = str(withdraw.chemicalSubstance.serialNumber)
+                if key != chemicalSubstance.serialNumber: continue
+                chemicalList.append({
+                    'date': order.dateWithdraw,
+                    'studentID': f'{order.user.studentID}',
+                    'name': f'{order.user.firstname} {order.user.lastname}',
+                    'quantity': f'{withdraw.quantity} {withdraw.chemicalSubstance.unit}'
+                })
+        return self.writeFileExcel(chemicalList, header, fileName)
+            
+    def getAllItems(self):
+        fileName    = 'Uses_ChemicalSubstances'
+        header      = { 'serialNumber': 'รหัส', 'name': 'ชื่อ', 'time': 'จำนวนครั้ง', 'quantity': 'ปริมาณทั้งหมดที่เบิกใช้' }
+        orders      = Order.objects.filter(status=Order.STATUS.APPROVED)
+        chemicalList = {}
+        for order in orders:
+            for withdraw in order.chemicalSubstance.all():
+                key = str(withdraw.chemicalSubstance.serialNumber)
+                if key in chemicalList:
+                    chemicalList[key]['quantity'] += withdraw.quantity
+                else:
+                    chemicalList[key] = {
+                        'quantity': withdraw.quantity,
+                        'unit': withdraw.chemicalSubstance.unit
+                    }
+        queryset    = ChemicalSubstance.objects.all().order_by('-statistics').filter(statistics__gt=1)
+        chemicals   = []
+        for data in queryset:
+            serialNumber = str(data.serialNumber)
+            if serialNumber in chemicalList:
+                quantity    = chemicalList[serialNumber]['quantity']
+                unit        = chemicalList[serialNumber]['unit']
+                chemicals.append({
+                    'serialNumber': serialNumber,
+                    'name': data.name,
+                    'time': data.statistics,
+                    'quantity': f'{quantity} {unit}'
+                })
+        return self.writeFileExcel(chemicals, header, fileName)
+
+    def writeFileExcel(self, dataList: list, header: dict, fileName: str):
+        csvPath = f'{fileName}.csv'
+        excelPath = f'{fileName}.xlsx'
+        with open(csvPath, 'w', newline='', encoding='utf-8') as outfile:
+            writer = DictWriter(outfile, fieldnames=header.keys())
+            writer.writerow(header)
+            writer.writerows(dataList)
+        convertCSVToXLSX(csvPath, excelPath)
+        return download_file(excelPath, excelPath)

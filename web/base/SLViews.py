@@ -66,7 +66,7 @@ class CalendarView(MenuList):
 
 class ListPageView(MenuList):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs):
         super(MenuList, self).get(request)
         self.addMenuPage(1, 1)
         results                     = ScientificInstrument.objects.all().order_by('name')
@@ -77,7 +77,7 @@ class ListPageView(MenuList):
         self.context['deleteUrl']   = '/api/scientificInstrument/remove'
         return render(request, 'pages/scientificInstruments/listPage.html', self.context)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args, **kwargs):
         super(MenuList, self).post(request)
         self.addMenuPage(1, 1)
         nameSearch                  = request.POST['nameSearch']
@@ -112,7 +112,7 @@ class EditPageView(AdminOnly):
 
 class DetailBookingView(MenuList):
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args, **kwargs):
         super(MenuList, self).post(request)
         self.addMenuPage(1, None)
         try:
@@ -125,7 +125,7 @@ class DetailBookingView(MenuList):
 
 class NotificationsBookingView(MenuList):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs):
         super(MenuList, self).get(request)
         self.addMenuPage(1, -1)
         account     = request.user.account
@@ -143,11 +143,13 @@ class NotificationsBookingView(MenuList):
             bookings      = Booking.objects.filter(waiting)
         return bookings.order_by('-dateBooking', '-startBooking')
 
-class AnalysisPageView(MenuList):
+class AnalysisView(MenuList):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs):
         super(MenuList, self).get(request)
-        self.addMenuPage(1, 3)
+        if request.user.account.status != Account.STATUS.ADMIN:
+            return redirect(reverse('notFoundPage'))
+        self.addMenuPage(1, 4)
         self.topScientificInstrument()
         self.bookingAll()
         return render(request, 'pages/scientificInstruments/analysisPage.html', self.context)

@@ -1,5 +1,5 @@
 # Django
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.core import serializers
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -127,10 +127,24 @@ class NotificationsPageView(MenuList):
 class AnalysisView(MenuList):
 
     def get(self, request: Request, *args, **kwargs):
-        return redirect(reverse('chemicalSubstanceListPage'))
         super(MenuList, self).get(request)
-        self.addMenuPage(2, 3)
-        self.context['orders']      = []
-        self.context['accounts']    = []
-        self.context['equipments']  = []
+        if request.user.account.status != Account.STATUS.ADMIN:
+            return redirect(reverse('notFoundPage'))
+        self.addMenuPage(2, 4)
+        self.context['orders']      = self.getOrderData()
+        self.context['accounts']    = self.getAccountNumber()
+        self.context['items']       = ChemicalSubstance.objects.filter(statistics__gt=1)
         return render(request, 'pages/chemicalSubstance/analysisPage.html', self.context)
+
+    def getAccountNumber(self) -> int:
+        data = Order.objects.annotate(user_count=Count('user'))
+        if data.count() > 0:
+            return data[0].user_count
+        return 0
+
+    def getOrderData(self):
+        orderDict           = {}
+        orders              = Order.objects.all()
+        orderDict['list']   = orders
+        orderDict['count']  = orders.count()
+        return orderDict

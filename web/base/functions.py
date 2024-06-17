@@ -20,10 +20,13 @@ def getDataFile(dirPath: str, fileName: str, dataCls, queryset):
     dataset = dataCls().export(queryset=queryset)
     with open(filePath, "w") as f:
         f.write(dataset.csv)
-    df = pd.read_csv(filePath)
     xlsxPath = os.path.join(dirPath, f"{fileName}.xlsx")
-    df.to_excel(xlsxPath, index=False, engine='openpyxl')
+    convertCSVToXLSX(filePath, xlsxPath)
     return f"{fileName}.xlsx"
+
+def convertCSVToXLSX(csvPath: str, xlsxPath: str):
+    df = pd.read_csv(csvPath)
+    df.to_excel(xlsxPath, index=False, engine='openpyxl')
 
 def uploadImage(name, imageFile, model):
     if os.path.isfile(name):

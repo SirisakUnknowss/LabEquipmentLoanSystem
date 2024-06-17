@@ -1,18 +1,22 @@
 # Python
-from datetime import datetime, timedelta
+from datetime import datetime
 # Django
 from django.db.models import F
 from django.shortcuts import redirect
 from django.urls import reverse
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
+from rest_framework.response import Response
 #Project
-from base.views import LabAPIGetView, LabAPIView
-from equipment.models import Equipment
 from account.models import Account
-from .models import Borrowing, EquipmentCart, Order
-from .serializers import SlzEquipmentCartInput, SlzEquipmentCart
-
-# Create your views here.
+from base.permissions import IsAdminAccount
+from base.views import LabAPIGetView, LabAPIView
+from borrowing.functions import updateStatusOrder, updateApprover, returnEquipments, borrowingAgain
+from borrowing.models import Borrowing, EquipmentCart, Order
+from borrowing.serializers import (SlzEquipmentCartInput, SlzEquipmentCart, SlzApprovalInput, SlzCancelInput,
+                                   SlzReturnInput, SlzConfirmReturnInput, SlzBorrowingAgainInput)
+from equipment.models import Equipment
 
 class AddItemForBorrowingApi(LabAPIGetView):
     queryset            = EquipmentCart.objects.all()
@@ -46,91 +50,76 @@ class AddItemForBorrowingApi(LabAPIGetView):
 
 class RemoveItemForBorrowingApi(LabAPIGetView):
     queryset            = EquipmentCart.objects.all()
-    serializer_class    = SlzEquipmentCart
     permission_classes  = [ IsAuthenticated ]
 
-    def post(self, request, *args, **kwargs):
-        account     = request.user.account
-        idCart      = request.data['equipmentCart']
+    def post(self, request: Request, *args, **kwargs):
+        account = request.user.account
+        idCart  = request.data['itemID']
         EquipmentCart.objects.filter(id=idCart, user=account).delete()
-        return redirect(reverse('equipmentCartPage'))
+        self.response["result"] = 'Update Completed.'
+        return Response(self.response)
 
 class ConfirmBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
     permission_classes  = [ IsAuthenticated ]
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args, **kwargs):
         account     = request.user.account
         equipments  = EquipmentCart.objects.filter(user=account)
         if not equipments.exists():
-            return redirect(reverse('equipmentCartPage'))
+            self.response["error"] = "ไม่มีรายการในตะกร้า"
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
         order = Order.objects.create(user=account)
         for item in equipments:
             equipment = Equipment.objects.get(id=item.equipment.id)
             if equipment.quantity < item.quantity:
-                return redirect(reverse('equipmentCartPage'))
+                self.response["error"] = "รายการคงเหลือไม่เพียงพอ"
+                return Response(self.response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             equipment.quantity -= item.quantity
             equipment.save()
             borrowing = Borrowing.objects.create(user=account, equipment=item.equipment, quantity=item.quantity)
             order.equipment.add(borrowing)
         equipments.delete()
-        return redirect(reverse('notificationsEquipmentPage'))
+        self.response["result"] = 'Update Completed.'
+        return Response(self.response)
 
-class DisapprovedBorrowingApi(LabAPIView):
+class ApprovalBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
+    serializer_class    = SlzApprovalInput
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
-    def post(self, request, *args, **kwargs):
-        account     = request.user.account
-        orderID     = self.request.data.get("orderID")
-        if account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('notificationsEquipmentPage'))
-        order       = Order.objects.filter(id=orderID)
-        if not order.exists():
-            return redirect(reverse('notificationsEquipmentPage'))
-        order.update(status=Order.STATUS.DISAPPROVED)
-        return redirect(reverse('notificationsEquipmentPage'))
-
-class ApprovedBorrowingApi(LabAPIView):
-    queryset            = Order.objects.all()
-    permission_classes  = [ IsAuthenticated, IsAdminUser ]
-
-    def post(self, request, *args, **kwargs):
-        account     = request.user.account
-        orderID     = self.request.data.get("orderID")
-        order       = Order.objects.filter(id=orderID)
-        if not order.exists():
-            return redirect(reverse('notificationsEquipmentPage'))
-        for item in order[0].equipment.all():
-            equipment:Equipment = Equipment.objects.get(id=item.equipment.id)
-            equipment.statistics += 1
-            equipment.save()
-        order.update(
-            status=Order.STATUS.APPROVED,
-            approver=account,
-            dateApproved=datetime.now(),
-            dateReturn=datetime.now() + timedelta(days=7)
-        )
-        return redirect(reverse('notificationsEquipmentPage'))
+    def post(self, request: Request, *args, **kwargs):
+        serializerInput = SlzApprovalInput(data=request.data)
+        if not serializerInput.is_valid():
+            self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
+        self.order: Order   = serializerInput.validated_data['orderID']
+        statusStr: str      = serializerInput.validated_data['status']
+        updateStatusOrder(self.order, statusStr)
+        updateApprover(self.order, self.request.user.account)
+        self.response["result"] = 'Update Completed.'
+        return Response(self.response)
 
 class CancelBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
+    serializer_class    = SlzCancelInput
     permission_classes  = [ IsAuthenticated ]
 
-    def post(self, request, *args, **kwargs):
-        account     = request.user.account
-        orderID     = self.request.data.get("orderID")
-        order       = Order.objects.filter(id=orderID, user=account)
-        if not order.exists():
-            return redirect(reverse('notificationsEquipmentPage'))
-        order.update( status=Order.STATUS.CANCELED)
-        return redirect(reverse('borrowingHistoryPage'))
+    def post(self, request: Request, *args, **kwargs):
+        serializerInput = SlzCancelInput(data=request.data)
+        if not serializerInput.is_valid():
+            self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
+        self.order: Order   = serializerInput.validated_data['orderID']
+        updateStatusOrder(self.order, Order.STATUS.CANCELED)
+        self.response["result"] = 'Update Completed.'
+        return Response(self.response)
 
 class RemoveBorrowingApi(LabAPIView):
     queryset            = Order.objects.all()
     permission_classes  = [ IsAuthenticated ]
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args, **kwargs):
         account     = request.user.account
         orderID     = self.request.data.get("orderID")
         order       = Order.objects.filter(id=orderID, user=account)
@@ -139,54 +128,51 @@ class RemoveBorrowingApi(LabAPIView):
         order.delete()
         return redirect(reverse('borrowingHistoryPage'))
 
-class ReturningApi(LabAPIView):
+class ReturnEquipmentsApi(LabAPIView):
     queryset            = Order.objects.all()
+    serializer_class    = SlzReturnInput
     permission_classes  = [ IsAuthenticated ]
 
-    def post(self, request, *args, **kwargs):
-        account     = request.user.account
-        orderID     = self.request.data.get("orderID")
-        if account.status == Account.STATUS.ADMIN:
-            order = Order.objects.filter(id=orderID)
-            order.update(status=Order.STATUS.RETURNED, dateReturn=datetime.now())
-            return redirect(reverse('notificationsEquipmentPage'))
-        order = Order.objects.filter(id=orderID, user=account, status=Order.STATUS.APPROVED)
-        if not order.exists():
-            return redirect(reverse('notificationsEquipmentPage'))
-        order.update(status=Order.STATUS.RETURNED, dateReturn=datetime.now())
-        return redirect(reverse('notificationsEquipmentPage'))
+    def post(self, request: Request, *args, **kwargs):
+        data = request.data.copy()
+        data.update({'account': request.user.account.pk})
+        serializerInput = SlzReturnInput(data=data)
+        if not serializerInput.is_valid():
+            self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
+        self.order = serializerInput.validated_data['orderID']
+        updateStatusOrder(self.order, Order.STATUS.RETURNED)
+        self.order.dateReturn   = datetime.now()
+        self.order.save(update_fields=["dateReturn"])
+        self.response["result"] = 'Update Completed.'
+        return Response(self.response)
     
-class BorrowAgainApi(LabAPIView):
+class BorrowingAgainApi(LabAPIView):
     queryset            = Order.objects.all()
+    serializer_class    = SlzBorrowingAgainInput
     permission_classes  = [ IsAuthenticated ]
 
-    def post(self, request, *args, **kwargs):
-        account     = request.user.account
-        orderID     = self.request.data.get("orderID")
-        if account.status == Account.STATUS.ADMIN:
-            order = Order.objects.filter(id=orderID)
-            order.update(status=Order.STATUS.RETURNED, dateReturn=datetime.now())
-            return redirect(reverse('notificationsEquipmentPage'))
-        order = Order.objects.filter(id=orderID, user=account, status=Order.STATUS.APPROVED)
-        if not order.exists():
-            return redirect(reverse('notificationsEquipmentPage'))
-        order.update(status=Order.STATUS.WAITING, dateReturn=datetime.now())
-        return redirect(reverse('notificationsEquipmentPage'))
+    def post(self, request: Request, *args, **kwargs):
+        serializerInput = SlzBorrowingAgainInput(data=request.data)
+        if not serializerInput.is_valid():
+            self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
+        self.order: Order = serializerInput.validated_data['orderID']
+        borrowingAgain(self.order)
+        self.response["result"] = 'Update Completed.'
+        return Response(self.response)
 
-class ConfirmreturnApi(LabAPIView):
+class ConfirmReturnApi(LabAPIView):
     queryset            = Order.objects.all()
-    permission_classes  = [ IsAuthenticated ]
+    serializer_class    = SlzConfirmReturnInput
+    permission_classes  = [ IsAuthenticated, IsAdminAccount ]
 
-    def post(self, request, *args, **kwargs):
-        account     = request.user.account
-        orderID     = self.request.data.get("orderID")
-        if account.status != Account.STATUS.ADMIN:
-            return redirect(reverse('notificationsEquipmentPage'))
-        order       = Order.objects.filter(id=orderID, status=Order.STATUS.RETURNED)
-        if not order.exists():
-            return redirect(reverse('notificationsEquipmentPage'))
-        for borrowing in order[0].equipment.all():
-            borrowing.equipment.quantity += borrowing.quantity
-            borrowing.equipment.save()
-        order.update(status=Order.STATUS.COMPLETED)
-        return redirect(reverse('notificationsEquipmentPage'))
+    def post(self, request: Request, *args, **kwargs):
+        serializerInput = SlzConfirmReturnInput(data=request.data)
+        if not serializerInput.is_valid():
+            self.response["error"] = next(iter(serializerInput.errors.values()))[0]
+            return Response(self.response, status=status.HTTP_400_BAD_REQUEST)
+        self.order: Order = serializerInput.validated_data['orderID']
+        returnEquipments(self.order)
+        self.response["result"] = 'Update Completed.'
+        return Response(self.response)

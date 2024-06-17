@@ -79,8 +79,15 @@ class WithdrawalAdmin(admin.ModelAdmin):
 class OrderResource(resources.ModelResource): 
     class Meta:
         model           = Order
-        exclude         = ('id', 'user', 'approver' )
-        export_order    = ('id', 'user', 'dateWithdraw', 'dateApproved', 'status',)
+        fields          = ('user__studentID', 'user__firstname', 'user__lastname', 'dateWithdraw', 'dateApproved', 'status', 'approver__firstname')
+        export_order = fields
+
+    def export(self, queryset=None, *args, **kwargs):
+        if queryset is None:
+            queryset = Order.objects.all()
+        dataset = super().export(queryset, *args, **kwargs)
+        dataset.headers = [ 'student ID', 'First Name', 'Last Name', 'Date Withdraw', 'Date Approved', 'Status','Approver', ]
+        return dataset
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

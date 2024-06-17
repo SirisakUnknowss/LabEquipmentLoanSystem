@@ -14,7 +14,7 @@
                         <div class="card-body">
                             <div class="right">
                                 {% if user.account.status == "admin" and not user.account.id == account.id %}
-                                <a href="{% url 'userEditPage' %}"><img src="{{ STATIC_URL }}/images/cancel.png" /></a>
+                                <a href="{% url 'userListPage' %}"><img src="{{ STATIC_URL }}/images/cancel.png" /></a>
                                 {% else %}
                                 <a href="{% url 'profilePage' %}"><img src="{{ STATIC_URL }}/images/cancel.png" /></a>
                                 {% endif %}
