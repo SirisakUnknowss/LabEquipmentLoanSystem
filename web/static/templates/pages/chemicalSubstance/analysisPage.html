@@ -22,7 +22,7 @@
                                 </div>
                                 <div class="card-footer d-flex p-3">
                                     <a href={% url "userListPage" %} class="text-sm text-info text-start text-decoration-underline w-50">ข้อมูลเพิ่มเติม</a>
-                                    {% comment %} <a href="" class="text-sm text-info text-end text-decoration-underline w-50">ดาวน์โหลดข้อมูล</a> {% endcomment %}
+                                    <a href="" onclick="downloadUserData(event)" class="text-sm text-info text-end text-decoration-underline w-50">ดาวน์โหลดข้อมูล</a>
                                 </div>
                             </div>
                         </div>
@@ -40,7 +40,7 @@
                                 </div>
                                 <div class="card-footer d-flex p-3">
                                     <a href={% url "withdrawHistoryPage" %} class="text-sm text-info text-start text-decoration-underline w-50">ข้อมูลเพิ่มเติม</a>
-                                    {% comment %} <a href="" class="text-sm text-info text-end text-decoration-underline w-50">ดาวน์โหลดข้อมูล</a> {% endcomment %}
+                                    <a href="" onclick="downloadOrderData(event)" class="text-sm text-info text-end text-decoration-underline w-50">ดาวน์โหลดข้อมูล</a>
                                 </div>
                             </div>
                         </div>
@@ -53,7 +53,7 @@
                 </div>
                 <div class="card-body p-0 my-3">
                     <span class="text-black text-bold me-3">สถิติการเบิกใช้สารเคมี</span>
-                    {% comment %} <a href="" class="text-sm text-info text-end text-decoration-underline w-50 ms-3">ดาวน์โหลดข้อมูล</a> {% endcomment %}
+                    <a href="" onclick="downloadDataUses(event)" class="text-sm text-info text-end text-decoration-underline w-50 ms-3">ดาวน์โหลดข้อมูล</a>
                 </div>
                 {% include 'pages/chemicalSubstance/analytic/table.html' %}
             </div>
@@ -67,4 +67,10 @@
 
 {% block js %}
 {{ block.super }}
+<script>
+    const urlExportDataUser = "{% url 'ExportUserChemicalSubstances' %}"
+    const urlExportOrder    = "{% url 'ExportOrderChemicalSubstances' %}"
+    const urlExportDataUses = "{% url 'ExportUsesChemicalSubstances' %}"
+</script>
+<script src="{{ STATIC_URL }}js/exportChemicalSubstances.js"></script>
 {% endblock js %}

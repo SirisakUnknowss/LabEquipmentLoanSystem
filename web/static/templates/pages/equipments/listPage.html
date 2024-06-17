@@ -57,9 +57,9 @@
                   <form id="add-equipment" method="post" action="{% url 'addItemForBorrowingApi' %}">
                     {% csrf_token %}
                     <label class="form-label">จำนวนที่ยืม : </label>
-                    <input type="number" class="text-center mb-3 border-radius-md" id="quantity" name="quantity" min="0" value="0" max="{{ result.quantity }}">
+                    <input type="number" class="text-center mb-3 border-radius-md" id="quantity" name="quantity" min="0" value="0" max="{{ result.quantity }}" onchange="showAddCartBtn({{ result.id }}, this)">
                     <input type="hidden" value="{{ result.id }}" name="equipment" /></br>
-                    <button class="btn btn-add-cart" type="submit">เพิ่มลงตะกร้า</button>
+                    <button class="btn btn-add-cart" id="addCart{{ result.id }}" type="submit" disabled>เพิ่มลงตะกร้า</button>
                   </form>
                   {% endif %}
                   {% endif %}
@@ -94,4 +94,18 @@
   <script src="{{ STATIC_URL }}js/exportDataAll.js"></script>
   <script src="{{ STATIC_URL }}js/deleteData.js"></script>
   {% endif %}
+  <script>
+
+    function showAddCartBtn(id, obj) {
+      var btn = document.getElementById("addCart" + id)
+      if (obj.value > 0)
+      {
+        btn.disabled = false
+      }
+      else
+      {
+        btn.disabled = true
+      }
+    }
+  </script>
 {% endblock %}

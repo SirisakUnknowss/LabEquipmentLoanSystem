@@ -69,7 +69,7 @@
                       <button class="btn bg-gradient-info" type="submit" disabled>เพิ่มลงตะกร้า</button>
                     {% else %}
                       <label for="quantity">จำนวนที่เบิก : </label>
-                      <input type="number" class="text-center w-15" id="quantity{{ result.id }}" name="quantity" min="0" value="0" max="{{ result.remainingQuantity }}"  onchange="showAddCartBtn({{ result.id }}, this)">
+                      <input type="number" class="text-center w-15" id="quantity{{ result.id }}" name="quantity" min="0" value="0" max="{{ result.remainingQuantity }}" onchange="showAddCartBtn({{ result.id }}, this)">
 
                       <button class="btn bg-gradient-info px-3" id="addCart{{ result.id }}" onclick="addToCart({{ result.id }})" disabled>เพิ่มลงตะกร้า</button>
                     {% endif %}
