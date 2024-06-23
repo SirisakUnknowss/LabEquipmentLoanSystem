@@ -1,12 +1,12 @@
 # Python
+from csv import DictWriter
 import os
 import pandas as pd
 #Django
 from django.core.files.storage import FileSystemStorage
 from django.http import FileResponse
-from equipment.models import getClassPath
     
-def download_file(file_path, fileName):
+def downloadFile(file_path, fileName):
     response = FileResponse(open(file_path, 'rb'), as_attachment=True)
     response['Content-Disposition'] = f'attachment; filename="{fileName}"'
     response['Content-Type'] = 'application/octet-stream'
@@ -47,3 +47,38 @@ def convertToFloat(value) -> float:
 def checkTextBlank(value):
     if value == '' or value == 'None':return None
     return value
+
+def writeFileExcel(dataList: list, header: dict, fileName: str):
+    csvPath = f'{fileName}.csv'
+    excelPath = f'{fileName}.xlsx'
+    with open(csvPath, 'w', newline='', encoding='utf-8') as outfile:
+        writer = DictWriter(outfile, fieldnames=header.keys())
+        writer.writerow(header)
+        writer.writerows(dataList)
+    convertCSVToXLSX(csvPath, excelPath)
+    return downloadFile(excelPath, excelPath)
+
+def checkTextNone(value):
+    if value == '' or value == 'None' or value == None:return ''
+    return value
+
+def exportAccountData(accounts, fileName):
+    header      = { 'number': 'ลำดับ', 'studentID': 'รหัสนักศึกษา', 'name': 'ชื่อ', 'branch': 'สาขา', 'email': 'email',
+                   'category': 'สถานะ' }
+    accountList = []
+    number      = 1
+    for account in accounts:
+        category = account.category
+        if category == 'notSpecified':
+            category = account.categoryOther
+        accountList.append(
+        {
+            'number': number,
+            'studentID': f'{account.studentID}',
+            'name': f'{checkTextNone(account.firstname)} {checkTextNone(account.lastname)}',
+            'branch': account.branch,
+            'email': account.email,
+            'category': f'{category}',
+        })
+        number += 1
+    return writeFileExcel(accountList, header, fileName)

@@ -1,5 +1,3 @@
-# Python
-import datetime as DT
 # Django
 from django.core.handlers.wsgi import WSGIRequest
 from django.views import View
@@ -9,8 +7,6 @@ from django.utils import timezone
 # Project
 from account.models import Account
 from borrowing.models import Order
-from chemicalSubstance.functions import cancelOrder
-from chemicalSubstance.models import Order as CSOrder
 
 def getOrder(order, status, account: Account):
     orders = order.objects.filter(user=account, status=status)
@@ -75,15 +71,6 @@ class AdminOnly(AdminWebView):
     def __init__(self) -> None:
         self.context = {}
 
-    def addMenuPage(self) -> list:
-        self.context['menuUpList'] = [
-            { 'name': 'หน้าแรก', 'link': '/', 'icon': 'home', 'active': False },
-        ]
-        self.context['menuDownList'] = [
-            { 'name': 'ติดต่อผู้ให้บริการ', 'link': '/contact', 'icon': 'help', 'active': False },
-            { 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False },
-        ]
-
 class MenuList(LabWebView):
     def __init__(self) -> None:
         self.nameNoticeBorrowing = 'แจ้งเตือนการยืม-คืนอุปกรณ์'
@@ -96,6 +83,8 @@ class MenuList(LabWebView):
 
     def setMenuHome(self) -> list:
         self.context['actionCategory'] = 'ใช้งานศูนย์'
+        if self.status == Account.STATUS.ADMIN:
+            self.context['menuDownList'].append({ 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False })
         self.context['menuList'] = [
         { 'name': 'ยืม-คืนอุปกรณ์วิทยาศาสตร์', 'link': 'equipment/list', 'image': 'static/images/landing/1.png' },
         { 'name': 'จองใช้งานเครื่องมือวิทยาศาสตร์', 'link': 'scientificInstrument/list', 'image': 'static/images/landing/2.png' },
@@ -146,6 +135,7 @@ class MenuList(LabWebView):
         menuUpList.extend([
             { 'name': 'รายการเครื่องมือวิทยาศาตร์', 'link': 'list', 'icon': 'description', 'active': False },
             { 'name': 'ปฏิทินการจอง', 'link': 'calendar', 'icon': 'shopping_basket', 'active': False },
+            { 'name': 'ประวัติการเบิกใช้สารเคมี', 'link': 'history', 'icon': 'history', 'active': False },
             ])
         if self.status == Account.STATUS.ADMIN:
             self.setMenuAdmin()

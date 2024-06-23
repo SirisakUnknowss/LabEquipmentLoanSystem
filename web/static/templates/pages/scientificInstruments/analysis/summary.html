@@ -1,0 +1,60 @@
+<div class="row">
+    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="card">
+            <div class="card-header p-0 m-3 text-start">
+                <div class="icon icon-md icon-shape bg-gradient-info shadow-none text-center border-radius-xl position-absolute">
+                    <i class="material-icons opacity-10">person</i>
+                </div>
+                <p class="text-md mb-0 w-100 text-black text-end vertical-text pe-0">จำนวนผู้{{ actionCategory }}{{ nameCategory }}</p>
+                <div class="text-end pt-1">
+                    <p class="mb-0 text-black text-bold">{{ accounts }} คน</p>
+                </div>
+            </div>
+            <div class="card-footer d-flex p-3">
+                <a href={% url "userListPage" %} class="text-sm text-info text-start text-decoration-underline w-50">ข้อมูลเพิ่มเติม</a>
+                <a href="" onclick="downloadUserData(event, 'User_Bookings')" class="text-sm text-info text-end text-decoration-underline w-50">ดาวน์โหลดข้อมูล</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="card">
+            <div class="card-header p-0 m-3 text-start">
+                <div class="icon icon-md icon-shape bg-gradient-warning shadow-none text-center border-radius-xl position-absolute">
+                    <i class="material-icons opacity-10">description</i>
+                </div>
+                <p class="text-md mb-0 w-100 text-black text-end vertical-text pe-0">จำนวนการ{{ actionCategory }}</p>
+                <div class="text-end pt-1">
+                    <p class="mb-0 text-black text-bold">{{ orders.all }} รายการ</p>
+                </div>
+            </div>
+            <div class="card-footer d-flex p-3">
+                <a href={% url "equipmentListPage" %} class="text-sm text-info text-start text-decoration-underline w-50">ข้อมูลเพิ่มเติม</a>
+                <a href="" onclick="downloadOrderData(event)" class="text-sm text-info text-end text-decoration-underline w-50">ดาวน์โหลดข้อมูล</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+        <div class="card">
+            <div class="card-header p-0 m-3 text-start">
+                <div class="icon icon-md icon-shape bg-gradient-success shadow-none text-center border-radius-xl position-absolute">
+                    <i class="material-icons opacity-10">history</i>
+                </div>
+                <p class="text-md mb-0 w-100 text-black text-end vertical-text pe-0">ประวัติการ{{ actionCategory }}</p>
+                <div class="text-end pt-1">
+                    <p class="mb-0 text-black text-bold">{{ histories.count }} รายการ</p>
+                </div>
+            </div>
+            <div class="card-footer d-flex p-3">
+                <a href={% url "borrowingHistoryPage" %} class="text-sm text-info text-start text-decoration-underline w-50">ข้อมูลเพิ่มเติม</a>
+                {% comment %} <a href="" onclick="downloadOrderData(event)" class="text-sm text-info text-end text-decoration-underline w-50">ดาวน์โหลดข้อมูล</a> {% endcomment %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-12">
+        <hr class="hr-3">
+    </div>
+</div>

@@ -4,9 +4,6 @@
         <tr>
             <th class="text-center text-uppercase text-black text-s font-weight-bolder">รหัสนักศึกษา</th>
             <th class="text-center text-uppercase text-black text-s font-weight-bolder">ผู้ใช้งาน</th>
-            {% ifequal nameCategory "เครื่องมือ" %}
-            <th class="text-center text-uppercase text-black text-s font-weight-bolder">เครื่องมือ</th>
-            {% endifequal %}
             <th class="text-center text-uppercase text-black text-s font-weight-bolder">ผู้อนุมัติ</th>
             <th class="text-center text-uppercase text-black text-s font-weight-bolder">{{ nameCategory|dateTitleNotice }}</th>
             {% ifequal nameCategory "อุปกรณ์" %}
@@ -34,11 +31,6 @@
                 {% if order.user.firstname %} {{ order.user.firstname }} {% endif %} {% if order.user.lastname %} {{ order.user.lastname }} {% endif %}
             </span>
         </td>
-        {% ifequal nameCategory "เครื่องมือ" %}
-        <td class="align-middle text-center">
-            <span class="text-secondary text-s">{{ order.scientificInstrument.name }}</span>
-        </td>
-        {% endifequal %}
         <td class="align-middle text-center">
             <span class="text-black text-s">
                 {% if order.approver.firstname %} {{ order.approver.firstname }} {% endif %} {% if order.approver.lastname %} {{ order.approver.lastname }} {% endif %}

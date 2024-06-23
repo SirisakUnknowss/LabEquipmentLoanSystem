@@ -1,13 +1,13 @@
 function downloadOrderData(event, arg) {
     event.preventDefault()
-    var nameFile = "Order_ChemicalSubstances.xlsx"
+    var nameFile = "Order_Booking.xlsx"
     loadContent(urlExportOrder, nameFile)
 }
 
 function downloadDataUses(event, id, name) {
     event.preventDefault()
     var url = urlExportDataUses
-    var nameFile = "Uses_ChemicalSubstances.xlsx"
+    var nameFile = "Uses_ScientificInstruments.xlsx"
     console.log(id)
     if (id != null)
     {

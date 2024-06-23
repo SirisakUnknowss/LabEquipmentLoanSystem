@@ -11,10 +11,11 @@ from rest_framework.response import Response
 #Project
 from account.admin import AccountResource
 from account.models import Account
-from base.functions import download_file, getDataFile
+from base.functions import downloadFile, getDataFile
 from base.menu import MenuList, AdminOnly
 from base.models import DataWeb
 from base.permissions import IsAdminAccount
+from base.variables import BRANCH, CATEGORY, LEVEL_CLASS
 from borrowing.admin import OrderModelResource
 from borrowing.models import Order
 from chemicalSubstance.admin import ChemicalSubstanceModelResource
@@ -90,7 +91,7 @@ class NotFoundPageView(View):
 class SignupView(View):
 
     def get(self, request, *args, **kwargs):
-        self.context = { 'title': 'ลงทะเบียน' }
+        self.context = { 'title': 'ลงทะเบียน', 'BRANCH': BRANCH, 'CATEGORY': CATEGORY, 'LEVEL_CLASS': LEVEL_CLASS }
         if request.user.is_authenticated and request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('homepage'))
         return render(request, 'base/signup.html', self.context)
@@ -100,8 +101,7 @@ class ContactView(MenuList):
     def get(self, request, *args, **kwargs):
         super(MenuList, self).get(request)
         dataWeb = DataWeb.objects.all().first()
-        if self.status == Account.STATUS.ADMIN:
-            self.context['menuDownList'].append({ 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False })
+        self.setMenuHome()
         self.context['menuDownList'][0]['active'] = True
         self.context['dataWeb'] = dataWeb
         return render(request, 'pages/contactPage.html', self.context)
@@ -120,6 +120,9 @@ class EditProfileView(View):
         if request.user.is_authenticated:
             self.context['account']     = request.user.account
             self.context['titlePage']   = 'แก้ไขข้อมูลส่วนตัว'
+            self.context['BRANCH']      = BRANCH
+            self.context['CATEGORY']    = CATEGORY
+            self.context['LEVEL_CLASS'] = LEVEL_CLASS
             return render(request, 'base/signup.html', self.context)
         return redirect(reverse('homepage'))
 
@@ -130,13 +133,18 @@ class EditProfileView(View):
             account = Account.objects.get(id=account)
             self.context['account']     = account
             self.context['titlePage']   = 'แก้ไขข้อมูลส่วนตัว'
+            self.context['BRANCH']      = BRANCH
+            self.context['CATEGORY']    = CATEGORY
+            self.context['LEVEL_CLASS'] = LEVEL_CLASS
         return render(request, 'base/signup.html', self.context)
 
-class UserManagementView(AdminOnly):
+class UserManagementView(MenuList):
 
     def get(self, request: Request, *args, **kwargs):
-        super(AdminOnly, self).get(request)
-        self.addMenuPage()
+        super(MenuList, self).get(request)
+        if request.user.account.status != Account.STATUS.ADMIN:
+            return redirect(reverse('homepage'))
+        self.setMenuHome()
         self.context['menuDownList'][1]['active'] = True
         if request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('homepage'))
@@ -148,6 +156,8 @@ class UserListPageView(MenuList):
         super(MenuList, self).get(request)
         if request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('homepage'))
+        self.setMenuHome()
+        self.context['menuDownList'][1]['active'] = True
         self.context['accounts'] = Account.objects.all().order_by('id')
         return render(request, 'pages/manageUserPage.html', self.context)
 
@@ -179,7 +189,7 @@ class ExportUserData(LabAPIView):
 
     def get(self, request, *args, **kwargs):
         filePath, fileName = self.writeFile()
-        return download_file(filePath, fileName)
+        return downloadFile(filePath, fileName)
 
     def writeFile(self):
         userFileDir = "UserData"
@@ -195,7 +205,7 @@ class ExportBorrowingData(LabAPIView):
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
         filePath, fileName = self.writeFile(parameter_value)
-        return download_file(filePath, fileName)
+        return downloadFile(filePath, fileName)
 
     def writeFile(self, parameter_value):
         userFileDir = "OrderData"
@@ -215,14 +225,14 @@ class ExportEquipments(LabAPIView):
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
         filePath, fileName = self.writeFile(parameter_value)
-        return download_file(filePath, fileName)
+        return downloadFile(filePath, fileName)
 
     def writeFile(self, parameter_value):
         userFileDir = "Equipments"
         dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
         queryset = Equipment.objects.all()
         if parameter_value != "":
-            queryset = Equipment.objects.all().order_by('-statistics').filter(statistics__gt=1)
+            queryset = Equipment.objects.all().order_by('-statistics').filter(statistics__gte=1)
         fileName = f"Equipments{parameter_value}Data"
         
         xlsxFile = getDataFile(dirPath, fileName, EquipmentModelResource, queryset)
@@ -234,14 +244,14 @@ class ExportScientificInstruments(LabAPIView):
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
         filePath, fileName = self.writeFile(parameter_value)
-        return download_file(filePath, fileName)
+        return downloadFile(filePath, fileName)
 
     def writeFile(self, parameter_value):
         userFileDir = "ScientificInstruments"
         dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
         queryset = ScientificInstrument.objects.all()
         if parameter_value != "":
-            queryset = ScientificInstrument.objects.all().order_by('-statistics').filter(statistics__gt=1)
+            queryset = ScientificInstrument.objects.all().order_by('-statistics').filter(statistics__gte=1)
         fileName = f"ScientificInstruments{parameter_value}Data"
         
         xlsxFile = getDataFile(dirPath, fileName, ScientificInstrumentModelResource, queryset)
@@ -253,14 +263,14 @@ class ExportChemicalSubstances(LabAPIView):
     def get(self, request, *args, **kwargs):
         parameter_value = request.GET['getData']
         filePath, fileName = self.writeFile(parameter_value)
-        return download_file(filePath, fileName)
+        return downloadFile(filePath, fileName)
 
     def writeFile(self, parameter_value):
         userFileDir = "ChemicalSubstances"
         dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
         queryset = ChemicalSubstance.objects.all()
         if parameter_value != "":
-            queryset = ChemicalSubstance.objects.all().order_by('-statistics').filter(statistics__gt=1)
+            queryset = ChemicalSubstance.objects.all().order_by('-statistics').filter(statistics__gte=1)
         fileName = f"ChemicalSubstances{parameter_value}Data"
         
         xlsxFile = getDataFile(dirPath, fileName, ChemicalSubstanceModelResource, queryset)
@@ -272,7 +282,7 @@ class ExportBookingData(LabAPIView):
     def get(self, request, *args, **kwargs):
         parameter_value     = request.GET['getData']
         filePath, fileName  = self.writeFile(parameter_value)
-        return download_file(filePath, fileName)
+        return downloadFile(filePath, fileName)
 
     def writeFile(self, parameter_value):
         userFileDir = "BookingData"

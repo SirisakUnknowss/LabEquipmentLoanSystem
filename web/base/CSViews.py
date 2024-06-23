@@ -131,10 +131,16 @@ class AnalysisView(MenuList):
         if request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('notFoundPage'))
         self.addMenuPage(2, 4)
-        self.context['orders']      = self.getOrderData()
+        self.getHistory()
+        self.context['orders']      = self.orderAll()
         self.context['accounts']    = self.getAccountNumber()
-        self.context['items']       = ChemicalSubstance.objects.filter(statistics__gt=1)
+        self.context['items']       = self.getItemData()
         return render(request, 'pages/chemicalSubstance/analysisPage.html', self.context)
+
+    def getItemData(self):
+        items       = ChemicalSubstance.objects.all()
+        orderDict   = { 'list': items.filter(statistics__gte=1) , 'count': items.count() }
+        return orderDict
 
     def getAccountNumber(self) -> int:
         data = Order.objects.annotate(user_count=Count('user'))
@@ -142,9 +148,22 @@ class AnalysisView(MenuList):
             return data[0].user_count
         return 0
 
-    def getOrderData(self):
-        orderDict           = {}
-        orders              = Order.objects.all()
-        orderDict['list']   = orders
-        orderDict['count']  = orders.count()
-        return orderDict
+    def orderAll(self):
+        waiting     = Q(status=Order.STATUS.WAITING)
+        approved    = Q(status=Order.STATUS.APPROVED)
+        canceled    = Q(status=Order.STATUS.CANCELED)
+        disapproved = Q(status=Order.STATUS.DISAPPROVED)
+        order       = dict()
+        orders      = Order.objects.all()
+
+        order['all']            = orders.count()
+        order['waiting']        = orders.filter(waiting).count()
+        order['canceled']       = orders.filter(canceled).count()
+        order['approved']       = orders.filter(approved).count()
+        order['disapproved']    = orders.filter(disapproved).count()
+        return order
+
+    def getHistory(self):
+        self.context['histories']   = {}
+        self.context['histories']   = getOrder(1, self.request.user.account, self.context['histories'])
+        self.context['histories']['count'] = self.context['histories']['orders'].count()

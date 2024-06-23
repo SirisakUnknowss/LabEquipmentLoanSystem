@@ -10,13 +10,16 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 #Project
 from account.models import Account
-from base.functions import uploadImage
+from base.functions import uploadImage, downloadFile, getDataFile, writeFileExcel, checkTextNone, exportAccountData
 from base.permissions import IsAdminAccount
 from base.views import LabAPIGetView, LabAPIView, LabListView
+from base.variables import STATUS_STYLE
 from borrowing.models import Order
+from scientificInstrument.admin import BookingModelResource
 from scientificInstrument.functions import updateStatusOrder
 from scientificInstrument.models import ScientificInstrument, Booking, getClassPath
 from scientificInstrument.serializers import SlzScientificInstrumentInput, SlzBookingInput, SlzBooking, SlzBookingOutput, SlzCancelInput, SlzApprovalInput
+from settings.base import MEDIA_ROOT
 
 # Create your views here.        
 
@@ -217,44 +220,6 @@ class BookingScientificInstrumentApi(LabAPIGetView):
         booking.save()
         return booking
 
-# class DisapprovedBookingApi(LabAPIView):
-#     queryset            = Booking.objects.all()
-#     permission_classes  = [ AllowAny ]
-
-#     def post(self, request, *args, **kwargs):
-#         account     = request.user.account
-#         bookingID   = self.request.data.get("bookingID")
-#         if account.status != Account.STATUS.ADMIN:
-#             return redirect(reverse('notificationBookingPage'))
-#         booking = Booking.objects.filter(id=bookingID)
-#         if not booking.exists():
-#             return redirect(reverse('notificationBookingPage'))
-#         booking.update(status=Order.STATUS.DISAPPROVED)
-#         return redirect(reverse('notificationBookingPage'))
-
-# class ApprovedBookingApi(LabAPIView):
-#     queryset            = Booking.objects.all()
-#     permission_classes  = [ AllowAny ]
-
-#     def post(self, request, *args, **kwargs):
-#         account     = request.user.account
-#         bookingID   = self.request.data.get("bookingID")
-#         if account.status != Account.STATUS.ADMIN:
-#             return redirect(reverse('notificationBookingPage'))
-#         booking = Booking.objects.filter(id=bookingID)
-#         if not booking.exists():
-#             return redirect(reverse('notificationBookingPage'))
-#         booking.update(
-#             status=Order.STATUS.APPROVED,
-#             approver=account,
-#             dateApproved=datetime.now()
-#         )
-#         scientificInstrument = booking.first().scientificInstrument
-#         scientificInstrument.statistics += 1
-#         scientificInstrument.save(update_fields=['statistics'])
-        
-#         return redirect(reverse('notificationBookingPage'))
-
 class ApprovalBookingApi(LabAPIView):
     queryset            = Booking.objects.all()
     permission_classes  = [ IsAuthenticated, IsAdminAccount ]
@@ -303,3 +268,76 @@ class GetBookingByID(LabAPIGetView):
         serializer              = self.get_serializer(booking)
         self.response["result"] = serializer.data
         return Response(self.response)
+
+class ExportUserBookings(LabAPIView):
+    permission_classes = [ IsAdminAccount ]
+
+    def get(self, request: Request, *args, **kwargs):
+        fileName = f"UserScientificInstrumentsData"
+        queryset = Account.objects.filter(accountOrder__isnull=False).distinct()
+        return exportAccountData(queryset, fileName)
+
+class ExportOrderBookings(LabAPIView):
+    permission_classes = [ IsAdminAccount ]
+
+    def get(self, request: Request, *args, **kwargs):
+        filePath, fileName = self.writeFile()
+        return downloadFile(filePath, fileName)
+
+    def writeFile(self):
+        userFileDir = "OrderScientificInstrumentsData"
+        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
+        queryset = Booking.objects.all()
+        fileName = f"OrderScientificInstrumentsData"
+        
+        xlsxFile = getDataFile(dirPath, fileName, BookingModelResource, queryset)
+        return f"{dirPath}/{xlsxFile}", xlsxFile
+
+class ExportUsesScientificInstruments(LabAPIView):
+    permission_classes = [ IsAdminAccount ]
+
+    def get(self, request: Request, *args, **kwargs):
+        if bool(request.GET and request.GET['id']):
+            id = request.GET['id']
+            return self.getWithID(id)
+        return self.getAllItems()
+
+    def getWithID(self, id: str):
+        queryset = ScientificInstrument.objects.filter(id=id)
+        if not queryset.exists(): return
+        sc          = queryset[0]
+        fileName    = f'Uses_{sc.name}'
+        header      = { 'date': 'วันที่จอง', 'start': 'เริ่มใช้', 'end': 'ถึง', 'studentID': 'รหัสนักศึกษา',
+                       'name': 'ชื่อ', 'approver': 'ผู้อนุมัติ', 'status': 'สถานะ' }
+        orders = Booking.objects.all()
+        scList = []
+        for order in orders:
+            key = order.scientificInstrument.pk
+            if key != sc.pk: continue
+            scList.append(
+            {
+                'date': order.dateBooking,
+                'start': order.startBooking,
+                'end': order.endBooking,
+                'studentID': f'{order.user.studentID}',
+                'name': f'{checkTextNone(order.user.firstname)} {checkTextNone(order.user.lastname)}',
+                'approver': f'{checkTextNone(order.approver.firstname)} {checkTextNone(order.approver.lastname)}',
+                'status': f'{STATUS_STYLE[order.status]["text"]}',
+            })
+        return writeFileExcel(scList, header, fileName)
+            
+    def getAllItems(self):
+        fileName    = 'Uses_ScientificInstruments'
+        header      = { 'number': 'ลำดับ', 'name': 'ชื่ออุปกรณ์วิทยาศาสตร์', 'time': 'จำนวนทั้งหมด' }
+        orders      = Booking.objects.all()
+        queryset    = ScientificInstrument.objects.filter(statistics__gte=1).order_by('-statistics')
+        scs     = []
+        number  = 1
+        for data in queryset:
+            scs.append({
+                'number': number,
+                'name': data.name,
+                'time': data.statistics,
+            })
+            number += 1
+        return writeFileExcel(scs, header, fileName)

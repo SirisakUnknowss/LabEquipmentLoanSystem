@@ -1,5 +1,5 @@
 # Django
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.core import serializers
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -7,7 +7,7 @@ from rest_framework.request import Request
 # Project
 from account.models import Account
 from base.menu import MenuList, AdminOnly
-from base.variables import STATUS_STYLE
+from base.variables import STATUS_STYLE, UNIT
 from borrowing.models import EquipmentCart, Order
 from equipment.models import Equipment
         
@@ -40,7 +40,7 @@ class BorrowingHistoryView(MenuList):
         super(MenuList, self).get(request)
         self.addMenuPage(0, 3)
         self.context = getOrder(1, request.user.account, self.context)
-        return render(request, 'pages/equipments/borrowingHistoryPage.html', self.context)
+        return render(request, 'pages/equipments/historyPage.html', self.context)
 
 class AddPageView(AdminOnly):
 
@@ -48,6 +48,7 @@ class AddPageView(AdminOnly):
         super(AdminOnly, self).get(request)
         self.context['titleBar']    = 'เพิ่มเครื่องมือวิทยาศาตร์'
         self.context['confirmUrl']  = '/api/equipment/add'
+        self.context['UNIT']        = UNIT
         return render(request, 'pages/equipments/addPage.html', self.context)
 
 class EditPageView(AdminOnly):
@@ -121,24 +122,22 @@ class AnalysisView(MenuList):
         if request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('notFoundPage'))
         self.addMenuPage(0, 4)
+        self.getHistory()
         self.context['orders']      = self.orderAll()
-        self.context['accounts']    = self.accountAll()
-        self.context['equipments']  = self.topEquipment()
+        self.context['accounts']    = self.getAccountNumber()
+        self.context['items']       = self.getItemData()
         return render(request, 'pages/equipments/analysisPage.html', self.context)
 
-    def topEquipment(self):
-        equipments = Equipment.objects.all().order_by('-statistics').filter(statistics__gt=1)[:20]
-        return equipments
-        
-    def accountAll(self):
-        admin               = Q(status=Account.STATUS.ADMIN)
-        user                = Q(status=Account.STATUS.USER)
-        account             = dict()
-        accounts            = Account.objects.all()
-        account['all']      = accounts.count()
-        account['user']     = accounts.filter(user).count()
-        account['admin']    = accounts.filter(admin).count()
-        return account
+    def getItemData(self):
+        items       = Equipment.objects.all()
+        orderDict   = { 'list': items.filter(statistics__gte=1) , 'count': items.count() }
+        return orderDict
+
+    def getAccountNumber(self) -> int:
+        data = Order.objects.annotate(user_count=Count('user'))
+        if data.count() > 0:
+            return data[0].user_count
+        return 0
 
     def orderAll(self):
         waiting     = Q(status=Order.STATUS.WAITING)
@@ -156,7 +155,12 @@ class AnalysisView(MenuList):
         order['canceled']       = orders.filter(canceled).count()
         order['returned']       = orders.filter(returned).count()
         order['approved']       = orders.filter(approved).count()
-        order['overdued']       = orders.filter(overdue).count()
+        order['overdue']        = orders.filter(overdue).count()
         order['completed']      = orders.filter(completed).count()
         order['disapproved']    = orders.filter(disapproved).count()
         return order
+
+    def getHistory(self):
+        self.context['histories']   = {}
+        self.context['histories']   = getOrder(1, self.request.user.account, self.context['histories'])
+        self.context['histories']['count'] = self.context['histories']['orders'].count()

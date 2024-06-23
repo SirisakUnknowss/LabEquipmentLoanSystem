@@ -1,0 +1,124 @@
+
+
+<div class="row">
+    <div class="col-xl-3 col-sm-3 mb-xl-0 mb-4">
+        <div class="card">
+            <div class="card-header p-0 mx-3 mt-3 text-start">
+                <div class="badge badge-sm bg-gradient-success w-100">
+                    <p class="mb-0 text-white text-bold">อนุมัติแล้ว</p>
+                </div>
+                <div class="text-end pt-3">
+                    <p class="mb-0 text-black text-bold">{{ orders.approved }} ครั้ง</p>
+                </div>
+            </div>
+            <div class="card-footer d-flex px-3 py-2">
+                <a href={% url "borrowingHistoryPage" %} class="text-sm text-info text-start text-decoration-underline w-50">ข้อมูลเพิ่มเติม</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-sm-3 mb-xl-0 mb-4">
+        <div class="card">
+            <div class="card-header p-0 mx-3 mt-3 text-start">
+                <div class="badge badge-sm bg-gradient-danger w-100">
+                    <p class="mb-0 text-white text-bold">ไม่อนุมัติ</p>
+                </div>
+                <div class="text-end pt-3">
+                    <p class="mb-0 text-black text-bold">{{ orders.disapproved }} ครั้ง</p>
+                </div>
+            </div>
+            <div class="card-footer d-flex px-3 py-2">
+                <a href={% url "borrowingHistoryPage" %} class="text-sm text-info text-start text-decoration-underline w-50">ข้อมูลเพิ่มเติม</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-sm-3 mb-xl-0 mb-4">
+        <div class="card">
+            <div class="card-header p-0 mx-3 mt-3 text-start">
+                <div class="badge badge-sm bg-gradient-warning w-100">
+                    <p class="mb-0 text-white text-bold">รออนุมัติ</p>
+                </div>
+                <div class="text-end pt-3">
+                    <p class="mb-0 text-black text-bold">{{ orders.waiting }} ครั้ง</p>
+                </div>
+            </div>
+            <div class="card-footer d-flex px-3 py-2">
+                <a href={% url "notificationsEquipmentPage" %} class="text-sm text-info text-start text-decoration-underline w-50">ข้อมูลเพิ่มเติม</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-sm-3 mb-xl-0 mb-4">
+        <div class="card">
+            <div class="card-header p-0 mx-3 mt-3 text-start">
+                <div class="badge badge-sm bg-gradient-secondary w-100">
+                    <p class="mb-0 text-white text-bold">ยกเลิกแล้ว</p>
+                </div>
+                <div class="text-end pt-3">
+                    <p class="mb-0 text-black text-bold">{{ orders.canceled }} ครั้ง</p>
+                </div>
+            </div>
+            <div class="card-footer d-flex px-3 py-2">
+                <a href={% url "borrowingHistoryPage" %} class="text-sm text-info text-start text-decoration-underline w-50">ข้อมูลเพิ่มเติม</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+
+    <div class="col-xl-3 col-sm-3 mb-xl-0 mb-4">
+        <div class="card">
+            <div class="card-header p-0 mx-3 mt-3 text-start">
+                <div class="badge badge-sm bg-gradient-success w-100">
+                    <p class="mb-0 text-white text-bold">ยืนยันการคืน</p>
+                </div>
+                <div class="text-end pt-3">
+                    <p class="mb-0 text-black text-bold">{{ orders.completed }} ครั้ง</p>
+                </div>
+            </div>
+            <div class="card-footer d-flex px-3 py-2">
+                <a href={% url "borrowingHistoryPage" %} class="text-sm text-info text-start text-decoration-underline w-50">ข้อมูลเพิ่มเติม</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-sm-3 mb-xl-0 mb-4">
+        <div class="card">
+            <div class="card-header p-0 mx-3 mt-3 text-start">
+                <div class="badge badge-sm bg-gradient-danger w-100">
+                    <p class="mb-0 text-white text-bold">เกินกำหนด</p>
+                </div>
+                <div class="text-end pt-3">
+                    <p class="mb-0 text-black text-bold">{{ orders.overdue }} ครั้ง</p>
+                </div>
+            </div>
+            <div class="card-footer d-flex px-3 py-2">
+                <a href={% url "notificationsEquipmentPage" %} class="text-sm text-info text-start text-decoration-underline w-50">ข้อมูลเพิ่มเติม</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-sm-3 mb-xl-0 mb-4">
+        <div class="card">
+            <div class="card-header p-0 mx-3 mt-3 text-start">
+                <div class="badge badge-sm bg-gradient-warning w-100">
+                    <p class="mb-0 text-white text-bold">รอยืนยันการคืน</p>
+                </div>
+                <div class="text-end pt-3">
+                    <p class="mb-0 text-black text-bold">{{ orders.returned }} ครั้ง</p>
+                </div>
+            </div>
+            <div class="card-footer d-flex px-3 py-2">
+                <a href={% url "notificationsEquipmentPage" %} class="text-sm text-info text-start text-decoration-underline w-50">ข้อมูลเพิ่มเติม</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <hr class="hr-3">
+    </div>
+</div>

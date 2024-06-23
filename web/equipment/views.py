@@ -2,13 +2,19 @@
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.db.models import F
 from rest_framework import status
+from rest_framework.request import Request
 from rest_framework.response import Response
 #Project
-from base.functions import uploadImage
+from account.admin import AccountResource
+from account.models import Account
+from base.functions import uploadImage, downloadFile, getDataFile, writeFileExcel, exportAccountData
 from base.permissions import IsAdminAccount
-from base.views import LabListView, LabAPIGetView
-from .serializers import SlzEquipmentInput, SlzEquipment
-from .models import Equipment, getClassPath
+from base.views import LabListView, LabAPIGetView, LabAPIView
+from borrowing.admin import OrderModelResource
+from borrowing.models import Order, Borrowing
+from equipment.serializers import SlzEquipmentInput, SlzEquipment
+from equipment.models import Equipment, getClassPath
+from settings.base import MEDIA_ROOT
 
 # Create your views here.
 class ListEquipment(LabListView):
@@ -102,3 +108,99 @@ class RemoveEquipment(LabAPIGetView):
         except Equipment.DoesNotExist:
             self.response["error"] = 'ไม่พบข้อมูล'
             return Response(self.response, status=status.HTTP_404_NOT_FOUND)
+
+class ExportUserEquipments(LabAPIView):
+    permission_classes = [ IsAdminAccount ]
+
+    def get(self, request: Request, *args, **kwargs):
+        fileName = f"UserEquipmentsData"
+        queryset = Account.objects.filter(accountOrder__isnull=False).distinct()
+        return exportAccountData(queryset, fileName)
+
+    def writeFile(self):
+        userFileDir = "UserEquipmentsData"
+        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
+        queryset = Account.objects.filter(accountOrder__isnull=False).distinct()
+        fileName = f"UserEquipmentsData"
+        
+        xlsxFile = getDataFile(dirPath, fileName, AccountResource, queryset)
+        return f"{dirPath}/{xlsxFile}", xlsxFile
+
+class ExportOrderEquipments(LabAPIView):
+    permission_classes = [ IsAdminAccount ]
+
+    def get(self, request: Request, *args, **kwargs):
+        filePath, fileName = self.writeFile()
+        return downloadFile(filePath, fileName)
+
+    def writeFile(self):
+        userFileDir = "OrderEquipmentsData"
+        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
+        queryset = Order.objects.all()
+        fileName = f"OrderEquipmentsData"
+        
+        xlsxFile = getDataFile(dirPath, fileName, OrderModelResource, queryset)
+        return f"{dirPath}/{xlsxFile}", xlsxFile
+
+class ExportUsesEquipments(LabAPIView):
+    permission_classes = [ IsAdminAccount ]
+
+    def get(self, request: Request, *args, **kwargs):
+        if bool(request.GET and request.GET['id']):
+            id = request.GET['id']
+            return self.getWithID(id)
+        return self.getAllItems()
+
+    def getWithID(self, id: str):
+        queryset = Equipment.objects.filter(id=id)
+        if not queryset.exists(): return
+        equipment   = queryset[0]
+        fileName    = f'Uses_{equipment.name}'
+        header      = { 'date': 'วันที่ยืม - คืน', 'studentID': 'รหัสนักศึกษา', 'name': 'ชื่อ', 'quantity': 'ปริมาณที่ยืม - คืน' }
+        orders = Order.objects.all()
+        equipmentList = []
+        for order in orders:
+            for item in order.equipment.all():
+                borrowing: Borrowing = item
+                key     = borrowing.equipment.pk
+                if key != equipment.pk: continue
+                equipmentList.append({
+                    'date': order.dateBorrowing,
+                    'studentID': f'{order.user.studentID}',
+                    'name': f'{order.user.firstname} {order.user.lastname}',
+                    'quantity': f'{borrowing.quantity} {borrowing.equipment.unit}'
+                })
+        print(equipmentList)
+        return writeFileExcel(equipmentList, header, fileName)
+            
+    def getAllItems(self):
+        fileName    = 'Uses_Equipments'
+        header      = { 'number': 'ลำดับ', 'name': 'ชื่ออุปกรณ์วิทยาศาสตร์', 'size': 'ขนาด', 'time': 'จำนวนทั้งหมด' }
+        orders      = Order.objects.all()
+        equipmentList = {}
+        for order in orders:
+            for item in order.equipment.all():
+                borrowing: Borrowing = item
+                key = borrowing.equipment.pk
+                if key in equipmentList:
+                    equipmentList[key]['quantity'] += borrowing.quantity
+                else:
+                    equipmentList[key] = {
+                        'quantity': borrowing.quantity,
+                        'unit': borrowing.equipment.unit
+                    }
+        queryset    = Equipment.objects.all().order_by('-statistics').filter(statistics__gte=1)
+        equipments  = []
+        number      = 1
+        for data in queryset:
+            if data.pk in equipmentList:
+                quantity    = equipmentList[data.pk]['quantity']
+                unit        = equipmentList[data.pk]['unit']
+                equipments.append({
+                    'number': number,
+                    'name': data.name,
+                    'size': f'{data.size} {unit}',
+                    'time': quantity,
+                })
+                number += 1
+        return writeFileExcel(equipments, header, fileName)

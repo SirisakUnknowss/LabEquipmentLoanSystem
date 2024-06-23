@@ -1,7 +1,7 @@
 # Python
 import json
 # Django
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.core import serializers
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -123,25 +123,34 @@ class DetailBookingView(MenuList):
         except Booking.DoesNotExist:
             return redirect(reverse('notificationBookingPage'))
 
+        
+def getOrder(status: int, account: Account, context: dict):
+    waiting     = Q(status=Order.STATUS.WAITING)
+    if status == 0:
+        orders = Booking.objects.filter(waiting)
+    if status == 1:
+        orders = Booking.objects.exclude(waiting)
+    if account.status == Account.STATUS.USER:
+        orders = orders.filter(user=account)
+    context['orders']      = orders.order_by('-dateBooking', '-startBooking')
+    context['statusMap']   = STATUS_STYLE
+    return context
+
 class NotificationsBookingView(MenuList):
 
     def get(self, request: Request, *args, **kwargs):
         super(MenuList, self).get(request)
         self.addMenuPage(1, -1)
-        account     = request.user.account
-        bookings    = self.getBookings(account)
-        self.context['orders']      = bookings
-        self.context['statusMap']   = STATUS_STYLE
+        self.context = getOrder(0, request.user.account, self.context)
         return render(request, 'pages/scientificInstruments/notificationPage.html', self.context)
 
-    def getBookings(self, account: Account):
-        waiting     = Q(status=Order.STATUS.WAITING)
-        approved    = Q(status=Order.STATUS.APPROVED)
-        bookings = Booking.objects.filter(user=account).filter(approved | waiting)
-        if account.status == Account.STATUS.ADMIN:
-            waiting     = Q(status=Order.STATUS.WAITING)
-            bookings      = Booking.objects.filter(waiting)
-        return bookings.order_by('-dateBooking', '-startBooking')
+class BookingHistoryView(MenuList):
+
+    def get(self, request: Request, *args, **kwargs):
+        super(MenuList, self).get(request)
+        self.addMenuPage(1, 4)
+        self.context = getOrder(1, request.user.account, self.context)
+        return render(request, 'pages/scientificInstruments/historyPage.html', self.context)
 
 class AnalysisView(MenuList):
 
@@ -149,26 +158,45 @@ class AnalysisView(MenuList):
         super(MenuList, self).get(request)
         if request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('notFoundPage'))
-        self.addMenuPage(1, 4)
-        self.topScientificInstrument()
-        self.bookingAll()
+        self.addMenuPage(1, 5)
+        self.getHistory()
+        self.context['orders']      = self.orderAll()
+        self.context['accounts']    = self.getAccountNumber()
+        self.context['items']       = self.getItemData()
         return render(request, 'pages/scientificInstruments/analysisPage.html', self.context)
 
     def topScientificInstrument(self):
-        scientificInstruments = ScientificInstrument.objects.all().order_by('-statistics').filter(statistics__gt=1)[:20]
+        scientificInstruments = ScientificInstrument.objects.all().order_by('-statistics').filter(statistics__gte=1)[:20]
         self.context['scientificInstruments'] = scientificInstruments
 
-    def bookingAll(self):
+    def getItemData(self):
+        items       = ScientificInstrument.objects.all().order_by('-statistics')
+        orderDict   = { 'list': items.filter(statistics__gte=1) , 'count': items.count() }
+        return orderDict
+
+    def getAccountNumber(self) -> int:
+        data = Order.objects.annotate(user_count=Count('user'))
+        if data.count() > 0:
+            return data[0].user_count
+        return 0
+
+    def orderAll(self):
         waiting     = Q(status=Order.STATUS.WAITING)
         approved    = Q(status=Order.STATUS.APPROVED)
         canceled    = Q(status=Order.STATUS.CANCELED)
         disapproved = Q(status=Order.STATUS.DISAPPROVED)
         order       = dict()
         bookings    = Booking.objects.all()
-
+        for booking in bookings:
+            print(booking.scientificInstrument.pk)
         order['all']            = bookings.count()
         order['waiting']        = bookings.filter(waiting).count()
         order['canceled']       = bookings.filter(canceled).count()
         order['approved']       = bookings.filter(approved).count()
         order['disapproved']    = bookings.filter(disapproved).count()
-        self.context['bookings'] = order
+        return order
+
+    def getHistory(self):
+        self.context['histories']   = {}
+        self.context['histories']   = getOrder(1, self.request.user.account, self.context['histories'])
+        self.context['histories']['count'] = self.context['histories']['orders'].count()

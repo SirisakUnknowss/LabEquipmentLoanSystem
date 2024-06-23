@@ -1,183 +1,39 @@
 {% extends 'base/base.html' %}
 {% block content %}
+{% load humanReadable %}
 {% include 'base/navside.html' %}
 <main class="main-content position-relative max-height-vh-100 h-100">
     {% include "base/navbar.html" %}
     <div class="container-fluid py-4 ">
-        
         <div class="row">
-            <div class="col-lg-10 col-md-10 col-10 d-flex align-items-center mb-3">
-                <h5>จัดการข้อมูลผู้ใช้บริการเครื่องมือวิทยาศาสตร์</h5>
-            </div>
-
-        <div class="container-fluid py-4 ">
-            <div class="row mb-2">
-                
-                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
-                    <div class="card">
-                        <div class="card-header p-3 pt-2">
-                            <div class="bg-gradient-info shadow-info border-radius-lg  pt-2 pb-2 mt-n4">
-                                <p class="text-s mb-0 text-white">รายการทั้งหมด</p>
-                            </div>
-                            <div class="text-center pt-3">
-                                <h1 class="mb-0 text-info">{{ bookings.all }}</h1>
-                                <p class="text-md mb-0 text-capitalize">รายการ</p>
-                                {% if user.account.status == "admin" %}
-                                <button class="btn bg-gradient-faded-dark mb-0 mt-3 toast-btn text-white" id="exportAllBookingButton" type="button" data-target="warningToast">
-                                    <i class="material-icons opacity-10">download</i>
-                                </button>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <hr class="dark horizontal my-0">
-                        <div class="card-footer p-3">
-                            
-                        </div>
-                    </div>
+            <div class="card card-body mx-3 px-4 pt-4">
+                <div class="container-fluid p-0">
+                    {% include 'pages/scientificInstruments/analysis/summary.html' %}
+                    {% include 'pages/scientificInstruments/analysis/orders.html' %}
                 </div>
                 
-                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
-                    <div class="card">
-                        <div class="card-header p-3 pt-2">
-                            <div class="bg-gradient-success shadow-success border-radius-lg pt-2 pb-2 mt-n4">
-                                <p class="text-s mb-0 text-white">รายการที่อนุมัติแล้ว</p>
-                            </div>
-                            <div class="text-center pt-3">
-                                <h1 class="mb-0 text-success">{{ bookings.approved }}</h1>
-                                <p class="text-md mb-0 text-capitalize">รายการ</p>
-                                {% if user.account.status == "admin" %}
-                                <button class="btn bg-gradient-faded-dark mb-0 mt-3 toast-btn text-white" id="exportApprovedBookingButton" type="button" data-target="warningToast">
-                                    <i class="material-icons opacity-10">download</i>
-                                </button>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <hr class="dark horizontal my-0">
-                        <div class="card-footer p-3">
-
-                        </div>
-                    </div>
+                <div class="card-body p-0 my-3">
+                    <span class="text-black text-bold me-3">สถิติการ{{ actionCategory }}{{ nameCategory }}</span>
+                    <a href="" onclick="downloadDataUses(event)" class="text-sm text-info text-end text-decoration-underline w-50 ms-3">ดาวน์โหลดข้อมูล</a>
                 </div>
-
-                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
-                    <div class="card">
-                        <div class="card-header p-3 pt-2">
-                            <div class="bg-gradient-warning shadow-warning border-radius-lg pt-2 pb-2 mt-n4">
-                                <p class="text-s mb-0 text-white">รายการที่รออนุมัติ</p>
-                            </div>
-                            <div class="text-center pt-3">
-                                <h1 class="mb-0 text-warning">{{ bookings.waiting }}</h1>
-                                <p class="text-md mb-0 text-capitalize">รายการ</p>
-                                {% if user.account.status == "admin" %}
-                                <button class="btn bg-gradient-faded-dark mb-0 mt-3 toast-btn text-white" id="exportWaitingBookingButton" type="button" data-target="warningToast">
-                                    <i class="material-icons opacity-10">download</i>
-                                </button>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <hr class="dark horizontal my-0">
-                        <div class="card-footer p-3">
-                            
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
-                    <div class="card">
-                        <div class="card-header p-3 pt-2">
-                            <div class="bg-gradient-danger shadow-danger border-radius-lg  pt-2 pb-2 mt-n4">
-                                <p class="text-s mb-0 text-white">รายการที่ยกเลิกแล้ว</p>
-                            </div>
-                            <div class="text-center pt-3">
-                                <h1 class="mb-0 text-danger">{{ bookings.canceled }}</h1>
-                                <p class="text-md mb-0 text-capitalize">รายการ</p>
-                                {% if user.account.status == "admin" %}
-                                <button class="btn bg-gradient-faded-dark mb-0 mt-3 toast-btn text-white" id="exportCanceledBookingButton" type="button" data-target="warningToast">
-                                    <i class="material-icons opacity-10">download</i>
-                                </button>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <hr class="dark horizontal my-0">
-                        <div class="card-footer p-3">
-                            
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
-                    <div class="card">
-                        <div class="card-header p-3 pt-2">
-                            <div class="bg-gradient-danger shadow-danger border-radius-lg pt-2 pb-2 mt-n4">
-                                <p class="text-s mb-0 text-white">รายการที่ไม่อนุมัติ</p>
-                            </div>
-                            <div class="text-center pt-3">
-                                <h1 class="mb-0 text-danger">{{ bookings.disapproved }}</h1>
-                                <p class="text-md mb-0 text-capitalize">รายการ</p>
-                                {% if user.account.status == "admin" %}
-                                <button class="btn bg-gradient-faded-dark mb-0 mt-3 toast-btn text-white" id="exportDisapprovedBookingButton" type="button" data-target="warningToast">
-                                    <i class="material-icons opacity-10">download</i>
-                                </button>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <hr class="dark horizontal my-0">
-                        <div class="card-footer p-3">
-
-                        </div>
-                    </div>
-                </div>
+                {% include 'pages/scientificInstruments/analysis/table.html' %}
             </div>
-
-            
-            <div class="row">
-                <div class="col-lg-8 col-md-6 col-8 d-flex align-items-center mb-3">
-                    <h6>อุปกรณ์ที่มีการยืมสูงสุด</h6>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-2 col-md-4 col-12">
-                    {% if user.account.status == "admin" and scientificInstruments|length > 0 %}
-                    <button class="btn bg-gradient-faded-dark mb-4 mt-n2 toast-btn text-white" id="exportMostScientificInstrumentButton" type="button" data-target="warningToast">
-                        <i class="material-icons opacity-10">download</i>
-                    </button>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="row">
-                {% for scientificInstrument in scientificInstruments %}
-                <div class="col-xl-3 col-sm-6 mb-xl-4 mb-4">
-                    <div class="card">
-                        <div class="card-header p-3 pt-2">
-                            <div class="bg-gradient-info shadow-info border-radius-lg  pt-2 pb-2 mt-n4">
-                                <p class="text-s mb-0 text-white">{{ scientificInstrument.name }}</p>
-                            </div>
-                            <div class="text-center pt-3">
-                                <h1 class="mb-0 text-info">{{ scientificInstrument.statistics }}</h1>
-                                <p class="text-md mb-0 text-capitalize">ครั้ง</p>
-                            </div>
-                        </div>
-                        <hr class="dark horizontal my-0">
-                        <div class="card-footer p-3">
-                            
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
         </div>
     </div>
 </main>
+{% include "modals/error.html" %}
+{% include "modals/loading.html" %}
+{% include "modals/success.html" %}
 {% endblock %}
 
 {% block js %}
 {{ block.super }}
-    <script>
-        let name_page = ""
-        const urlExportDataBooking = "{% url 'ExportBookingData' %}"
-        const urlExportData = "{% url 'ExportScientificInstruments' %}"
-    </script>
-    <script src="{{ STATIC_URL }}js/exportDataScientificIntrument.js"></script>
-{% endblock %}
+<script>
+    const urlExportDataUser = "{% url 'ExportUserBookings' %}"
+    const urlExportOrder    = "{% url 'ExportOrderBookings' %}"
+    const urlExportDataUses = "{% url 'ExportUsesScientificInstruments' %}"
+</script>
+<script src="{{ STATIC_URL }}js/callAPI.js"></script>
+<script src="{{ STATIC_URL }}js/exportUserData.js"></script>
+<script src="{{ STATIC_URL }}js/exportScientificInstruments.js"></script>
+{% endblock js %}

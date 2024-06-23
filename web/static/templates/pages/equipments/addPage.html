@@ -31,48 +31,9 @@
                             <div class="input-group input-group-outline my-3">
                                 <select class="form-select" id="id_unit" name="unit" required>
                                     <option value="">-------- หน่วย --------</option>
-                                    
-                                    {% ifequal result.unit "Milliliter" %}
-                                    <option value="Milliliter" selected>mL</option>
-                                    {% else %}
-                                    <option value="Milliliter">ml</option>
-                                    {% endifequal %}
-                                    
-                                    {% ifequal result.unit "Liter" %}
-                                    <option value="Liter" selected>L</option>
-                                    {% else %}
-                                    <option value="Liter">L</option>
-                                    {% endifequal %}
-                                    
-                                    {% ifequal result.unit "Millimeter" %}
-                                    <option value="Millimeter" selected>m</option>
-                                    {% else %}
-                                    <option value="Millimeter">mm</option>
-                                    {% endifequal %}
-                                    
-                                    {% ifequal result.unit "Centimeter" %}
-                                    <option value="Centimeter" selected>㎤</option>
-                                    {% else %}
-                                    <option value="Centimeter">㎤</option>
-                                    {% endifequal %}
-                                    
-                                    {% ifequal result.unit "Celsius" %}
-                                    <option value="Celsius" selected>&#8451;</option>
-                                    {% else %}
-                                    <option value="Celsius">&#8451;</option>
-                                    {% endifequal %}
-                                    
-                                    {% ifequal result.unit "NotSpecified" %}
-                                    <option value="NotSpecified" selected>ไม่ระบุ</option>
-                                    {% else %}
-                                    <option value="NotSpecified">ไม่ระบุ</option>
-                                    {% endifequal %}
-                                    
-                                    {% ifequal result.unit "Other" %}
-                                    <option value="Other" selected>อื่น ๆ</option>
-                                    {% else %}
-                                    <option value="Other">อื่น ๆ</option>
-                                    {% endifequal %}
+                                    {% for value, label in UNIT.items %}
+                                        <option value="{{ value }}" {% if result.unit == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                             <div id="unitOther" class="d-none">

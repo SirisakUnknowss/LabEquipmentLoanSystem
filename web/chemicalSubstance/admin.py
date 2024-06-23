@@ -1,7 +1,10 @@
 from django.contrib import admin
-from import_export.admin import ImportExportModelAdmin, ExportMixin
-from import_export import resources
-from .models import ChemicalSubstance, HazardCategory, Withdrawal, Order, ChemicalSubstanceCart
+from import_export.admin import ImportExportModelAdmin
+from import_export.widgets import ManyToManyWidget
+from import_export import fields, resources
+# Project
+from base.variables import STATUS_STYLE
+from chemicalSubstance.models import ChemicalSubstance, HazardCategory, Withdrawal, Order, ChemicalSubstanceCart
 
 @admin.register(HazardCategory)
 class HazardCategoryCartAdmin(ImportExportModelAdmin):
@@ -76,18 +79,30 @@ class WithdrawalAdmin(admin.ModelAdmin):
     list_filter     = ['user__studentID']
     search_fields   = ['user__studentID']
 
-class OrderResource(resources.ModelResource): 
+FIELDS = [ 'user__studentID', 'chemicalSubstance', 'dateWithdraw', 'dateApproved', 'status', 'approver__firstname' ]
+class OrderResource(resources.ModelResource):
+    chemicalSubstance = fields.Field(
+        column_name='chemicalSubstance',
+        attribute='chemicalSubstance',
+        widget=ManyToManyWidget(Withdrawal, field='chemicalSubstance', separator=', ')
+    )
     class Meta:
-        model           = Order
-        fields          = ('user__studentID', 'user__firstname', 'user__lastname', 'dateWithdraw', 'dateApproved', 'status', 'approver__firstname')
-        export_order = fields
+        model   = Order
+        fields  = FIELDS
+
+    def dehydrate_status(self, order):
+        return STATUS_STYLE[order.status]["text"]
 
     def export(self, queryset=None, *args, **kwargs):
         if queryset is None:
             queryset = Order.objects.all()
         dataset = super().export(queryset, *args, **kwargs)
-        dataset.headers = [ 'student ID', 'First Name', 'Last Name', 'Date Withdraw', 'Date Approved', 'Status','Approver', ]
-        return dataset
+        ordered_columns = FIELDS
+        new_dataset = dataset.__class__(headers=[ 'รหัสนักศึกษา', 'สารเคมี', 'วันที่เบิก', 'วันที่อนุมัติ', 'สถานะ', 'ผู้อนุมัติ' ])
+        for row in dataset.dict:
+            new_row = [row[column] for column in ordered_columns]
+            new_dataset.append(new_row)
+        return new_dataset
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

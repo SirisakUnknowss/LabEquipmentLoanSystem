@@ -24,22 +24,18 @@
     </div>
     <div class="input-group input-group-outline my-3 is-filled">
         <label class="form-label">ชื่อ</label>
-        <input type="text" class="form-control" id="id_firstname" name="firstname" value="{{ account.firstname }}" required pattern="[^0-9]*">
+        <input type="text" class="form-control" id="id_firstname" name="firstname" value="{% if account.firstname %}{{ account.firstname }}{% endif %}" required pattern="[^0-9]*">
     </div>
     <div class="input-group input-group-outline mb-3 is-filled">
         <label class="form-label">นามสกุล</label>
-        <input type="text" class="form-control" id="id_lastname" name="lastname" value="{{ account.lastname }}" place required pattern="[^0-9]*">
+        <input type="text" class="form-control" id="id_lastname" name="lastname" value="{% if account.lastname %}{{ account.lastname }}{% endif %}" place required pattern="[^0-9]*">
     </div>
     <div class="input-group input-group-outline mb-3">
         <select class="form-select" id="id_branch" name="branch" required>
             <option value="">-------- สาขา --------</option>
-            <option value="B-Ed_Chemistry">สาขาวิชาเคมี (คบ.)</option>
-            <option value="B-S_Chemistry">สาขาวิชาเคมี (วท.บ.)</option>
-            <option value="B-Ed_Physical">สาขาวิชาฟิสิกส์ (คบ.)</option>
-            <option value="B-S_Physical">สาขาวิชาฟิสิกส์ (วท.บ.)</option>
-            <option value="B-Ed_Biology">สาขาวิชาชีววิทยา (คบ.)</option>
-            <option value="B-S_Biology">สาขาวิชาชีววิทยา (วท.บ.)</option>
-            <option value="Other_Other">อื่น ๆ</option>
+            {% for value, label in BRANCH.items %}
+                <option value="{{ value }}" {% if account.branch == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
         </select>
     </div>
     <div id="branchOther" class="d-none">
@@ -49,11 +45,9 @@
     <div class="input-group input-group-outline mb-3">
         <select class="form-select" id="idLevelClass" name="levelclass" required>
             <option value="">-------- ชั้นปี --------</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
+            {% for value, label in LEVEL_CLASS.items %}
+                <option value="{{ value }}" {% if account.levelclass == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
         </select>
     </div>
     <div class="input-group input-group-outline mb-3 is-filled">
@@ -65,13 +59,12 @@
         <input type="email" class="form-control" id="id_email" name="email" value="{{ account.email }}" required>
     </div>
     <div class="input-group input-group-outline mb-3">
+        aaaaaaa == {{ result.category }}
         <select class="form-select" id="id_category" name="category" required>
             <option value="">-------- สถานะ --------</option>
-            <option value="student">นักศึกษา</option>
-            <option value="teacher">อาจารย์</option>
-            <option value="personnel">บุคลากร</option>
-            <option value="other">อื่นๆ</option>
-            <option value="notSpecified">ไม่ระบุ</option>
+            {% for value, label in CATEGORY.items %}
+                <option value="{{ value }}" {% if account.category == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
         </select>
     </div>
     <div id="categoryOther" class="d-none">

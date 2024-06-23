@@ -12504,7 +12504,6 @@ textarea.form-control-lg {
   position: relative;
   z-index: 32;
   color: #fff;
-  display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
@@ -18325,4 +18324,9 @@ label.input-stepper {
 .vertical-text {
   margin: auto;
   padding: 10px;
+}
+
+.auto-newline {
+  word-wrap: break-word;
+  white-space:pre-wrap;
 }

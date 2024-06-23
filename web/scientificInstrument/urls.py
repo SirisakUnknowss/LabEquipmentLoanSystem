@@ -11,9 +11,10 @@ urlpatterns = [
     path('get/timeStartCanBooking', views.GetTimeStartCanBooking.as_view(), name='GetTimeStartCanBooking'),
     path('get/timeEndCanBooking', views.GetTimeEndCanBooking.as_view(), name='GetTimeEndCanBooking'),
     path('booking', views.BookingScientificInstrumentApi.as_view(), name='BookingScientificInstrumentApi'),
-    # path('disapproved', views.DisapprovedBookingApi.as_view(), name='disapprovedBookingApi'),
-    # path('approved', views.ApprovedBookingApi.as_view(), name='approvedBookingApi'),
     path('approval', views.ApprovalBookingApi.as_view(), name='approvalBookingApi'),
     path('cancel', views.CancelBookingApi.as_view(), name='cancelBookingApi'),
     path('get', views.GetBookingByID.as_view(), name="GetBookingByID"),
+    path('export/user', views.ExportUserBookings.as_view(), name='ExportUserBookings'),
+    path('export/order', views.ExportOrderBookings.as_view(), name='ExportOrderBookings'),
+    path('export/scientificInstruments', views.ExportUsesScientificInstruments.as_view(), name='ExportUsesScientificInstruments'),
 ]

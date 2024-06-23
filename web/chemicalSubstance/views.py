@@ -1,7 +1,5 @@
 # Python
-from csv import DictWriter
 from datetime import datetime
-import pandas, os
 # Django
 from django.db.models import F
 from rest_framework import status
@@ -12,7 +10,7 @@ from rest_framework.response import Response
 # Project
 from account.admin import AccountResource
 from account.models import Account
-from base.functions import convertToFloat, checkTextBlank, download_file, getDataFile, convertCSVToXLSX
+from base.functions import convertToFloat, checkTextBlank, downloadFile, getDataFile, writeFileExcel, exportAccountData
 from base.permissions import IsAdminAccount
 from base.views import LabAPIView
 from chemicalSubstance.admin import OrderResource
@@ -241,24 +239,16 @@ class ExportUserChemicalSubstances(LabAPIView):
     permission_classes = [ IsAdminAccount ]
 
     def get(self, request: Request, *args, **kwargs):
-        filePath, fileName = self.writeFile()
-        return download_file(filePath, fileName)
-
-    def writeFile(self):
-        userFileDir = "UserChemicalSubstancesData"
-        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
-        queryset = Account.objects.filter(userOrderWithdraw__isnull=False).distinct()
         fileName = f"UserChemicalSubstancesData"
-        
-        xlsxFile = getDataFile(dirPath, fileName, AccountResource, queryset)
-        return f"{dirPath}/{xlsxFile}", xlsxFile
+        queryset = Account.objects.filter(userOrderWithdraw__isnull=False).distinct()
+        return exportAccountData(queryset, fileName)
 
 class ExportOrderChemicalSubstances(LabAPIView):
     permission_classes = [ IsAdminAccount ]
 
     def get(self, request: Request, *args, **kwargs):
         filePath, fileName = self.writeFile()
-        return download_file(filePath, fileName)
+        return downloadFile(filePath, fileName)
 
     def writeFile(self):
         userFileDir = "OrderChemicalSubstancesData"
@@ -273,13 +263,13 @@ class ExportUsesChemicalSubstances(LabAPIView):
     permission_classes = [ IsAdminAccount ]
 
     def get(self, request: Request, *args, **kwargs):
-        if bool(request.GET and request.GET['serialNumber']):
-            serialNumber = request.GET['serialNumber']
-            return self.getWithSerialNumber(serialNumber)
+        if bool(request.GET and request.GET['id']):
+            id = request.GET['id']
+            return self.getWithID(id)
         return self.getAllItems()
 
-    def getWithSerialNumber(self, serialNumber: str):
-        queryset = ChemicalSubstance.objects.filter(serialNumber=serialNumber)
+    def getWithID(self, id: str):
+        queryset = ChemicalSubstance.objects.filter(id=id)
         if not queryset.exists(): return
         chemicalSubstance = queryset[0]
         fileName    = f'Uses_{chemicalSubstance.name}'
@@ -287,16 +277,17 @@ class ExportUsesChemicalSubstances(LabAPIView):
         orders = Order.objects.filter(status=Order.STATUS.APPROVED)
         chemicalList = []
         for order in orders:
-            for withdraw in order.chemicalSubstance.all():
-                key     = str(withdraw.chemicalSubstance.serialNumber)
-                if key != chemicalSubstance.serialNumber: continue
+            for item in order.chemicalSubstance.all():
+                withdraw: Withdrawal = item
+                key     = str(withdraw.chemicalSubstance.pk)
+                if key != chemicalSubstance.pk: continue
                 chemicalList.append({
                     'date': order.dateWithdraw,
                     'studentID': f'{order.user.studentID}',
                     'name': f'{order.user.firstname} {order.user.lastname}',
                     'quantity': f'{withdraw.quantity} {withdraw.chemicalSubstance.unit}'
                 })
-        return self.writeFileExcel(chemicalList, header, fileName)
+        return writeFileExcel(chemicalList, header, fileName)
             
     def getAllItems(self):
         fileName    = 'Uses_ChemicalSubstances'
@@ -304,36 +295,29 @@ class ExportUsesChemicalSubstances(LabAPIView):
         orders      = Order.objects.filter(status=Order.STATUS.APPROVED)
         chemicalList = {}
         for order in orders:
-            for withdraw in order.chemicalSubstance.all():
-                key = str(withdraw.chemicalSubstance.serialNumber)
+            for item in order.chemicalSubstance.all():
+                withdraw: Withdrawal = item
+                key = withdraw.chemicalSubstance.pk
                 if key in chemicalList:
                     chemicalList[key]['quantity'] += withdraw.quantity
                 else:
                     chemicalList[key] = {
+                        'serialNumber': withdraw.chemicalSubstance.serialNumber,
                         'quantity': withdraw.quantity,
                         'unit': withdraw.chemicalSubstance.unit
                     }
-        queryset    = ChemicalSubstance.objects.all().order_by('-statistics').filter(statistics__gt=1)
+        queryset    = ChemicalSubstance.objects.all().order_by('-statistics').filter(statistics__gte=1)
         chemicals   = []
         for data in queryset:
-            serialNumber = str(data.serialNumber)
-            if serialNumber in chemicalList:
-                quantity    = chemicalList[serialNumber]['quantity']
-                unit        = chemicalList[serialNumber]['unit']
+            pk = data.pk
+            if pk in chemicalList:
+                serialNumber    = chemicalList[pk]['serialNumber']
+                quantity        = chemicalList[pk]['quantity']
+                unit            = chemicalList[pk]['unit']
                 chemicals.append({
                     'serialNumber': serialNumber,
                     'name': data.name,
                     'time': data.statistics,
                     'quantity': f'{quantity} {unit}'
                 })
-        return self.writeFileExcel(chemicals, header, fileName)
-
-    def writeFileExcel(self, dataList: list, header: dict, fileName: str):
-        csvPath = f'{fileName}.csv'
-        excelPath = f'{fileName}.xlsx'
-        with open(csvPath, 'w', newline='', encoding='utf-8') as outfile:
-            writer = DictWriter(outfile, fieldnames=header.keys())
-            writer.writerow(header)
-            writer.writerows(dataList)
-        convertCSVToXLSX(csvPath, excelPath)
-        return download_file(excelPath, excelPath)
+        return writeFileExcel(chemicals, header, fileName)
