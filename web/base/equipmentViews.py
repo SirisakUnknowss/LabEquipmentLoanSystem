@@ -129,8 +129,8 @@ class AnalysisView(MenuList):
         return render(request, 'pages/equipments/analysisPage.html', self.context)
 
     def getItemData(self):
-        items       = Equipment.objects.all()
-        orderDict   = { 'list': items.filter(statistics__gte=1) , 'count': items.count() }
+        items       = Equipment.objects.filter(statistics__gte=1).order_by('-statistics')
+        orderDict   = { 'list': items , 'count': items.count() }
         return orderDict
 
     def getAccountNumber(self) -> int:

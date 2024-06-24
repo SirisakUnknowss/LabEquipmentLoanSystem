@@ -165,13 +165,9 @@ class AnalysisView(MenuList):
         self.context['items']       = self.getItemData()
         return render(request, 'pages/scientificInstruments/analysisPage.html', self.context)
 
-    def topScientificInstrument(self):
-        scientificInstruments = ScientificInstrument.objects.all().order_by('-statistics').filter(statistics__gte=1)[:20]
-        self.context['scientificInstruments'] = scientificInstruments
-
     def getItemData(self):
-        items       = ScientificInstrument.objects.all().order_by('-statistics')
-        orderDict   = { 'list': items.filter(statistics__gte=1) , 'count': items.count() }
+        items       = ScientificInstrument.objects.filter(statistics__gte=1).order_by('-statistics')
+        orderDict   = { 'list': items , 'count': items.count() }
         return orderDict
 
     def getAccountNumber(self) -> int:
