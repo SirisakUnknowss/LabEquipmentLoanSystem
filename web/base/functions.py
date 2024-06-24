@@ -2,14 +2,17 @@
 from csv import DictWriter
 import os
 import pandas as pd
-#Django
+# Django
 from django.core.files.storage import FileSystemStorage
 from django.http import FileResponse
+# Project
+from base.variables import BRANCH, CATEGORY
     
 def downloadFile(file_path, fileName):
     response = FileResponse(open(file_path, 'rb'), as_attachment=True)
     response['Content-Disposition'] = f'attachment; filename="{fileName}"'
     response['Content-Type'] = 'application/octet-stream'
+    os.remove(file_path)
     return response
 
 def getDataFile(dirPath: str, fileName: str, dataCls, queryset):
@@ -27,6 +30,7 @@ def getDataFile(dirPath: str, fileName: str, dataCls, queryset):
 def convertCSVToXLSX(csvPath: str, xlsxPath: str):
     df = pd.read_csv(csvPath)
     df.to_excel(xlsxPath, index=False, engine='openpyxl')
+    os.remove(csvPath)
 
 def uploadImage(name, imageFile, model):
     if os.path.isfile(name):
@@ -68,7 +72,14 @@ def exportAccountData(accounts, fileName):
     accountList = []
     number      = 1
     for account in accounts:
-        category = account.category
+        category    = account.category
+        branch      = account.branch
+        faculty     = account.faculty
+        keyBranch   = f'{faculty}_{branch}'
+        if keyBranch in BRANCH:
+            branch = BRANCH[keyBranch]
+        if category in CATEGORY:
+            category = CATEGORY[category]
         if category == 'notSpecified':
             category = account.categoryOther
         accountList.append(
@@ -76,7 +87,7 @@ def exportAccountData(accounts, fileName):
             'number': number,
             'studentID': f'{account.studentID}',
             'name': f'{checkTextNone(account.firstname)} {checkTextNone(account.lastname)}',
-            'branch': account.branch,
+            'branch': branch,
             'email': account.email,
             'category': f'{category}',
         })

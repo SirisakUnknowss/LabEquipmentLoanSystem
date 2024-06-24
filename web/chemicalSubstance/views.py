@@ -8,10 +8,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 # Project
-from account.admin import AccountResource
 from account.models import Account
-from base.functions import convertToFloat, checkTextBlank, downloadFile, getDataFile, writeFileExcel, exportAccountData
+from base.functions import convertToFloat, checkTextBlank, downloadFile, getDataFile, writeFileExcel, exportAccountData, checkTextNone
 from base.permissions import IsAdminAccount
+from base.variables import STATUS_STYLE
 from base.views import LabAPIView
 from chemicalSubstance.admin import OrderResource
 from chemicalSubstance.functions import updateHazard, updateImage, updateStatusOrder, cancelOrder
@@ -273,19 +273,24 @@ class ExportUsesChemicalSubstances(LabAPIView):
         if not queryset.exists(): return
         chemicalSubstance = queryset[0]
         fileName    = f'Uses_{chemicalSubstance.name}'
-        header      = { 'date': 'วันที่เบิก', 'studentID': 'รหัสนักศึกษา', 'name': 'ชื่อ', 'quantity': 'ปริมาณที่เบิกใช้' }
-        orders = Order.objects.filter(status=Order.STATUS.APPROVED)
+        header      = { 'date': 'วันที่เบิก', 'studentID': 'รหัสนักศึกษา', 'name': 'ชื่อ', 'quantity': 'ปริมาณที่เบิกใช้', 'approver': 'ผู้อนุมัติ', 'status': 'สถานะ' }
+        orders      = Order.objects.filter(status=Order.STATUS.APPROVED)
         chemicalList = []
         for order in orders:
             for item in order.chemicalSubstance.all():
                 withdraw: Withdrawal = item
-                key     = str(withdraw.chemicalSubstance.pk)
+                key     = withdraw.chemicalSubstance.pk
                 if key != chemicalSubstance.pk: continue
+                approver = None
+                if order.approver:
+                    approver = f'{checkTextNone(order.approver.firstname)} {checkTextNone(order.approver.lastname)}'
                 chemicalList.append({
                     'date': order.dateWithdraw,
                     'studentID': f'{order.user.studentID}',
                     'name': f'{order.user.firstname} {order.user.lastname}',
-                    'quantity': f'{withdraw.quantity} {withdraw.chemicalSubstance.unit}'
+                    'quantity': f'{withdraw.quantity} {withdraw.chemicalSubstance.unit}',
+                    'approver': approver,
+                    'status': f'{STATUS_STYLE[order.status]["text"]}',
                 })
         return writeFileExcel(chemicalList, header, fileName)
             

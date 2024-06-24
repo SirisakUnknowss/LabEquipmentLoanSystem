@@ -274,7 +274,7 @@ class ExportUserBookings(LabAPIView):
 
     def get(self, request: Request, *args, **kwargs):
         fileName = f"UserScientificInstrumentsData"
-        queryset = Account.objects.filter(accountOrder__isnull=False).distinct()
+        queryset = Account.objects.filter(accountBooking__isnull=False).distinct()
         return exportAccountData(queryset, fileName)
 
 class ExportOrderBookings(LabAPIView):
@@ -314,6 +314,9 @@ class ExportUsesScientificInstruments(LabAPIView):
         for order in orders:
             key = order.scientificInstrument.pk
             if key != sc.pk: continue
+            approver = None
+            if order.approver:
+                approver = f'{checkTextNone(order.approver.firstname)} {checkTextNone(order.approver.lastname)}'
             scList.append(
             {
                 'date': order.dateBooking,
@@ -321,7 +324,7 @@ class ExportUsesScientificInstruments(LabAPIView):
                 'end': order.endBooking,
                 'studentID': f'{order.user.studentID}',
                 'name': f'{checkTextNone(order.user.firstname)} {checkTextNone(order.user.lastname)}',
-                'approver': f'{checkTextNone(order.approver.firstname)} {checkTextNone(order.approver.lastname)}',
+                'approver': approver,
                 'status': f'{STATUS_STYLE[order.status]["text"]}',
             })
         return writeFileExcel(scList, header, fileName)

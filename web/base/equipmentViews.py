@@ -134,10 +134,7 @@ class AnalysisView(MenuList):
         return orderDict
 
     def getAccountNumber(self) -> int:
-        data = Order.objects.annotate(user_count=Count('user'))
-        if data.count() > 0:
-            return data[0].user_count
-        return 0
+        return Account.objects.filter(accountOrder__isnull=False).distinct().count()
 
     def orderAll(self):
         waiting     = Q(status=Order.STATUS.WAITING)

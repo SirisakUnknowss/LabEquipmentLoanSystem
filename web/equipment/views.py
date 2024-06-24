@@ -7,8 +7,9 @@ from rest_framework.response import Response
 #Project
 from account.admin import AccountResource
 from account.models import Account
-from base.functions import uploadImage, downloadFile, getDataFile, writeFileExcel, exportAccountData
+from base.functions import uploadImage, downloadFile, getDataFile, writeFileExcel, exportAccountData, checkTextNone
 from base.permissions import IsAdminAccount
+from base.variables import STATUS_STYLE
 from base.views import LabListView, LabAPIGetView, LabAPIView
 from borrowing.admin import OrderModelResource
 from borrowing.models import Order, Borrowing
@@ -117,15 +118,6 @@ class ExportUserEquipments(LabAPIView):
         queryset = Account.objects.filter(accountOrder__isnull=False).distinct()
         return exportAccountData(queryset, fileName)
 
-    def writeFile(self):
-        userFileDir = "UserEquipmentsData"
-        dirPath = f"{MEDIA_ROOT}/files/{userFileDir}"
-        queryset = Account.objects.filter(accountOrder__isnull=False).distinct()
-        fileName = f"UserEquipmentsData"
-        
-        xlsxFile = getDataFile(dirPath, fileName, AccountResource, queryset)
-        return f"{dirPath}/{xlsxFile}", xlsxFile
-
 class ExportOrderEquipments(LabAPIView):
     permission_classes = [ IsAdminAccount ]
 
@@ -156,7 +148,7 @@ class ExportUsesEquipments(LabAPIView):
         if not queryset.exists(): return
         equipment   = queryset[0]
         fileName    = f'Uses_{equipment.name}'
-        header      = { 'date': 'วันที่ยืม - คืน', 'studentID': 'รหัสนักศึกษา', 'name': 'ชื่อ', 'quantity': 'ปริมาณที่ยืม - คืน' }
+        header      = { 'date': 'วันที่ยืม - คืน', 'studentID': 'รหัสนักศึกษา', 'name': 'ชื่อ', 'quantity': 'ปริมาณที่ยืม - คืน', 'approver': 'ผู้อนุมัติ', 'status': 'สถานะ' }
         orders = Order.objects.all()
         equipmentList = []
         for order in orders:
@@ -164,13 +156,17 @@ class ExportUsesEquipments(LabAPIView):
                 borrowing: Borrowing = item
                 key     = borrowing.equipment.pk
                 if key != equipment.pk: continue
+                approver = None
+                if order.approver:
+                    approver = f'{checkTextNone(order.approver.firstname)} {checkTextNone(order.approver.lastname)}'
                 equipmentList.append({
-                    'date': order.dateBorrowing,
+                    'date': order.dateBorrowing.date(),
                     'studentID': f'{order.user.studentID}',
                     'name': f'{order.user.firstname} {order.user.lastname}',
-                    'quantity': f'{borrowing.quantity} {borrowing.equipment.unit}'
+                    'quantity': f'{borrowing.quantity} {borrowing.equipment.unit}',
+                    'approver': approver,
+                    'status': f'{STATUS_STYLE[order.status]["text"]}',
                 })
-        print(equipmentList)
         return writeFileExcel(equipmentList, header, fileName)
             
     def getAllItems(self):
@@ -186,10 +182,10 @@ class ExportUsesEquipments(LabAPIView):
                     equipmentList[key]['quantity'] += borrowing.quantity
                 else:
                     equipmentList[key] = {
-                        'quantity': borrowing.quantity,
+                        'quantity': borrowing.equipment.statistics,
                         'unit': borrowing.equipment.unit
                     }
-        queryset    = Equipment.objects.all().order_by('-statistics').filter(statistics__gte=1)
+        queryset    = Equipment.objects.filter(statistics__gte=1).order_by('-statistics')
         equipments  = []
         number      = 1
         for data in queryset:

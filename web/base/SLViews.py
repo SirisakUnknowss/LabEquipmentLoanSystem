@@ -171,10 +171,7 @@ class AnalysisView(MenuList):
         return orderDict
 
     def getAccountNumber(self) -> int:
-        data = Order.objects.annotate(user_count=Count('user'))
-        if data.count() > 0:
-            return data[0].user_count
-        return 0
+        return Account.objects.filter(accountBooking__isnull=False).distinct().count()
 
     def orderAll(self):
         waiting     = Q(status=Order.STATUS.WAITING)
@@ -183,8 +180,6 @@ class AnalysisView(MenuList):
         disapproved = Q(status=Order.STATUS.DISAPPROVED)
         order       = dict()
         bookings    = Booking.objects.all()
-        for booking in bookings:
-            print(booking.scientificInstrument.pk)
         order['all']            = bookings.count()
         order['waiting']        = bookings.filter(waiting).count()
         order['canceled']       = bookings.filter(canceled).count()
