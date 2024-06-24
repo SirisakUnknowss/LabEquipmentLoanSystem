@@ -39,7 +39,6 @@ class LabWebView(AuthenticationMixin):
         ]
         checkOverdue(request)
         return redirect(reverse('notFoundPage'))
-
     def post(self, request, *args, **kwargs):
         self.status = request.user.account.status
         self.context['menuDownList'] = [
@@ -52,7 +51,7 @@ class AdminMixin(View):
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return render(request, 'base/login.html')
+            return redirect(reverse('homepage'))
         if request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('notFoundPage'))
         return super().dispatch(request, *args, **kwargs)
@@ -60,11 +59,9 @@ class AdminMixin(View):
 class AdminWebView(AdminMixin):
 
     def get(self, request, *args, **kwargs):
-        checkOverdue(request)
         return redirect(reverse('homepage'))
 
     def post(self, request, *args, **kwargs):
-        checkOverdue(request)
         return redirect(reverse('homepage'))
 
 class AdminOnly(AdminWebView):

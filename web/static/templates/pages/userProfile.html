@@ -18,16 +18,19 @@
                                 {% endif %}
                             </div>
                             <ul class="list-group mt-2 text-center">
-                                <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">ชื่อ - นามสกุล</strong> :&nbsp;{{ user.account.firstname }}&nbsp;{{ user.account.lastname }}</li>
+                                <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">ชื่อ - นามสกุล</strong> :
+                                    {% if user.account.firstname %} {{ user.account.firstname }} {% endif %} {% if user.account.lastname %} {{ user.account.lastname }} {% endif %}
+                                </li>
                                 <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">รหัสนักศึกษา</strong> :&nbsp;{{ user.account.studentID }}</li>
                                 <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">สาขา</strong> :&nbsp;{{ user.account.branch }}</li>
                                 <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">เบอร์โทรติดต่อ</strong> :&nbsp;{{ user.account.phone }}</li>
                                 <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">อีเมล์</strong> :&nbsp;{{ user.account.email }}</li>
                             </ul>
                             <div class="text-center mt-4">
-                                <a href="{% url 'editProfilePage' %}">
+                                <form method="post" action="{% url 'editProfilePage' %}">
+                                    {% csrf_token %}
                                     <button class="btn bg-gradient-warning" type="submit">แก้ไขข้อมูล</button>
-                                </a>
+                                </form>
                             </div>
                         </div>
                     </div>

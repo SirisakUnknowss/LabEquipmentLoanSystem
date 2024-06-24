@@ -15,7 +15,7 @@ from base.functions import downloadFile, getDataFile
 from base.menu import MenuList, AdminOnly
 from base.models import DataWeb
 from base.permissions import IsAdminAccount
-from base.variables import BRANCH, CATEGORY, LEVEL_CLASS
+from base.variables import addVariables
 from borrowing.admin import OrderModelResource
 from borrowing.models import Order
 from chemicalSubstance.admin import ChemicalSubstanceModelResource
@@ -91,7 +91,19 @@ class NotFoundPageView(View):
 class SignupView(View):
 
     def get(self, request, *args, **kwargs):
-        self.context = { 'title': 'ลงทะเบียน', 'BRANCH': BRANCH, 'CATEGORY': CATEGORY, 'LEVEL_CLASS': LEVEL_CLASS }
+        self.context = {}
+        self.context['titlePage'] = 'ลงทะเบียนเข้าใช้งาน'
+        self.context = addVariables(self.context)
+        if request.user.is_authenticated:
+            return redirect(reverse('homepage'))
+        return render(request, 'base/signup.html', self.context)
+
+class AddUserView(AdminOnly):
+
+    def get(self, request, *args, **kwargs):
+        self.context['titlePage']   = 'เพิ่มผู้ใช้งาน'
+        self.context['adduser']     = True
+        self.context = addVariables(self.context)
         if request.user.is_authenticated and request.user.account.status != Account.STATUS.ADMIN:
             return redirect(reverse('homepage'))
         return render(request, 'base/signup.html', self.context)
@@ -110,33 +122,40 @@ class ProfileView(MenuList):
 
     def get(self, request, *args, **kwargs):
         super(MenuList, self).get(request)
+        self.setMenuHome()
         self.context['titleBar'] = "ข้อมูลบัญชีผู้ใช้งาน"
         return render(request, 'pages/userProfile.html', self.context)
 
 class EditProfileView(View):
     
     def get(self, request: Request, *args, **kwargs):
-        self.context = {}
-        if request.user.is_authenticated:
-            self.context['account']     = request.user.account
-            self.context['titlePage']   = 'แก้ไขข้อมูลส่วนตัว'
-            self.context['BRANCH']      = BRANCH
-            self.context['CATEGORY']    = CATEGORY
-            self.context['LEVEL_CLASS'] = LEVEL_CLASS
-            return render(request, 'base/signup.html', self.context)
         return redirect(reverse('homepage'))
 
     def post(self, request: Request, *args, **kwargs):
-        self.context = {}
-        account = request.POST['accountID']
-        if account:
-            account = Account.objects.get(id=account)
-            self.context['account']     = account
-            self.context['titlePage']   = 'แก้ไขข้อมูลส่วนตัว'
-            self.context['BRANCH']      = BRANCH
-            self.context['CATEGORY']    = CATEGORY
-            self.context['LEVEL_CLASS'] = LEVEL_CLASS
+        self.context    = {}
+        self.linkBack   = '/account/profile'
+        if not request.user.is_authenticated:
+            return redirect(reverse('homepage'))
+        status = request.user.account.status
+        if 'accountID' in request.POST and status == Account.STATUS.ADMIN:
+            account                 = request.POST['accountID']
+            self.linkBack           = '/user/list'
+            self.account: Account   = Account.objects.get(id=account)
+        else:
+            self.account = request.user.account
+        self.getData()
         return render(request, 'base/signup.html', self.context)
+
+    def getData(self):
+            branch = f'{self.account.faculty}_{self.account.branch}'
+            if self.account.faculty == 'other':
+                branch = 'other'
+            self.context['branch']      =  branch
+            self.context['account']     = self.account
+            self.context['titlePage']   = 'แก้ไขข้อมูลส่วนตัว'
+            self.context['linkBack']    = self.linkBack
+            self.context = addVariables(self.context)
+        
 
 class UserManagementView(MenuList):
 

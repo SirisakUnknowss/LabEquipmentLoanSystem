@@ -12,6 +12,7 @@ from account.form import AuthenForm, RegisterForm, UpdateForm
 from account.models import Account, getClassPath
 from account.serializers import SlzAccountCreate
 from base.functions import uploadImage
+from base.variables import addVariables
 
 class LoginView(View):
 
@@ -42,15 +43,18 @@ def user_register(request):
     form = RegisterForm(request.POST)
     if not form.is_valid():
         context = { 'form': form.errors, 'title': 'ลงทะเบียน' }
+        context = addVariables(context)
         return render(request, 'base/signup.html', context)
     account = Account.objects.filter(studentID=form['username'].data)
     if account.exists():
         context = { 'accountExists': 'บัญชีผู้ใช้งานนี้มีอยู่แล้ว', 'title': 'ลงทะเบียน' }
+        context = addVariables(context)
         return render(request, 'base/signup.html', context)
     user = User.objects.filter(username=form['username'].data)
     user.delete()
     if form['password'].data != form['repassword'].data:
         context = { 'password': 'รหัสผ่านไม่ตรงกัน', 'title': 'ลงทะเบียน' }
+        context = addVariables(context)
         return render(request, 'base/signup.html', context)
     user    = create_user_data(form)
     account = createAccount(request, user, form)
@@ -73,21 +77,21 @@ def create_user_data(form:RegisterForm):
     
 def createAccount(request, user:User, form:RegisterForm):
     branch = split_branch(form['branch'].data)
-    branchs = request.POST['branch']
+    branches = request.POST['branch']
     category = request.POST['category']
-    if branchs == 'Other_Other':
+    if branches == 'other':
         branch['branch'] = request.POST['branchOther']
     categoryOther = request.POST['categoryOther']
     data = {
         "user": user.id,
         "studentID": form['username'].data,
         "password": form['password'].data,
-        "nameprefix": form['nameprefix'].data,
+        "prefix": form['prefix'].data,
         "firstname": form['firstname'].data,
         "lastname": form['lastname'].data,
         "email": form['email'].data,
         "phone": form['phone'].data,
-        "levelclass": form['levelclass'].data,
+        "levelClass": form['levelClass'].data,
         "branch": branch['branch'],
         "faculty": branch['faculty'],
         "category": category,
@@ -101,12 +105,12 @@ def createAccount(request, user:User, form:RegisterForm):
         user=user,
         studentID=data['studentID'],
         password=data['password'],
-        nameprefix=data['nameprefix'],
+        prefix=data['prefix'],
         firstname=data['firstname'],
         lastname=data['lastname'],
         email=data['email'],
         phone=data['phone'],
-        levelclass=data['levelclass'],
+        levelClass=data['levelClass'],
         branch=data['branch'],
         faculty=data['faculty'],
         category=data['category'],
@@ -122,8 +126,10 @@ def createAccount(request, user:User, form:RegisterForm):
     return account
 
 def split_branch(value:str):
-    strSplit = value.split('_')
-    data = { 'branch': strSplit[1], 'faculty': strSplit[0] }
+    data = { 'branch': None, 'faculty': value }
+    if value != 'other':
+        strSplit = value.split('_')
+        data = { 'branch': strSplit[1], 'faculty': strSplit[0] }
     return data
 
 def user_edit(request):
@@ -145,25 +151,27 @@ def setData(request):
         return HttpResponse(form.errors, content_type='application/json')
     user        = Account.objects.get(id=request.POST['accountID'])
     branch      = split_branch(form['branch'].data)
-    branchs     = request.POST['branch']
+    branches    = request.POST['branch']
     category    = request.POST['category']
-    if branchs == 'Other_Other':
+    categoryOther = None
+    if branches == 'other':
         branch['branch'] = request.POST['branchOther']
     if category == 'other':
-        category = request.POST['categoryOther']
+        categoryOther = request.POST['categoryOther']
     data = {
         "studentID": user.studentID,
         "id": request.POST['accountID'],
         "user": user.id,
-        "nameprefix": form['nameprefix'].data,
+        "prefix": form['prefix'].data,
         "firstname": form['firstname'].data,
         "lastname": form['lastname'].data,
         "email": form['email'].data,
         "phone": form['phone'].data,
-        "levelclass": form['levelclass'].data,
+        "levelClass": form['levelClass'].data,
         "branch": branch['branch'],
         "faculty": branch['faculty'],
         "category": category,
+        "categoryOther": categoryOther,
         "image": None,
     }
     if request.FILES.get('upload', False):
@@ -172,12 +180,12 @@ def setData(request):
 
 def editProfile(data):
     Account.objects.filter(id=data['id']).update(
-        nameprefix=data['nameprefix'],
+        prefix=data['prefix'],
         firstname=data['firstname'],
         lastname=data['lastname'],
         email=data['email'],
         phone=data['phone'],
-        levelclass=data['levelclass'],
+        levelClass=data['levelClass'],
         branch=data['branch'],
         faculty=data['faculty'],
         category=data['category'],

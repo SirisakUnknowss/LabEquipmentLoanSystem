@@ -5643,6 +5643,10 @@ textarea.form-control-lg {
 .d-none {
   display: none !important; }
 
+.drop-shadow {
+  filter: drop-shadow(0px 0px 5px  rgba(0, 0, 0, 1));
+}
+
 .shadow {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important; }
 
@@ -7166,6 +7170,9 @@ textarea.form-control-lg {
 .fs-6 {
   font-size: 1rem !important; }
 
+.fs-7 {
+  font-size: 0.75rem !important; }
+
 .fst-italic {
   font-style: italic !important; }
 
@@ -7275,10 +7282,10 @@ textarea.form-control-lg {
   color: #6c757d !important; }
 
 .text-black-50 {
-  color: rgba(0, 0, 0, 0.5) !important; }
+  color: rgba(42, 43, 43, 0.5) !important; }
   
 .text-black {
-  color: #000000 !important; }
+  color: #2A2B2B !important; }
 
 .text-white-50 {
   color: rgba(255, 255, 255, 0.5) !important; }

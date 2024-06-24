@@ -26,12 +26,12 @@ DATE_TITLE = {
 }
 
 LEVEL_CLASS = {
-    "0": "ไม่ระบุ",
     "1": "1",
     "2": "2",
     "3": "3",
     "4": "4",
     "5": "5",
+    "0": "ไม่ระบุ",
 }
 BRANCH = {
     "B-Ed_Chemistry": "สาขาวิชาเคมี (คบ.)",
@@ -40,7 +40,7 @@ BRANCH = {
     "B-S_Physical": "สาขาวิชาฟิสิกส์ (วท.บ.)",
     "B-Ed_Biology": "สาขาวิชาชีววิทยา (คบ.)",
     "B-S_Biology": "สาขาวิชาชีววิทยา (วท.บ.)",
-    "Other_Other": "อื่น ๆ",
+    "other": "อื่น ๆ",
 }
 
 CATEGORY = {
@@ -48,5 +48,19 @@ CATEGORY = {
     "teacher": "อาจารย์",
     "personnel": "บุคลากร",
     "other": "อื่นๆ",
-    "NotSpecified": "ไม่ระบุ",
+    "notSpecified": "ไม่ระบุ",
 }
+
+PREFIX = {
+    "Mr.": "นาย",
+    "Mrs.": "นาง",
+    "Miss": "นางสาว",
+    "notSpecified": "ไม่ระบุ",
+}
+
+def addVariables(context: dict):
+    context['BRANCH']       = BRANCH
+    context['CATEGORY']     = CATEGORY
+    context['LEVEL_CLASS']  = LEVEL_CLASS
+    context['PREFIX']       = PREFIX
+    return context

@@ -1,4 +1,5 @@
 {% extends 'base/base.html' %}
+{% load humanReadable %}
 {% block content %}
 {% include 'base/navside.html' %}
 <main class="main-content position-relative max-height-vh-100 h-100">
@@ -13,15 +14,12 @@
                 <div class="row">
                     <div class="col-lg-4 col-md-8 col-12 mx-auto">
                         <form role="form" class="text-start" id="login-form" method="post" action="{% url 'userListPage' %}">
-                        {% csrf_token %}
-                        <div class="input-group input-group-outline mb-2">
-                            <label class="form-label">รหัสนักศึกษา</label>
-                            <input type="text" class="form-control" id="id_username" name="username" onfocus="focused(this)" onfocusout="defocused(this)">
-                            <input type="hidden" value="view" name="status" />
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn bg-gradient-primary w-100 mb-2">ค้นหา</button>
-                        </div>
+                            {% csrf_token %}
+                            <div class="input-group input-group-outline mb-2">
+                                <label class="form-label">รหัสนักศึกษา</label>
+                                <input type="text" class="form-control" id="id_username" name="username" onfocus="focused(this)" onfocusout="defocused(this)">
+                                <input type="hidden" value="view" name="status" />
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -39,9 +37,7 @@
                     <table class="table align-items-center mb-0 mt-5">
                             <thead>
                                 <tr>
-                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder w-5"></th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder w-10">รหัสนักศึกษา</th>
-                                    <th class="text-center text-uppercase text-black text-s font-weight-bolder w-10">รหัสผ่าน</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder w-20">ชื่อ - สกุล</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder w-15">อีเมล์</th>
                                     <th class="text-center text-uppercase text-black text-s font-weight-bolder w-10">สาขา</th>
@@ -55,26 +51,26 @@
                                     <div class="avatar">
                                         {% if account.image %}
                                         <img src="{{ account.image }}" onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/account/PlaceHolder.png' ;" class="avatar img-fluid shadow" />
+                                        {% else %}
+                                        <img src="{{ STATIC_URL }}/images/account/PlaceHolder.png" class="avatar img-fluid shadow" />
                                         {% endif %}
+                                        <span class="text-black text-s vertical-text">{{ account.studentID }}</span>
                                     </div>
                                 </td>
                                 <td class="align-middle text-center">
-                                    <span class="text-secondary text-s">{{ account.studentID }}</span>
-                                </td>
-                                <td class="align-middle text-center">
-                                    <input type="password" id="fakePassword{{ account.id }}" class="form-control form-login w-75 d-inline mr-3" value="{{ account.password }}">
-                                    <span><i id="toggler{{ account.id }}" onclick="showPass({{ account.id }})" class="far fa-eye"></i></span>
-                                </td>
-                                <td class="align-middle text-center">
-                                    <span class="text-secondary text-s">{{ account.firstname }}  {{ account.lastname }}</span>
+                                    <span class="text-secondary text-s">
+                                        {% if account.firstname %} {{ account.firstname }} {% endif %} {% if account.lastname %} {{ account.lastname }} {% endif %}
+                                    </span>
                                 </td>
                                 <td class="align-middle text-center">
                                     <span class="text-secondary text-s">{{ account.email }}</span>
                                 </td>
                                 <td class="align-middle text-center">
-                                    <span class="text-secondary text-s">{{ account.branch }}</span>
+                                    <span class="text-secondary text-s auto-newline">{{ account.branch|branchTH:account.faculty }}</span>
                                 </td>
                                 <td class="align-middle text-center text-sm">
+                                    <input type="password" id="fakePassword{{ account.id }}" class="form-control fs-7 border p-1 w-75 d-inline mb-1 mr-3" value="{{ account.password }}">
+                                    <buuton onclick="showPass({{ account.id }})"><i id="toggler{{ account.id }}" class="far fa-eye-slash"></i></buuton></br>
                                     <form class="align-items-center text-center d-inline-block" id="register-account" method="post" action="{% url 'editProfilePage' %}">
                                         {% csrf_token %}
                                         <input type="hidden" value="{{ account.id }}" name="accountID" />
@@ -105,18 +101,15 @@
 {{ block.super }}
     <script>
         function showPass(id) {
-            var password = document.getElementById('fakePassword' + id);
-            var toggler = document.getElementById('toggler' + id);
-            showHidePassword = () => {
-                if (password.type == 'password') {
-                password.setAttribute('type', 'text');
-                toggler.classList.add('fa-eye-slash');
-                } else {
-                toggler.classList.remove('fa-eye-slash');
-                password.setAttribute('type', 'password');
-                }
-            };
-            toggler.addEventListener('click', showHidePassword);
+            var password = document.getElementById('fakePassword' + id)
+            var toggler = document.getElementById('toggler' + id)
+            if (password.type == 'password') {
+            password.setAttribute('type', 'text')
+            toggler.className = 'far fa-eye'
+            } else {
+            toggler.className = 'far fa-eye-slash'
+            password.setAttribute('type', 'password')
+            }
         }
     </script>
 {% endblock %}

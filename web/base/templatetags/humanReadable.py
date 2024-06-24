@@ -3,7 +3,7 @@ from datetime import datetime
 # DJANGO
 from django import template
 # Project
-from base.variables import UNIT, DATE_TITLE
+from base.variables import UNIT, DATE_TITLE, BRANCH
 
 register = template.Library()
 
@@ -45,3 +45,10 @@ def dateTitleNotice(value):
 		return DATE_TITLE[value]
 	except:
 		return None
+
+@register.filter
+def branchTH(b, f):
+    try:
+        return BRANCH[f'{f}_{b}']
+    except:
+        return b

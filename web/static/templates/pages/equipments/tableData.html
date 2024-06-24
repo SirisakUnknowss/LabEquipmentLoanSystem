@@ -16,7 +16,6 @@
     {% for order in orders %}
     <tr>
         <td class="align-middle text-center">
-            
             <div class="avatar">
                 {% if order.user.image %}
                 <img src="{{ order.user.image }}" onerror="this.onerror=null; this.src='{{ STATIC_URL }}images/account/PlaceHolder.png' ;" class="avatar img-fluid shadow" />
