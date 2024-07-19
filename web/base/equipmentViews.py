@@ -70,9 +70,7 @@ class ListPageView(MenuList):
         super(MenuList, self).get(request)
         self.addMenuPage(0, 1)
         results                     = Equipment.objects.all().order_by('name')
-        resultsJson                 = serializers.serialize("json", results)
         self.context['results']     = results
-        self.context['resultsJson'] = resultsJson
         self.context['deleteUrl']   = '/api/equipment/remove'
         return render(request, 'pages/equipments/listPage.html', self.context)
 
@@ -82,9 +80,7 @@ class ListPageView(MenuList):
         nameSearch                  = request.POST['nameSearch']
         name                        = Q(name__contains=nameSearch)
         results                     = Equipment.objects.filter(name).order_by('name')
-        resultsJson                 = serializers.serialize("json", results)
         self.context['results']     = results
-        self.context['resultsJson'] = resultsJson
         self.context['deleteUrl']   = '/api/equipment/remove'
         return render(request, 'pages/equipments/listPage.html', self.context)
 

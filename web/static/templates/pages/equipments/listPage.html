@@ -87,9 +87,8 @@
   {% if user.account.status == "admin" %}
   <script>
     const deleteUrl = '{{ deleteUrl }}'
-    const resultsJson = JSON.parse('{{ resultsJson | safe }}')
-      const urlExportData = "{% url 'ExportEquipments' %}"
-      const nameFileExport = "equipmentsAllData.xlsx"
+    const urlExportData = "{% url 'ExportEquipments' %}"
+    const nameFileExport = "equipmentsAllData.xlsx"
   </script>
   <script src="{{ STATIC_URL }}js/exportDataAll.js"></script>
   <script src="{{ STATIC_URL }}js/deleteData.js"></script>

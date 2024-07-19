@@ -18,9 +18,7 @@ class ListPageView(MenuList):
         super(MenuList, self).get(request)
         self.addMenuPage(2, 1)
         results                     = ChemicalSubstance.objects.all().order_by('name')
-        resultsJson                 = serializers.serialize("json", results)
         self.context['results']     = results
-        self.context['resultsJson'] = resultsJson
         self.context['deleteUrl']   = "/api/chemicalSubstance/remove"
         return render(request, 'pages/chemicalSubstance/listPage.html', self.context)
 
@@ -30,9 +28,7 @@ class ListPageView(MenuList):
         nameSearch                  = request.POST['nameSearch']
         name                        = Q(name__contains=nameSearch)
         results                     = ChemicalSubstance.objects.filter(name).order_by('name')
-        resultsJson                 = serializers.serialize("json", results)
         self.context['results']     = results
-        self.context['resultsJson'] = resultsJson
         self.context['deleteUrl']   = "/api/chemicalSubstance/remove"
         return render(request, 'pages/chemicalSubstance/listPage.html', self.context)
 
@@ -77,9 +73,7 @@ class AddPageView(AdminOnly):
     def get(self, request: Request, *args, **kwargs):
         super(AdminOnly, self).get(request)
         ghsList                     = HazardCategory.objects.filter(category=HazardCategory.CATEGORY.GHS)
-        # unList                      = HazardCategory.objects.filter(category=HazardCategory.CATEGORY.UN)
         self.context['ghsList']     = SlzHazardCategory(ghsList, many=True).data
-        # self.context['unList']      = SlzHazardCategory(unList, many=True).data
         self.context['confirmUrl']  = '/api/chemicalSubstance/add'
         self.context['titleBar']    = 'เพิ่มสารเคมี'
         return render(request, 'pages/chemicalSubstance/addPage.html', self.context)
@@ -90,10 +84,8 @@ class EditPageView(AdminOnly):
         super(AdminOnly, self).post(request)
         try:
             ghsList                     = HazardCategory.objects.filter(category=HazardCategory.CATEGORY.GHS)
-            # unList                      = HazardCategory.objects.filter(category=HazardCategory.CATEGORY.UN)
             instance                    = get_object_or_404(ChemicalSubstance, id=request.POST['id'])
             self.context['ghsList']     = SlzHazardCategory(ghsList, many=True).data
-            # self.context['unList']      = SlzHazardCategory(unList, many=True).data
             self.context['result']      = SlzChemicalSubstanceOutput(instance).data
             self.context['confirmUrl']  = '/api/chemicalSubstance/edit'
             self.context['titleBar']    = 'แก้ไขสารเคมี'

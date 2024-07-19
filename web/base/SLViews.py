@@ -73,7 +73,7 @@ class ListPageView(MenuList):
         serializer                  = SlzScientificInstrument(results, many=True).data
         resultsJson                 = json.dumps(serializer, ensure_ascii=False)
         self.context['results']     = results
-        self.context['resultsJson'] = resultsJson
+        self.context['resultsJson'] = resultsJson.replace('\"', '\\"')
         self.context['deleteUrl']   = '/api/scientificInstrument/remove'
         return render(request, 'pages/scientificInstruments/listPage.html', self.context)
 
@@ -85,7 +85,7 @@ class ListPageView(MenuList):
         results                     = ScientificInstrument.objects.filter(name).order_by('name')
         resultsJson                 = serializers.serialize("json", results)
         self.context['results']     = results
-        self.context['resultsJson'] = resultsJson
+        self.context['resultsJson'] = resultsJson.replace('\"', '\\"')
         self.context['deleteUrl']   = '/api/scientificInstrument/remove'
         return render(request, 'pages/scientificInstruments/listPage.html', self.context)
 
