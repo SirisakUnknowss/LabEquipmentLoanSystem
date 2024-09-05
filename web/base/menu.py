@@ -83,9 +83,9 @@ class MenuList(LabWebView):
         if self.status == Account.STATUS.ADMIN:
             self.context['menuDownList'].append({ 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False })
         self.context['menuList'] = [
-        { 'name': 'ยืม-คืนอุปกรณ์วิทยาศาสตร์', 'link': 'equipment/list', 'image': 'static/images/landing/1.png' },
-        { 'name': 'จองใช้งานเครื่องมือวิทยาศาสตร์', 'link': 'scientificInstrument/list', 'image': 'static/images/landing/2.png' },
-        { 'name': 'เบิกใช้สารเคมีวิทยาศาสตร์', 'link': 'chemicalSubstance/list', 'image': 'static/images/landing/3.png' },
+        { 'name': 'อุปกรณ์วิทยาศาสตร์', 'link': 'equipment/list', 'image': 'static/images/landing/1.png' },
+        { 'name': 'เครื่องมือวิทยาศาสตร์', 'link': 'scientificInstrument/list', 'image': 'static/images/landing/2.png' },
+        { 'name': 'สารเคมี', 'link': 'chemicalSubstance/list', 'image': 'static/images/landing/3.png' },
     ]
 
     def addMenuPage(self, category: int, active: int) -> list:
