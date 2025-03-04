@@ -1,6 +1,18 @@
 version: "3.9"
-# Dev only
+
 services:
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: equipmentlab
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   web:
     build: 
@@ -13,5 +25,9 @@ services:
     env_file:
       - ./web/docker/prodRDS/.prodRDS
     command: "python manage.py runserver 0.0.0.0:8000"
-    # command: gunicorn LabEquipmentLoanSystem.wsgi:application --preload --workers=3 --bind 0.0.0.0:8000 --forwarded-allow-ips="*"
     restart: always
+    depends_on:
+      - db  # ให้ Django รอ PostgreSQL รันก่อน
+
+volumes:
+  postgres_data:
