@@ -83,7 +83,7 @@ class MenuList(LabWebView):
         if self.status == Account.STATUS.ADMIN:
             self.context['menuDownList'].append({ 'name': 'ตั้งค่าผู้ใช้งาน', 'link': '/user/management', 'icon': 'settings', 'active': False })
         self.context['menuList'] = [
-        { 'name': 'อุปกรณ์วิทยาศาสตร์', 'link': 'equipment/list', 'image': 'static/images/landing/1.png' },
+        { 'name': 'วัสดุและอุปกรณ์วิทยาศาสตร์', 'link': 'equipment/list', 'image': 'static/images/landing/1.png' },
         { 'name': 'เครื่องมือวิทยาศาสตร์', 'link': 'scientificInstrument/list', 'image': 'static/images/landing/2.png' },
         { 'name': 'สารเคมี', 'link': 'chemicalSubstance/list', 'image': 'static/images/landing/3.png' },
     ]
