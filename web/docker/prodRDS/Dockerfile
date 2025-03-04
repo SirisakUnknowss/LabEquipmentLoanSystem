@@ -12,6 +12,7 @@ ENV PYTHONUNBUFFERED 1
 RUN python -m pip install pip
 RUN python -m pip install --upgrade setuptools pip
 RUN apt update && apt-get upgrade -y
+RUN apt update && apt install -y postgresql-client
 # Install Pillow dependencies
 RUN apt install libxml2-dev libxslt-dev libffi-dev gcc curl
 RUN apt install tk-dev tcl-dev
