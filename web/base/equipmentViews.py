@@ -60,6 +60,7 @@ class EditPageView(AdminOnly):
             self.context['result']      = result
             self.context['titleBar']    = 'แก้ไขเครื่องมือวิทยาศาตร์'
             self.context['confirmUrl']  = '/api/equipment/edit'
+            self.context['UNIT']        = UNIT
             return render(request, 'pages/equipments/addPage.html', self.context)
         except Equipment.DoesNotExist:
             return redirect(reverse('equipmentListPage'))
