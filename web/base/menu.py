@@ -132,7 +132,7 @@ class MenuList(LabWebView):
         menuUpList.extend([
             { 'name': 'รายการเครื่องมือวิทยาศาตร์', 'link': 'list', 'icon': 'description', 'active': False },
             { 'name': 'ปฏิทินการจอง', 'link': 'calendar', 'icon': 'shopping_basket', 'active': False },
-            { 'name': 'ประวัติการเบิกใช้สารเคมี', 'link': 'history', 'icon': 'history', 'active': False },
+            { 'name': 'ประวัติการขอใช้เครื่องมือวิทยาศาสตร์', 'link': 'history', 'icon': 'history', 'active': False },
             ])
         if self.status == Account.STATUS.ADMIN:
             self.setMenuAdmin()
@@ -145,7 +145,7 @@ class MenuList(LabWebView):
         menuUpList.extend([
             { 'name': 'รายการสารเคมี', 'link': 'list', 'icon': 'description', 'active': False },
             { 'name': 'ตะกร้าของฉัน', 'link': 'cart', 'icon': 'shopping_basket', 'active': False },
-            { 'name': 'ประวัติการเบิกใช้สารเคมี', 'link': 'history', 'icon': 'history', 'active': False },
+            { 'name': 'ประวัติการขอใช้เครื่องมือวิทยาศาสตร์', 'link': 'history', 'icon': 'history', 'active': False },
             ])
         if self.status == Account.STATUS.ADMIN:
             self.setMenuAdmin()

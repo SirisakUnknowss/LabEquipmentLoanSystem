@@ -120,15 +120,17 @@
   border-radius: 8px;
 }
 .text-4 {
-  flex-shrink: 0;
   flex-basis: auto;
   position: relative;
-  height: 19px;
+  height: auto;
   color: #000000;
   font-family: Roboto, var(--default-font-family);
   font-size: 16px;
   font-weight: 600;
   line-height: 18.75px;
-  white-space: nowrap;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
   z-index: 15;
 }
