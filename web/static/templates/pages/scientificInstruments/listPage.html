@@ -87,8 +87,6 @@
     const resultsJson = JSON.parse('{{ resultsJson | safe }}')
   </script>
   
-  <script src="{{ STATIC_URL }}js/scientificDetail.js"></script>
-  <script src="{{ STATIC_URL }}js/scientificBooking.js"></script>
   {% if user.account.status == "admin" %}
   <script>
     const deleteUrl = '{{ deleteUrl }}'
@@ -97,5 +95,8 @@
   </script>
   <script src="{{ STATIC_URL }}js/exportDataAll.js"></script>
   <script src="{{ STATIC_URL }}js/deleteData.js"></script>
+  {% else %}
+  <script src="{{ STATIC_URL }}js/scientificBooking.js"></script>
+  <script src="{{ STATIC_URL }}js/scientificDetail.js"></script>
   {% endif %}
 {% endblock %}
